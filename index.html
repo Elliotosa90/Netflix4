@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NetflixZone - Investment Platform</title>
     <style>
-        /* =====================================================================
-           ████████  STYLES  ████████
-           ===================================================================== */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
             --red: #E50914; --dark-red: #B20710; --black: #000000;
@@ -173,18 +170,13 @@
         .np-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; background: rgba(179,127,235,0.15); color: var(--purple); margin-left: 4px; }
         .payout-status { font-size: 11px; color: var(--text3); }
         .countdown-timer { font-size: 13px; color: var(--yellow); margin-top: 4px; }
-        .sync-status { font-size: 11px; color: var(--text3); text-align: right; padding: 4px 8px; }
-        .sync-status.synced { color: var(--green); }
-        .sync-status.error { color: var(--red); }
-        .sync-status.syncing { color: var(--yellow); }
-        .admin-card .admin-actions .btn-orange { background: var(--orange); color: var(--black); }
     </style>
 </head>
 <body>
 
-<!-- =====================================================================
-     ████████  AUTH CONTAINER  ████████
-     ===================================================================== -->
+<!-- ============================================================ -->
+<!-- AUTH CONTAINER -->
+<!-- ============================================================ -->
 <div id="authContainer" class="auth-container">
     <div class="auth-box">
         <div class="logo"><h1>NETFLIX<span>ZONE</span></h1><p>Investment Platform</p></div>
@@ -192,8 +184,6 @@
             <div class="active" onclick="showAuthTab('login')">Sign In</div>
             <div onclick="showAuthTab('register')">Register</div>
         </div>
-
-        <!-- ── LOGIN FORM ── -->
         <div id="loginForm">
             <h2>Welcome back</h2>
             <div id="loginError" class="error"></div>
@@ -209,8 +199,6 @@
                 <div id="resetMsg" style="font-size:13px;margin-top:8px;text-align:center;"></div>
             </div>
         </div>
-
-        <!-- ── REGISTER FORM ── -->
         <div id="registerForm" class="hidden">
             <h2>Create Account</h2>
             <div id="registerError" class="error"></div>
@@ -224,15 +212,13 @@
             <button class="btn-primary" onclick="userRegister()">Create Account</button>
             <div class="link"><a href="#" onclick="event.preventDefault();showAuthTab('login');">Already have an account? Sign in.</a></div>
         </div>
-
-        <!-- ── HIDDEN ADMIN LINK ── -->
         <div class="admin-hidden-link"><a onclick="openAdminLogin()">●</a></div>
     </div>
 </div>
 
-<!-- =====================================================================
-     ████████  ADMIN LOGIN OVERLAY  ████████
-     ===================================================================== -->
+<!-- ============================================================ -->
+<!-- ADMIN LOGIN OVERLAY -->
+<!-- ============================================================ -->
 <div id="adminLoginOverlay" class="admin-login-overlay">
     <div class="admin-login-box">
         <button class="close-admin" onclick="closeAdminLogin()">✕</button>
@@ -245,22 +231,20 @@
     </div>
 </div>
 
-<!-- =====================================================================
-     ████████  USER / ADMIN DASHBOARD  ████████
-     ===================================================================== -->
+<!-- ============================================================ -->
+<!-- USER / ADMIN DASHBOARD -->
+<!-- ============================================================ -->
 <div id="userDashboard" class="dashboard">
     <div class="topbar">
         <div class="brand">NETFLIX<span>ZONE</span></div>
         <div class="user-menu">
             <span class="username" id="displayUsername">user</span>
             <span id="userStatusBadge" class="status-badge active">Active</span>
-            <span id="syncStatus" class="sync-status" title="Sync status with cloud backup">💾 Saved locally</span>
             <button onclick="userLogout()" class="logout-btn">Sign Out</button>
         </div>
     </div>
     <div class="dashboard-content">
-
-        <!-- ── STATS GRID ── -->
+        <!-- Stats Grid -->
         <div class="stats-grid">
             <div class="stat-card"><div class="label">Balance (NGN)</div><div class="value green" id="userBalance">₦0.00</div></div>
             <div class="stat-card"><div class="label">Invested (NGN)</div><div class="value" id="userInvested">₦0.00</div></div>
@@ -269,14 +253,14 @@
             <div class="stat-card"><div class="label">Status</div><div class="value" id="userPlan" style="font-size:20px;">-</div></div>
         </div>
 
-        <!-- ── REFERRAL BOX ── -->
+        <!-- Referral Box -->
         <div class="referral-box">
             <div class="r-label">Your Referral Code</div>
             <div class="r-code" id="refCode">-</div>
             <div class="r-link" id="refLink" onclick="copyRefLink()">Click to copy</div>
         </div>
 
-        <!-- ── ASSET INVESTMENT DISPLAY ── -->
+        <!-- ASSET INVESTMENT SECTION -->
         <div class="asset-display" id="assetDisplay">
             <div class="a-label">Current Investment Asset</div>
             <div class="a-value" id="currentAssetDisplay">⛏️ Metallic Minerals</div>
@@ -285,7 +269,7 @@
             <button class="btn-blue" onclick="showAssetSwitchModal()" id="switchAssetBtn" style="margin-top:8px;padding:8px 18px;border:none;border-radius:4px;cursor:pointer;font-weight:600;font-size:13px;">Switch Asset</button>
         </div>
 
-        <!-- ── QUICK ACTIONS ── -->
+        <!-- Quick Actions -->
         <div class="quick-actions">
             <div class="quick-action" onclick="showDepositModal()"><div class="icon">💰</div><h3>Deposit</h3><p>Fund via Monnify</p></div>
             <div class="quick-action" id="withdrawBtn" onclick="showWithdrawModal()"><div class="icon">💸</div><h3>Withdraw</h3><p>To wallet / bank</p></div>
@@ -293,10 +277,10 @@
             <div class="quick-action" onclick="refreshUserData()"><div class="icon">🔄</div><h3>Refresh</h3><p>Update data</p></div>
         </div>
 
-        <!-- ── INTEREST STATUS ── -->
+        <!-- Interest Status -->
         <div class="section-title" id="interestStatus" style="font-size:13px;color:var(--blue);margin-bottom:8px;"></div>
 
-        <!-- ── TRANSACTION HISTORY ── -->
+        <!-- Transaction History -->
         <div class="section-title">Transaction History</div>
         <div class="tab-buttons">
             <button class="active" onclick="showTxTab('all')">All</button>
@@ -308,9 +292,7 @@
         </div>
         <div class="table-wrap"><table><thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Status</th><th>Details</th></tr></thead><tbody id="userTransactions"></tbody></table></div>
 
-        <!-- ════════════════════════════════════════════════════════════════
-             ████████  ADMIN SECTION  ████████
-             ════════════════════════════════════════════════════════════════ -->
+        <!-- ADMIN SECTION -->
         <div id="adminSection" class="hidden">
             <div class="section-title" style="color:var(--red);">⚙ Admin Dashboard</div>
 
@@ -320,7 +302,7 @@
                 <div class="stat-card"><div class="label">Active Users</div><div class="value green" id="adminActiveUsers">0</div></div>
             </div>
 
-            <!-- ── ASSET INTEREST RATES SETTINGS ── -->
+            <!-- ASSET INTEREST RATES SETTINGS -->
             <div class="admin-section">
                 <h3>⛏️ Asset Interest Rates</h3>
                 <p style="font-size:12px;color:var(--text3);margin-bottom:12px;">Set daily interest rate (%) for each investment asset. Users earn interest based on their chosen asset.</p>
@@ -345,7 +327,7 @@
                 <div id="assetRateMsg" style="font-size:12px;color:var(--green);margin-top:8px;"></div>
             </div>
 
-            <!-- ── PLATFORM SETTINGS ── -->
+            <!-- Platform Settings -->
             <div class="admin-section">
                 <h3>⚙️ Platform Settings</h3>
                 <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-bottom:14px;">
@@ -365,7 +347,7 @@
                 </div>
             </div>
 
-            <!-- ── MONNIFY SETTINGS ── -->
+            <!-- Monnify Settings -->
             <div class="admin-section">
                 <h3>👑 Monnify Settings (Bank Payouts)</h3>
                 <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
@@ -382,7 +364,7 @@
                 <div id="monnifyMsg" style="font-size:12px;color:var(--green);margin-top:6px;"></div>
             </div>
 
-            <!-- ── NOWPAYMENTS SETTINGS ── -->
+            <!-- NOWPayments Settings -->
             <div class="admin-section">
                 <h3>🔮 NOWPayments Settings (Crypto Payouts)</h3>
                 <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
@@ -396,19 +378,19 @@
                 <div id="npMsg" style="font-size:12px;color:var(--green);margin-top:6px;"></div>
             </div>
 
-            <!-- ── PENDING WITHDRAWALS ── -->
+            <!-- Pending Withdrawals -->
             <div class="admin-section">
                 <h3>⏳ Pending Withdrawals (Approve or Decline)</h3>
                 <div id="pendingWithdrawals"></div>
             </div>
 
-            <!-- ── ALL USERS CARDS ── -->
+            <!-- All Users Cards -->
             <div class="admin-section">
                 <h3>All Users</h3>
                 <div id="adminUserCards" class="admin-grid"></div>
             </div>
 
-            <!-- ── CREATE USER ── -->
+            <!-- Create User -->
             <div class="admin-section">
                 <h3>Create User</h3>
                 <div style="display:flex;gap:10px;flex-wrap:wrap;">
@@ -420,7 +402,7 @@
                 <div id="adminCreateMsg" style="margin-top:8px;font-size:13px;color:var(--green);"></div>
             </div>
 
-            <!-- ── CHANGE ADMIN PASSWORD ── -->
+            <!-- Change Admin Password -->
             <div class="admin-section">
                 <h3>🔑 Change Admin Password</h3>
                 <div style="display:flex;gap:10px;flex-wrap:wrap;">
@@ -431,7 +413,7 @@
                 <div id="changePassMsg" style="font-size:13px;"></div>
             </div>
 
-            <!-- ── RESET USER PASSWORD ── -->
+            <!-- Reset User Password -->
             <div class="admin-section">
                 <h3>🔑 Reset User Password</h3>
                 <div style="display:flex;gap:10px;flex-wrap:wrap;">
@@ -442,14 +424,13 @@
                 <div id="resetUserPassMsg" style="font-size:13px;"></div>
             </div>
 
-            <!-- ── SYSTEM ACTIONS ── -->
+            <!-- System Actions -->
             <div class="admin-section">
-                <h3>⚡ System Actions</h3>
+                <h3>System Actions</h3>
                 <div style="display:flex;gap:10px;flex-wrap:wrap;">
                     <button onclick="adminPayAllProfits()" class="btn-blue" style="padding:10px 20px;">💰 Apply Daily Interest</button>
                     <button onclick="adminResetAll()" class="btn-red" style="padding:10px 20px;">⚠️ Reset All Data</button>
                     <button onclick="refreshAdminData()" class="btn-yellow" style="padding:10px 20px;">🔄 Refresh</button>
-                    <button onclick="syncToJSONBin()" class="btn-teal" style="padding:10px 20px;">☁️ Sync to Cloud</button>
                 </div>
                 <div id="adminActionMsg" style="margin-top:8px;font-size:13px;color:var(--blue);"></div>
             </div>
@@ -457,11 +438,9 @@
     </div>
 </div>
 
-<!-- =====================================================================
-     ████████  MODALS  ████████
-     ===================================================================== -->
-
-<!-- ── DEPOSIT MODAL ── -->
+<!-- ============================================================ -->
+<!-- DEPOSIT MODAL -->
+<!-- ============================================================ -->
 <div id="depositModal" class="modal-overlay">
     <div class="modal">
         <h3>💰 Make a Deposit (NGN)</h3>
@@ -477,7 +456,9 @@
     </div>
 </div>
 
-<!-- ── WITHDRAW MODAL ── -->
+<!-- ============================================================ -->
+<!-- WITHDRAW MODAL -->
+<!-- ============================================================ -->
 <div id="withdrawModal" class="modal-overlay">
     <div class="modal">
         <h3>💸 Withdraw Funds</h3>
@@ -532,7 +513,9 @@
     </div>
 </div>
 
-<!-- ── ASSET SWITCH MODAL ── -->
+<!-- ============================================================ -->
+<!-- ASSET SWITCH MODAL -->
+<!-- ============================================================ -->
 <div id="assetSwitchModal" class="modal-overlay">
     <div class="modal">
         <h3>⛏️ Switch Investment Asset</h3>
@@ -569,7 +552,9 @@
     </div>
 </div>
 
-<!-- ── PROFILE MODAL ── -->
+<!-- ============================================================ -->
+<!-- PROFILE MODAL -->
+<!-- ============================================================ -->
 <div id="profileModal" class="modal-overlay">
     <div class="modal">
         <h3>👤 Account Profile</h3>
@@ -578,7 +563,9 @@
     </div>
 </div>
 
-<!-- ── DEPOSIT RESULT MODAL ── -->
+<!-- ============================================================ -->
+<!-- DEPOSIT RESULT MODAL -->
+<!-- ============================================================ -->
 <div id="depositResultModal" class="modal-overlay">
     <div class="modal" style="text-align:center;">
         <h3 id="depositResultTitle">✅ Payment Confirmed</h3>
@@ -589,7 +576,9 @@
     </div>
 </div>
 
-<!-- ── PAYOUT RESULT MODAL ── -->
+<!-- ============================================================ -->
+<!-- PAYOUT RESULT MODAL -->
+<!-- ============================================================ -->
 <div id="payoutResultModal" class="modal-overlay">
     <div class="modal" style="text-align:center;">
         <h3 id="payoutResultTitle">✅ Payout Initiated</h3>
@@ -600,38 +589,78 @@
     </div>
 </div>
 
-<!-- ── MONNIFY SDK ── -->
+<!-- ============================================================ -->
+<!-- Monnify SDK -->
+<!-- ============================================================ -->
 <script src="https://sdk.monnify.com/plugin/monnify.js"></script>
 
+<!-- ============================================================ -->
+<!-- Supabase JS SDK v2 (CDN) -->
+<!-- ============================================================ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
-// ═══════════════════════════════════════════════════════════════════════════════
-// ████████  SECTION 1: CONFIGURATION  ████████
-// ═══════════════════════════════════════════════════════════════════════════════
-// ★ EDIT YOUR JSONBIN CREDENTIALS BELOW ★
-// ★ localStorage is PRIMARY storage (never loses data on page reload)
-// ★ JSONBin is SECONDARY/backup (sync only, failures won't destroy data)
-// ═══════════════════════════════════════════════════════════════════════════════
+/* ================================================================
+ * ══════════════════════════════════════════════════════════════════
+ * SUPABASE CONFIGURATION — EDIT YOUR SUPABASE CREDENTIALS HERE
+ * ══════════════════════════════════════════════════════════════════
+ * ================================================================
+ * ┌─────────────────────────────────────────────────────────────────┐
+ * │  Go to: https://supabase.com → Project → Settings → API        │
+ * │  Paste your Supabase URL and anon key below.                   │
+ * │  The anon key is safe for client-side use (RLS-protected).     │
+ * └─────────────────────────────────────────────────────────────────┘
+ */
+var SUPABASE_URL = "https://YOUR-PROJECT.supabase.co";    // <-- PLACEHOLDER: Replace with your Supabase project URL
+var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."; // <-- PLACEHOLDER: Replace with your Supabase anon key
 
-var CONFIG = {
-    JSONBIN_MASTER_KEY: "$2a$10$7LIOruQCVZ2kz.zECoZdOeGnJlwM78ZjJ7K3HxpfglNnITLECcd56",
-    JSONBIN_ACCESS_KEY: "",
-    JSONBIN_BIN_ID: "6a39a799da38895dfeee0840",
-    // ★ PLACEHOLDER: Replace with your actual keys above if using JSONBin sync
-    // ★ If you leave these empty, the app runs fully offline with localStorage
-    JSONBIN_URL: "https://api.jsonbin.io/v3/b/6a39a799da38895dfeee0840",
-    CURRENCY_SYMBOL: "\u20A6",
-    CURRENCY_CODE: "NGN",
-    DEFAULT_MIN_DEPOSIT: 1000,
-    DEFAULT_MIN_WITHDRAW: 500,
-    LOCALSTORAGE_KEY: "netflixzone_data",
-    ASSET_SWITCH_COOLDOWN_HOURS: 24
-};
-CONFIG.JSONBIN_URL = "https://api.jsonbin.io/v3/b/" + CONFIG.JSONBIN_BIN_ID;
+var supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// ████████  SECTION 2: ASSET TYPES  ████████
-// ═══════════════════════════════════════════════════════════════════════════════
+/* ================================================================
+ * ══════════════════════════════════════════════════════════════════
+ * SUPABASE DATABASE SETUP — RUN THIS SQL IN YOUR SUPABASE SQL EDITOR
+ * ══════════════════════════════════════════════════════════════════
+ *
+ * Copy and paste the SQL below into Supabase SQL Editor and click RUN.
+ * This creates all required tables and inserts the default admin user.
+ *
+ * ┌─────────────────────────────────────────────────────────────────┐
+ * │  CREATE TABLE IF NOT EXISTS settings (                         │
+ * │    id integer PRIMARY KEY DEFAULT 1,                           │
+ * │    data jsonb NOT NULL DEFAULT '{}'::jsonb,                    │
+ * │    CONSTRAINT single_row CHECK (id = 1)                        │
+ * │  );                                                            │
+ * │  INSERT INTO settings (id, data) VALUES (1, '{}'::jsonb)       │
+ * │    ON CONFLICT (id) DO NOTHING;                                │
+ * │                                                                │
+ * │  CREATE TABLE IF NOT EXISTS users (                            │
+ * │    username text PRIMARY KEY,                                  │
+ * │    data jsonb NOT NULL DEFAULT '{}'::jsonb                     │
+ * │  );                                                            │
+ * │                                                                │
+ * │  CREATE TABLE IF NOT EXISTS admin (                            │
+ * │    id integer PRIMARY KEY DEFAULT 1,                           │
+ * │    username text NOT NULL DEFAULT 'admin',                     │
+ * │    password text NOT NULL DEFAULT 'admin123',                   │
+ * │    CONSTRAINT single_admin_row CHECK (id = 1)                  │
+ * │  );                                                            │
+ * │  INSERT INTO admin (id, username, password) VALUES             │
+ * │    (1, 'admin', 'admin123')                                    │
+ * │    ON CONFLICT (id) DO NOTHING;                                │
+ * └─────────────────────────────────────────────────────────────────┘
+ * ================================================================ */
 
+// ================================================================
+// CONFIG
+// ================================================================
+var CURRENCY_SYMBOL = "\u20A6";
+var CURRENCY_CODE = "NGN";
+var DEFAULT_MIN_DEPOSIT = 1000;
+var DEFAULT_MIN_WITHDRAW = 500;
+
+// ================================================================
+// ASSET CONFIGURATION
+// ================================================================
 var ASSET_TYPES = {
     metallic: {
         id: 'metallic',
@@ -658,257 +687,21 @@ var ASSET_TYPES = {
         defaultRate: 4.0
     }
 };
+var ASSET_SWITCH_COOLDOWN_HOURS = 24;
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// ████████  SECTION 3: DEFAULT DATA STRUCTURE (with placeholder values)  ████████
-// ═══════════════════════════════════════════════════════════════════════════════
-// ★ This is the FALLBACK data used when localStorage is empty.
-// ★ Admin credentials: admin / admin123 (PLACEHOLDER — change on first login)
-// ★ Modify these defaults to customize the initial platform state.
-// ═══════════════════════════════════════════════════════════════════════════════
-
-function getDefaultData() {
-    return {
-        // ── Metadata ──
-        _version: 2,                       // Increment when data structure changes
-        _lastUpdated: new Date().toISOString(),
-
-        // ── Admin account (PLACEHOLDER: change password after login) ──
-        admin: {
-            username: 'admin',             // ★ PLACEHOLDER admin username
-            password: 'admin123'           // ★ PLACEHOLDER admin password
-        },
-
-        // ── Platform settings ──
-        settings: {
-            interestRate: 2.0,             // Default interest rate (%)
-            minDeposit: 1000,              // Minimum deposit in NGN
-            minWithdraw: 500,              // Minimum withdrawal in NGN
-            withdrawDay: 5,                // 0=Sun, 5=Fri, -1=Any day
-            // Monnify (bank payouts) - ★ PLACEHOLDER keys
-            monnifyApiKey: '',
-            monnifyContractCode: '',
-            monnifySecretKey: '',
-            monnifySourceAccount: '',
-            // NOWPayments (crypto payouts) - ★ PLACEHOLDER keys
-            npApiKey: '',
-            npSecretKey: '',
-            npEmail: '',
-            npPassword: '',
-            // Per-asset interest rates
-            assetRates: {
-                metallic: 2.0,
-                energy: 3.0,
-                gemstone: 4.0
-            }
-        },
-
-        // ── Users (empty by default) ──
-        users: {}
-    };
-}
-
-/* ── USER OBJECT STRUCTURE (created on registration) ──
-   appData.users[username] = {
-       fullName:           string,
-       email:              string,
-       phone:              string,
-       password:           string,
-       balance:            number (NGN),
-       invested:           number (NGN),
-       profit:             number (NGN),
-       referralBonus:      number (NGN),
-       referralCode:       string (same as username),
-       referredBy:         string (empty if none),
-       plan:               string ("Basic"),
-       status:             string ("active" | "frozen" | "closed"),
-       createdAt:          string (ISO date),
-       lastInterestDate:   string (date string when interest last applied),
-       transactions:       array of { date, type, amount, description },
-       withdrawals:        array of { date, amount, currency, wallet, status, type, ... },
-       referrals:          array of { date, referee, bonus },
-       processedReferences: array of strings (Monnify refs to prevent double-credit),
-       asset:              string ("metallic" | "energy" | "gemstone"),
-       lastAssetSwitch:    string (ISO datetime or "")
-   };
-── */
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// ████████  SECTION 4: PERSISTENCE LAYER (localStorage + JSONBin backup)  ████████
-// ═══════════════════════════════════════════════════════════════════════════════
-// ★ localStorage is the PRIMARY data store — data persists across page reloads
-// ★ JSONBin is a C
-   // ═══════════════════════════════════════════════════════════════════════════════
-// ████████  SECTION 4: PERSISTENCE LAYER (localStorage + JSONBin backup)  ████████
-// ═══════════════════════════════════════════════════════════════════════════════
-// ★ localStorage is PRIMARY — data persists across reloads
-// ★ JSONBin is BACKUP — failures won't destroy data
-// ═══════════════════════════════════════════════════════════════════════════════
-
-var appData = null;      // In-memory working copy
+// ================================================================
+// STATE
+// ================================================================
 var currentUser = null;
 var currentUserData = null;
 var isAdminLoggedIn = false;
 var currentTxTab = 'all';
 var _pendingAssetSelection = null;
+var _cachedSettings = null; // Holds settings row from Supabase
 
-// ── Load from localStorage (NEVER fails — always returns valid data) ──
-function loadFromLocalStorage() {
-    try {
-        var stored = localStorage.getItem(CONFIG.LOCALSTORAGE_KEY);
-        if (stored) {
-            var parsed = JSON.parse(stored);
-            // Version check: if stored data is outdated, merge with defaults
-            if (parsed && parsed._version && parsed._version >= getDefaultData()._version) {
-                return parsed;
-            }
-        }
-    } catch(e) {
-        console.warn('localStorage parse error, using defaults:', e);
-    }
-    // Fall back to defaults
-    return getDefaultData();
-}
-
-// ── Save to localStorage (ALWAYS succeeds) ──
-function saveToLocalStorage() {
-    try {
-        if (!appData) { appData = getDefaultData(); }
-        appData._lastUpdated = new Date().toISOString();
-        localStorage.setItem(CONFIG.LOCALSTORAGE_KEY, JSON.stringify(appData));
-        updateSyncStatus('saved');
-    } catch(e) {
-        console.error('localStorage save failed:', e);
-        updateSyncStatus('error');
-    }
-}
-
-// ── Sync status indicator ──
-function updateSyncStatus(status) {
-    var el = document.getElementById('syncStatus');
-    if (!el) return;
-    if (status === 'saved') {
-        el.textContent = '💾';
-        el.className = 'sync-status synced';
-    } else if (status === 'syncing') {
-        el.textContent = '☁️ Syncing to cloud...';
-        el.className = 'sync-status syncing';
-    } else if (status === 'synced') {
-        el.textContent = '☁️OK';
-        el.className = 'sync-status synced';
-    } else {
-        el.textContent = '⚠️ Cloud sync failed (local OK)';
-        el.className = 'sync-status error';
-    }
-}
-
-// ── JSONBin headers ──
-function getJSONBinHeaders() {
-    var h = {};
-    if (CONFIG.JSONBIN_MASTER_KEY) h['X-Master-Key'] = CONFIG.JSONBIN_MASTER_KEY;
-    if (CONFIG.JSONBIN_ACCESS_KEY) h['X-Access-Key'] = CONFIG.JSONBIN_ACCESS_KEY;
-    return h;
-}
-
-// ── Sync TO JSONBin (backup — failures are non-critical) ──
-function syncToJSONBin() {
-    if (!CONFIG.JSONBIN_BIN_ID) { alert('No JSONBin ID configured. Data is saved locally only.'); return; }
-    updateSyncStatus('syncing');
-    saveToLocalStorage(); // Ensure localStorage is fresh first
-    return fetch(CONFIG.JSONBIN_URL, {
-        method: 'PUT',
-        headers: Object.assign({'Content-Type':'application/json'}, getJSONBinHeaders()),
-        body: JSON.stringify(appData)
-    })
-    .then(function(r) {
-        if (r.ok) { updateSyncStatus('synced'); return true; }
-        updateSyncStatus('error');
-        return false;
-    })
-    .catch(function() {
-        updateSyncStatus('error');
-        return false;
-    });
-}
-
-// ── Load FROM JSONBin (merges into localStorage as backup source) ──
-function loadFromJSONBin() {
-    if (!CONFIG.JSONBIN_BIN_ID) return Promise.resolve(null);
-    return fetch(CONFIG.JSONBIN_URL, { headers: getJSONBinHeaders() })
-        .then(function(r) {
-            if (!r.ok) throw new Error('JSONBin fetch failed: ' + r.status);
-            return r.json();
-        })
-        .then(function(j) {
-            var remoteData = j.record;
-            if (!remoteData) return null;
-            // Only use remote data if it has a newer version than local
-            var local = loadFromLocalStorage();
-            var localVersion = local._version || 0;
-            var remoteVersion = remoteData._version || 0;
-            var localUpdated = local._lastUpdated || '';
-            var remoteUpdated = remoteData._lastUpdated || '';
-            // Use whichever was updated more recently
-            if (remoteUpdated > localUpdated && remoteVersion >= localVersion) {
-                // Merge remote users into local (don't lose local data)
-                if (remoteData.users) {
-                    for (var un in remoteData.users) {
-                        if (!local.users[un]) {
-                            local.users[un] = remoteData.users[un];
-                        } else if (remoteUpdated > localUpdated) {
-                            // Remote has newer data for this user
-                            local.users[un] = remoteData.users[un];
-                        }
-                    }
-                }
-                // Merge settings (remote wins if newer)
-                if (remoteData.settings) {
-                    local.settings = JSON.parse(JSON.stringify(remoteData.settings));
-                }
-                if (remoteData.admin) {
-                    local.admin = JSON.parse(JSON.stringify(remoteData.admin));
-                }
-                local._lastUpdated = remoteUpdated;
-                local._version = Math.max(localVersion, remoteVersion);
-                localStorage.setItem(CONFIG.LOCALSTORAGE_KEY, JSON.stringify(local));
-                return local;
-            }
-            return local;
-        })
-        .catch(function() {
-            // JSONBin failed — that's OK, use local data
-            return loadFromLocalStorage();
-        });
-}
-
-// ── loadData() — primary load: localStorage first, JSONBin as enhancement ──
-function loadData() {
-    appData = loadFromLocalStorage();
-    // Fire-and-forget JSONBin sync (improves data but doesn't block)
-    loadFromJSONBin().then(function(merged) {
-        if (merged) {
-            appData = merged;
-            // If user is logged in, refresh their data reference
-            if (currentUser && appData.users[currentUser]) {
-                currentUserData = appData.users[currentUser];
-            }
-        }
-    });
-    return Promise.resolve(appData);
-}
-
-// ── saveData() — primary save: localStorage immediately, JSONBin async ──
-function saveData() {
-    saveToLocalStorage();
-    // Async JSONBin backup (don't wait for it)
-    syncToJSONBin().catch(function() {});
-    return Promise.resolve(true);
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// ████████  SECTION 5: SESSION PERSISTENCE  ████████
-// ═══════════════════════════════════════════════════════════════════════════════
-
+// ================================================================
+// SESSION PERSISTENCE
+// ================================================================
 function saveSession(username, isAdmin) {
     try {
         localStorage.setItem('nfz_session', JSON.stringify({
@@ -918,65 +711,174 @@ function saveSession(username, isAdmin) {
         }));
     } catch(e) {}
 }
-
 function clearSession() {
     try { localStorage.removeItem('nfz_session'); } catch(e) {}
 }
-
 function getSession() {
-    try {
-        var s = localStorage.getItem('nfz_session');
-        return s ? JSON.parse(s) : null;
-    } catch(e) { return null; }
+    try { var s = localStorage.getItem('nfz_session'); return s ? JSON.parse(s) : null; } catch(e) { return null; }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// ████████  SECTION 6: HELPER FUNCTIONS  ████████
-// ═══════════════════════════════════════════════════════════════════════════════
+// ================================================================
+// ══════════════════════════════════════════════════════════════════
+// SUPABASE DATA LAYER — All database reads/writes go through these
+// ══════════════════════════════════════════════════════════════════
+// ================================================================
 
+/** Fetch the settings row (id=1) from Supabase */
+async function loadSettings() {
+    var { data, error } = await supabase
+        .from('settings')
+        .select('data')
+        .eq('id', 1)
+        .single();
+    if (error || !data) {
+        // Initialize if missing
+        var defaults = {
+            interestRate: 2,
+            minDeposit: DEFAULT_MIN_DEPOSIT,
+            minWithdraw: DEFAULT_MIN_WITHDRAW,
+            withdrawDay: 5,
+            monnifyApiKey: '',
+            monnifyContractCode: '',
+            monnifySecretKey: '',
+            monnifySourceAccount: '',
+            npApiKey: '',
+            npSecretKey: '',
+            npEmail: '',
+            npPassword: '',
+            assetRates: { metallic: 2.0, energy: 3.0, gemstone: 4.0 }
+        };
+        var { data: ins, error: insErr } = await supabase
+            .from('settings')
+            .upsert({ id: 1, data: defaults })
+            .select('data')
+            .single();
+        if (insErr) { console.error('Settings init error', insErr); return defaults; }
+        _cachedSettings = ins.data;
+        return ins.data;
+    }
+    _cachedSettings = data.data;
+    return data.data;
+}
+
+/** Save settings row */
+async function saveSettings(newData) {
+    _cachedSettings = newData;
+    var { error } = await supabase
+        .from('settings')
+        .update({ data: newData })
+        .eq('id', 1);
+    if (error) { console.error('saveSettings error', error); return false; }
+    return true;
+}
+
+/** Fetch all users from Supabase (returns { username: data } map) */
+async function loadAllUsers() {
+    var { data, error } = await supabase
+        .from('users')
+        .select('username, data');
+    if (error || !data) { console.error('loadAllUsers error', error); return {}; }
+    var map = {};
+    data.forEach(function(row) { map[row.username] = row.data; });
+    return map;
+}
+
+/** Fetch a single user's data by username */
+async function loadUser(username) {
+    var { data, error } = await supabase
+        .from('users')
+        .select('data')
+        .eq('username', username)
+        .single();
+    if (error || !data) return null;
+    return data.data;
+}
+
+/** Upsert a user's data (insert if not exists, update if exists) */
+async function saveUser(username, userData) {
+    var { error } = await supabase
+        .from('users')
+        .upsert({ username: username, data: userData })
+        .eq('username', username);
+    if (error) { console.error('saveUser error', error); return false; }
+    return true;
+}
+
+/** Delete a user */
+async function deleteUser(username) {
+    var { error } = await supabase
+        .from('users')
+        .delete()
+        .eq('username', username);
+    if (error) { console.error('deleteUser error', error); return false; }
+    return true;
+}
+
+/** Fetch admin credentials */
+async function loadAdmin() {
+    var { data, error } = await supabase
+        .from('admin')
+        .select('username, password')
+        .eq('id', 1)
+        .single();
+    if (error || !data) return { username: 'admin', password: 'admin123' };
+    return data;
+}
+
+    /** Save admin credentials */
+async function saveAdmin(adminData) {
+    var { error } = await supabase
+        .from('admin')
+        .update({ username: adminData.username, password: adminData.password })
+        .eq('id', 1);
+    return !error;
+}
+
+    // ================================================================
+// HELPERS
+// ================================================================
 function esc(s) { if(!s)return''; var d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
-function minDep() { return (appData.settings&&appData.settings.minDeposit)||CONFIG.DEFAULT_MIN_DEPOSIT; }
-function minWd() { return (appData.settings&&appData.settings.minWithdraw)||CONFIG.DEFAULT_MIN_WITHDRAW; }
-function wdDay() { if(!appData.settings||appData.settings.withdrawDay===undefined)return 5; return parseInt(appData.settings.withdrawDay); }
-function wdName(d) { var a=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']; return d===-1?'Any day':a[d]; }
-function fmtNaira(amount) { return CONFIG.CURRENCY_SYMBOL + Number(amount).toLocaleString('en-NG',{minimumFractionDigits:2,maximumFractionDigits:2}); }
 
+async function getSettings() {
+    if (!_cachedSettings) _cachedSettings = await loadSettings();
+    return _cachedSettings;
+}
+
+function minDep() { return (_cachedSettings && _cachedSettings.minDeposit) || DEFAULT_MIN_DEPOSIT; }
+function minWd() { return (_cachedSettings && _cachedSettings.minWithdraw) || DEFAULT_MIN_WITHDRAW; }
+function wdDay() { if(!_cachedSettings || _cachedSettings.withdrawDay === undefined) return 5; return parseInt(_cachedSettings.withdrawDay); }
+function wdName(d) { var a=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']; return d===-1?'Any day':a[d]; }
+function fmtNaira(amount) { return CURRENCY_SYMBOL + Number(amount).toLocaleString('en-NG',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+
+// ================================================================
+// ASSET & INTEREST HELPERS
+// ================================================================
 function getUserInterestRate(userData) {
     if (!userData) userData = currentUserData;
     var asset = (userData && userData.asset) || 'metallic';
-    var rates = (appData.settings && appData.settings.assetRates) || {};
+    var rates = (_cachedSettings && _cachedSettings.assetRates) || {};
     var rate = rates[asset];
-    if (rate === undefined || rate === null) {
-        rate = ASSET_TYPES[asset] ? ASSET_TYPES[asset].defaultRate : 2.0;
-    }
+    if (rate === undefined || rate === null) rate = (ASSET_TYPES[asset] || ASSET_TYPES.metallic).defaultRate;
     return parseFloat(rate);
 }
 
-function getAssetInfo(assetId) {
-    return ASSET_TYPES[assetId] || ASSET_TYPES.metallic;
-}
+function getAssetInfo(assetId) { return ASSET_TYPES[assetId] || ASSET_TYPES.metallic; }
 
 function canSwitchAsset(userData) {
-    if (!userData) return true;
-    var lastSwitch = userData.lastAssetSwitch || '';
-    if (!lastSwitch) return true;
-    var diff = Date.now() - new Date(lastSwitch).getTime();
-    var hours = diff / (1000 * 60 * 60);
-    return hours >= CONFIG.ASSET_SWITCH_COOLDOWN_HOURS;
+    if (!userData || !userData.lastAssetSwitch) return true;
+    var diff = Date.now() - new Date(userData.lastAssetSwitch).getTime();
+    return diff / (1000 * 60 * 60) >= ASSET_SWITCH_COOLDOWN_HOURS;
 }
 
 function getAssetSwitchCooldownRemaining(userData) {
     if (!userData || !userData.lastAssetSwitch) return 0;
     var diff = Date.now() - new Date(userData.lastAssetSwitch).getTime();
-    var hours = diff / (1000 * 60 * 60);
-    var remaining = CONFIG.ASSET_SWITCH_COOLDOWN_HOURS - hours;
-    return Math.max(0, remaining);
+    return Math.max(0, ASSET_SWITCH_COOLDOWN_HOURS - diff / (1000 * 60 * 60));
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// ████████  SECTION 7: AUTH UI  ████████
-// ═══════════════════════════════════════════════════════════════════════════════
-
+// ================================================================
+// AUTH UI
+// ================================================================
 function showAuthTab(t) {
     document.querySelectorAll('.auth-tabs div').forEach(function(e){e.classList.remove('active');});
     if(t==='login'){
@@ -991,113 +893,178 @@ function showAuthTab(t) {
     ['loginError','registerError','registerSuccess'].forEach(function(i){document.getElementById(i).textContent='';});
 }
 
-function toggleResetPassword() { var s=document.getElementById('resetSection'); s.classList.toggle('show'); document.getElementById('resetUsername').value=''; document.getElementById('resetMsg').textContent=''; }
+function toggleResetPassword() {
+    var s=document.getElementById('resetSection');
+    s.classList.toggle('show');
+    document.getElementById('resetUsername').value='';
+    document.getElementById('resetMsg').textContent='';
+}
 
 function resetPasswordRequest() {
-    var u=document.getElementById('resetUsername').value.trim(), m=document.getElementById('resetMsg');
+    var u=document.getElementById('resetUsername').value.trim();
+    var m=document.getElementById('resetMsg');
     if(!u){m.textContent='Enter your username.';m.style.color='#E50914';return;}
-    loadData();
-    if(!appData||!appData.users[u]){m.textContent='Username not found.';m.style.color='#E50914';return;}
-    m.textContent='Contact admin to reset your password.';m.style.color='#e6b91e';
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// ████████  SECTION 8: USER LOGIN / REGISTER  ████████
-// ═══════════════════════════════════════════════════════════════════════════════
-
-function userLogin() {
-    var u=document.getElementById('loginUsername').value.trim(), p=document.getElementById('loginPassword').value.trim(), e=document.getElementById('loginError');
-    if(!u||!p){e.textContent='Enter username and password.';return;}
-    loadData();
-    if(!appData){e.textContent='Failed to connect.';return;}
-    var user=appData.users[u]; if(!user||user.password!==p){e.textContent='Invalid credentials.';return;}
-    if(user.status==='closed'){e.textContent='Account closed.';return;}
-    isAdminLoggedIn=false; currentUser=u; currentUserData=user;
-    saveSession(u, false);
-    applyDailyInterest().then(function(){enterDashboard('user');});
-}
-
-function registerReferralBonus(referee, amt) {
-    var r=appData.users[referee]; if(!r||!r.referredBy)return Promise.resolve();
-    var ru=r.referredBy, rr=appData.users[ru]; if(!rr)return Promise.resolve();
-    var b=amt*0.20; rr.balance+=b; rr.referralBonus=(rr.referralBonus||0)+b;
-    if(!rr.transactions)rr.transactions=[]; if(!rr.referrals)rr.referrals=[];
-    var n=new Date(), d=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
-    rr.transactions.push({date:d, type:'referral', amount:b, description:'Referral bonus 20% from '+referee});
-    rr.referrals.push({date:d, referee:referee, bonus:b}); appData.users[ru]=rr;
-    return saveData();
-}
-
-function applyDailyInterest() {
-    return new Promise(function(resolve) {
-        if(!appData||!currentUser||!appData.users[currentUser]){resolve();return;}
-        var u=appData.users[currentUser];
-        var rate = getUserInterestRate(u);
-        var t=new Date().toDateString();
-        if(u.lastInterestDate===t){document.getElementById('interestStatus').textContent='Interest already applied today.'; resolve();return;}
-        if(u.balance>0&&u.status==='active'){
-            var i=u.balance*(rate/100); u.balance+=i; u.profit+=i;
-            if(!u.transactions)u.transactions=[];
-            var n=new Date(), d=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
-            var assetInfo = getAssetInfo(u.asset || 'metallic');
-            u.transactions.push({date:d, type:'profit', amount:i, description:assetInfo.icon+' '+assetInfo.name+' interest '+rate+'%'});
-            u.lastInterestDate=t; appData.users[currentUser]=u;
-            saveData().then(function(){document.getElementById('interestStatus').textContent=rate+'% '+assetInfo.icon+' '+assetInfo.name+' interest ('+fmtNaira(i)+') applied!';resolve();});
-        } else {
-            u.lastInterestDate=t; appData.users[currentUser]=u;
-            saveData().then(function(){document.getElementById('interestStatus').textContent=u.status!=='active'?'Only active accounts earn interest.':'No balance to earn interest.';resolve();});
-        }
+    loadUser(u).then(function(userData){
+        if(!userData){m.textContent='Username not found.';m.style.color='#E50914';return;}
+        m.textContent='Contact admin to reset your password.';m.style.color='#e6b91e';
     });
 }
 
-function resolveRef(ref) {
-    if(appData.users[ref])return ref;
-    for(var un in appData.users){if(appData.users[un].referralCode===ref)return un;}
+// ================================================================
+// USER LOGIN
+// ================================================================
+async function userLogin() {
+    var u=document.getElementById('loginUsername').value.trim();
+    var p=document.getElementById('loginPassword').value.trim();
+    var e=document.getElementById('loginError');
+    if(!u||!p){e.textContent='Enter username and password.';return;}
+
+    await getSettings();
+    var userData = await loadUser(u);
+    if(!userData || userData.password !== p) { e.textContent='Invalid credentials.'; return; }
+    if(userData.status === 'closed') { e.textContent='Account closed.'; return; }
+
+    isAdminLoggedIn = false;
+    currentUser = u;
+    currentUserData = userData;
+    saveSession(u, false);
+    await applyDailyInterest();
+    enterDashboard('user');
+}
+
+// ================================================================
+// REFERRAL BONUS
+// ================================================================
+async function registerReferralBonus(referee, amt) {
+    var refereeData = await loadUser(referee);
+    if(!refereeData || !refereeData.referredBy) return;
+    var ru = refereeData.referredBy;
+    var rr = await loadUser(ru);
+    if(!rr) return;
+    var b = amt * 0.20;
+    rr.balance = (rr.balance || 0) + b;
+    rr.referralBonus = (rr.referralBonus || 0) + b;
+    if(!rr.transactions) rr.transactions = [];
+    if(!rr.referrals) rr.referrals = [];
+    var n = new Date();
+    var d = n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+    rr.transactions.push({date:d, type:'referral', amount:b, description:'Referral bonus 20% from '+referee});
+    rr.referrals.push({date:d, referee:referee, bonus:b});
+    await saveUser(ru, rr);
+}
+
+// ================================================================
+// APPLY DAILY INTEREST
+// ================================================================
+async function applyDailyInterest() {
+    await getSettings();
+    if(!currentUser || !currentUserData) return;
+    var u = currentUserData;
+    var rate = getUserInterestRate(u);
+    var today = new Date().toDateString();
+    if(u.lastInterestDate === today) {
+        document.getElementById('interestStatus').textContent = 'Interest already applied today.';
+        return;
+    }
+    if(u.balance > 0 && u.status === 'active') {
+        var i = u.balance * (rate / 100);
+        u.balance += i;
+        u.profit = (u.profit || 0) + i;
+        if(!u.transactions) u.transactions = [];
+        var n = new Date();
+        var d = n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+        var assetInfo = getAssetInfo(u.asset || 'metallic');
+        u.transactions.push({date:d, type:'profit', amount:i, description:assetInfo.icon+' '+assetInfo.name+' interest '+rate+'%'});
+        u.lastInterestDate = today;
+        currentUserData = u;
+        await saveUser(currentUser, u);
+        document.getElementById('interestStatus').textContent = rate+'% '+assetInfo.icon+' '+assetInfo.name+' interest ('+fmtNaira(i)+') applied!';
+    } else {
+        u.lastInterestDate = today;
+        currentUserData = u;
+        await saveUser(currentUser, u);
+        document.getElementById('interestStatus').textContent = u.status!=='active' ? 'Only active accounts earn interest.' : 'No balance to earn interest.';
+    }
+}
+
+function resolveRef(ref, usersMap) {
+    if(usersMap[ref]) return ref;
+    for(var un in usersMap) { if(usersMap[un].referralCode === ref) return un; }
     return null;
 }
 
-function userRegister() {
-    var u=document.getElementById('regUsername').value.trim(), fn=document.getElementById('regFullname').value.trim(),
-        em=document.getElementById('regEmail').value.trim(), ph=document.getElementById('regPhone').value.trim(),
-        pw=document.getElementById('regPassword').value.trim(), ref=document.getElementById('regReferral').value.trim(),
-        err=document.getElementById('registerError'), suc=document.getElementById('registerSuccess');
+// ================================================================
+// USER REGISTER
+// ================================================================
+async function userRegister() {
+    var u=document.getElementById('regUsername').value.trim();
+    var fn=document.getElementById('regFullname').value.trim();
+    var em=document.getElementById('regEmail').value.trim();
+    var ph=document.getElementById('regPhone').value.trim();
+    var pw=document.getElementById('regPassword').value.trim();
+    var ref=document.getElementById('regReferral').value.trim();
+    var err=document.getElementById('registerError');
+    var suc=document.getElementById('registerSuccess');
     if(!u||!fn||!em||!pw){err.textContent='Fill required fields.';suc.textContent='';return;}
-    loadData();
-    if(!appData){err.textContent='Failed to connect.';return;} if(appData.users[u]){err.textContent='Username taken.';suc.textContent='';return;}
-    var rbu=''; if(ref){rbu=resolveRef(ref); if(!rbu){err.textContent='Invalid referral code.';suc.textContent='';return;}}
-    var n=new Date(), d=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');
-    appData.users[u]={fullName:fn,email:em,phone:ph||'',password:pw,balance:0,invested:0,profit:0,referralBonus:0,referralCode:u,referredBy:rbu,plan:'Basic',status:'active',createdAt:d,lastInterestDate:'',transactions:[],withdrawals:[],referrals:[],processedReferences:[],asset:'metallic',lastAssetSwitch:''};
-    saveData().then(function(){err.textContent='';suc.textContent='Account created! Sign in now.';['regUsername','regFullname','regEmail','regPhone','regPassword','regReferral'].forEach(function(i){document.getElementById(i).value='';});});
+
+    await getSettings();
+    var existing = await loadUser(u);
+    if(existing) { err.textContent='Username taken.'; suc.textContent=''; return; }
+
+    var allUsers = await loadAllUsers();
+    var rbu = '';
+    if(ref) { rbu = resolveRef(ref, allUsers); if(!rbu){err.textContent='Invalid referral code.';suc.textContent='';return;} }
+
+    var n = new Date();
+    var d = n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');
+    var newUser = {
+        fullName: fn, email: em, phone: ph || '', password: pw,
+        balance: 0, invested: 0, profit: 0, referralBonus: 0,
+        referralCode: u, referredBy: rbu, plan: 'Basic', status: 'active',
+        createdAt: d, lastInterestDate: '', transactions: [], withdrawals: [],
+        referrals: [], processedReferences: [], asset: 'metallic', lastAssetSwitch: ''
+    };
+    await saveUser(u, newUser);
+    err.textContent='';
+    suc.textContent='Account created! Sign in now.';
+    ['regUsername','regFullname','regEmail','regPhone','regPassword','regReferral'].forEach(function(i){document.getElementById(i).value='';});
 }
 
 function userLogout() {
-    currentUser=null;currentUserData=null;isAdminLoggedIn=false;clearSession();
+    currentUser=null; currentUserData=null; isAdminLoggedIn=false;
+    clearSession();
     document.getElementById('authContainer').classList.remove('hidden');
     document.getElementById('userDashboard').classList.remove('active');
-    document.getElementById('loginUsername').value='';document.getElementById('loginPassword').value='';
+    document.getElementById('loginUsername').value='';
+    document.getElementById('loginPassword').value='';
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// ████████  SECTION 9: ADMIN LOGIN  ████████
-// ═══════════════════════════════════════════════════════════════════════════════
+// ================================================================
+// ADMIN LOGIN
+// ================================================================
+function openAdminLogin(){
+    document.getElementById('adminLoginError').textContent='';
+    document.getElementById('adminLoginUser').value='';
+    document.getElementById('adminLoginPass').value='';
+    document.getElementById('adminLoginOverlay').classList.add('active');
+}
+function closeAdminLogin(){ document.getElementById('adminLoginOverlay').classList.remove('active'); }
 
-function openAdminLogin(){document.getElementById('adminLoginError').textContent='';document.getElementById('adminLoginUser').value='';document.getElementById('adminLoginPass').value='';document.getElementById('adminLoginOverlay').classList.add('active');}
-function closeAdminLogin(){document.getElementById('adminLoginOverlay').classList.remove('active');}
-function adminLogin(){
-    var u=document.getElementById('adminLoginUser').value.trim(),p=document.getElementById('adminLoginPass').value.trim(),e=document.getElementById('adminLoginError');
+async function adminLogin(){
+    var u=document.getElementById('adminLoginUser').value.trim();
+    var p=document.getElementById('adminLoginPass').value.trim();
+    var e=document.getElementById('adminLoginError');
     if(!u||!p){e.textContent='Enter credentials.';return;}
-    loadData();
-    if(!appData){e.textContent='Failed.';return;}
-    if(u===appData.admin.username&&p===appData.admin.password){
-        isAdminLoggedIn=true;currentUser='admin';currentUserData=null;
-        closeAdminLogin();saveSession('admin',true);enterDashboard('admin');
-    } else {e.textContent='Invalid admin credentials.';}
+    var adminData = await loadAdmin();
+    if(u === adminData.username && p === adminData.password){
+        isAdminLoggedIn=true; currentUser='admin'; currentUserData=null;
+        closeAdminLogin(); saveSession('admin',true); enterDashboard('admin');
+    } else { e.textContent='Invalid admin credentials.'; }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// ████████  SECTION 10: DASHBOARD ENTRY  ████████
-// ═══════════════════════════════════════════════════════════════════════════════
-
+// ================================================================
+// DASHBOARD ENTRY
+// ================================================================
 function enterDashboard(t){
     document.getElementById('authContainer').classList.add('hidden');
     document.getElementById('userDashboard').classList.add('active');
@@ -1116,15 +1083,14 @@ function showTxTab(tab){
     currentTxTab=tab;
     document.querySelectorAll('.tab-buttons button').forEach(function(b){b.classList.remove('active');});
     document.querySelectorAll('.tab-buttons button').forEach(function(b){
-        if(b.textContent.toLowerCase().includes(tab)||(tab==='asset_switch'&&b.textContent.includes('Switch')))b.classList.add('active');
+        if(b.textContent.toLowerCase().includes(tab)||(tab==='asset_switch'&&b.textContent.includes('Switch'))) b.classList.add('active');
     });
     refreshUserData();
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// ████████  SECTION 11: USER DASHBOARD RENDERING  ████████
-// ═══════════════════════════════════════════════════════════════════════════════
-
+    // ================================================================
+// RENDER ASSET DISPLAY
+// ================================================================
 function renderAssetDisplay() {
     if (!currentUserData) return;
     var assetId = currentUserData.asset || 'metallic';
@@ -1135,43 +1101,100 @@ function renderAssetDisplay() {
     var canSwitch = canSwitchAsset(currentUserData);
     var switchBtn = document.getElementById('switchAssetBtn');
     if (canSwitch) {
-        switchBtn.disabled = false;
-        switchBtn.style.opacity = '1';
-        switchBtn.textContent = 'Switch Asset';
+        switchBtn.disabled = false; switchBtn.style.opacity = '1'; switchBtn.textContent = 'Switch Asset';
         document.getElementById('assetCooldownDisplay').textContent = '';
     } else {
         var remaining = getAssetSwitchCooldownRemaining(currentUserData);
-        var hrs = Math.floor(remaining);
-        var mins = Math.floor((remaining - hrs) * 60);
-        switchBtn.disabled = true;
-        switchBtn.style.opacity = '0.5';
-        switchBtn.textContent = '⏳ Cooldown';
+        var hrs = Math.floor(remaining), mins = Math.floor((remaining - hrs) * 60);
+        switchBtn.disabled = true; switchBtn.style.opacity = '0.5'; switchBtn.textContent = '⏳ Cooldown';
         document.getElementById('assetCooldownDisplay').textContent = 'Can switch in ' + hrs + 'h ' + mins + 'm';
     }
 }
 
-function refreshUserData(){
-    loadData();
-    if(!appData||!appData.users[currentUser]){alert('Session expired.');userLogout();return;}
-    currentUserData=appData.users[currentUser];
-    document.getElementById('userBalance').textContent=fmtNaira(currentUserData.balance);
-    document.getElementById('userInvested').textContent=fmtNaira(currentUserData.invested);
-    document.getElementById('userProfit').textContent=fmtNaira(currentUserData.profit);
-    document.getElementById('userReferralBonus').textContent=fmtNaira(currentUserData.referralBonus||0);
-    document.getElementById('userPlan').textContent=currentUserData.plan;
-    document.getElementById('refCode').textContent=currentUser;
-    document.getElementById('refLink').textContent=currentUser;
-    var b=document.getElementById('userStatusBadge');
-    b.textContent=currentUserData.status.charAt(0).toUpperCase()+currentUserData.status.slice(1);
-    b.className='status-badge '+currentUserData.status;
-    var w=document.getElementById('withdrawBtn');
-    if(currentUserData.status==='frozen'){w.classList.add('disabled');w.onclick=function(){alert('Withdrawals disabled.');};}
-    else{w.classList.remove('disabled');w.onclick=function(){showWithdrawModal();};}
+// ================================================================
+// ASSET SWITCH MODAL
+// ================================================================
+function showAssetSwitchModal() {
+    if (!currentUserData) return;
+    if (!canSwitchAsset(currentUserData)) {
+        var rem = getAssetSwitchCooldownRemaining(currentUserData);
+        var h = Math.floor(rem), m = Math.floor((rem - h)*60);
+        alert('You can only switch assets once every ' + ASSET_SWITCH_COOLDOWN_HOURS + ' hours. Please wait ' + h + 'h ' + m + 'm.');
+        return;
+    }
+    _pendingAssetSelection = null;
+    document.getElementById('assetSwitchError').textContent = '';
+    document.getElementById('selectedAssetDisplay').textContent = 'Click an asset above to select it.';
+    var rates = (_cachedSettings && _cachedSettings.assetRates) || {};
+    for (var aid in ASSET_TYPES) {
+        var r = rates[aid]; if (r === undefined || r === null) r = ASSET_TYPES[aid].defaultRate;
+        document.getElementById('assetRateDisplay_' + aid).textContent = r + '% daily';
+    }
+    document.getElementById('assetSwitchModal').classList.add('active');
+}
+
+function selectAssetOption(assetId) {
+    _pendingAssetSelection = assetId;
+    var info = getAssetInfo(assetId);
+    var rates = (_cachedSettings && _cachedSettings.assetRates) || {};
+    var r = rates[assetId]; if (r === undefined || r === null) r = info.defaultRate;
+    document.getElementById('selectedAssetDisplay').innerHTML = '✅ Selected: ' + info.icon + ' ' + info.name + ' (' + r + '% daily)';
+    document.getElementById('assetSwitchError').textContent = '';
+}
+
+async function confirmAssetSwitch() {
+    if (!_pendingAssetSelection) { document.getElementById('assetSwitchError').textContent = 'Please select an asset first.'; return; }
+    if (!canSwitchAsset(currentUserData)) { document.getElementById('assetSwitchError').textContent = 'Cooldown still active. Please wait.'; return; }
+    var newAsset = _pendingAssetSelection;
+    var oldAsset = currentUserData.asset || 'metallic';
+    if (newAsset === oldAsset) { document.getElementById('assetSwitchError').textContent = 'You are already invested in this asset.'; return; }
+
+    var u = await loadUser(currentUser);
+    if (!u) { alert('Session expired.'); return; }
+    u.asset = newAsset;
+    u.lastAssetSwitch = new Date().toISOString();
+    var n = new Date();
+    var d = n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+    var oldInfo = getAssetInfo(oldAsset), newInfo = getAssetInfo(newAsset);
+    if (!u.transactions) u.transactions = [];
+    u.transactions.push({date:d, type:'asset_switch', amount:0, description:'Switched from ' + oldInfo.name + ' to ' + newInfo.name});
+    await saveUser(currentUser, u);
+    currentUserData = u;
+    closeModal('assetSwitchModal');
+    refreshUserData();
+    alert('✅ Asset switched to ' + newInfo.name + '! Your interest rate has been updated.');
+}
+
+// ================================================================
+// REFRESH USER DATA
+// ================================================================
+async function refreshUserData() {
+    await getSettings();
+    var u = await loadUser(currentUser);
+    if (!u) { alert('Session expired.'); userLogout(); return; }
+    currentUserData = u;
+
+    document.getElementById('userBalance').textContent = fmtNaira(u.balance);
+    document.getElementById('userInvested').textContent = fmtNaira(u.invested);
+    document.getElementById('userProfit').textContent = fmtNaira(u.profit);
+    document.getElementById('userReferralBonus').textContent = fmtNaira(u.referralBonus || 0);
+    document.getElementById('userPlan').textContent = u.plan;
+    document.getElementById('refCode').textContent = currentUser;
+    document.getElementById('refLink').textContent = currentUser;
+
+    var b = document.getElementById('userStatusBadge');
+    b.textContent = u.status.charAt(0).toUpperCase() + u.status.slice(1);
+    b.className = 'status-badge ' + u.status;
+
+    var w = document.getElementById('withdrawBtn');
+    if (u.status === 'frozen') { w.classList.add('disabled'); w.onclick = function(){alert('Withdrawals disabled.');}; }
+    else { w.classList.remove('disabled'); w.onclick = function(){showWithdrawModal();}; }
+
     renderAssetDisplay();
 
-    var a=[];
-    (currentUserData.transactions||[]).forEach(function(t){a.push(Object.assign({},t));});
-    (currentUserData.withdrawals||[]).forEach(function(w){
+    var a = [];
+    (u.transactions||[]).forEach(function(t){ a.push(Object.assign({},t)); });
+    (u.withdrawals||[]).forEach(function(w){
         var wType = w.type === 'bank' ? 'bank_withdraw' : 'withdraw';
         var det = '';
         if (w.type === 'bank') {
@@ -1183,54 +1206,49 @@ function refreshUserData(){
         }
         a.push({date:w.date, type: wType, amount:-w.amount, status:w.status, description:det, payoutRef: w.payoutRef, isBank: w.type === 'bank'});
     });
-    (currentUserData.referrals||[]).forEach(function(r){a.push({date:r.date, type:'referral', amount:r.bonus, status:'approved', description:'Bonus from '+r.referee});});
-    var f=a;
-    if(currentTxTab==='deposits')f=a.filter(function(t){return t.type==='deposit';});
-    else if(currentTxTab==='withdrawals')f=a.filter(function(t){return t.type==='withdraw'||t.type==='bank_withdraw';});
-    else if(currentTxTab==='profits')f=a.filter(function(t){return t.type==='profit';});
-    else if(currentTxTab==='referrals')f=a.filter(function(t){return t.type==='referral';});
-    else if(currentTxTab==='asset_switch')f=a.filter(function(t){return t.type==='asset_switch';});
-    var tb=document.getElementById('userTransactions');
-    if(!f.length){tb.innerHTML='<tr><td colspan="5" style="text-align:center;color:#808080;">No transactions.</td></tr>';}
-    else{
+    (u.referrals||[]).forEach(function(r){ a.push({date:r.date, type:'referral', amount:r.bonus, status:'approved', description:'Bonus from '+r.referee}); });
+
+    var f = a;
+    if(currentTxTab==='deposits') f=a.filter(function(t){return t.type==='deposit';});
+    else if(currentTxTab==='withdrawals') f=a.filter(function(t){return t.type==='withdraw'||t.type==='bank_withdraw';});
+    else if(currentTxTab==='profits') f=a.filter(function(t){return t.type==='profit';});
+    else if(currentTxTab==='referrals') f=a.filter(function(t){return t.type==='referral';});
+    else if(currentTxTab==='asset_switch') f=a.filter(function(t){return t.type==='asset_switch';});
+
+    var tb = document.getElementById('userTransactions');
+    if(!f.length){ tb.innerHTML='<tr><td colspan="5" style="text-align:center;color:#808080;">No transactions.</td></tr>'; }
+    else {
         f.sort(function(a,b){return new Date(b.date)-new Date(a.date);});
-        tb.innerHTML=f.map(function(t){
-            var bc=t.type==='deposit'?'deposit':t.type==='profit'?'profit':t.type==='referral'?'referral':t.type==='asset_switch'?'asset_switch':t.type==='bank_withdraw'?'bank_withdraw':t.status==='pending'?'pending':t.status==='approved'?'approved':t.status==='declined'?'declined':'withdraw';
-            var ac=(t.type==='deposit'||t.type==='profit'||t.type==='referral')?'amount-green':t.status==='pending'?'amount-yellow':'amount-red';
+        tb.innerHTML = f.map(function(t){
+            var bc = t.type==='deposit'?'deposit':t.type==='profit'?'profit':t.type==='referral'?'referral':t.type==='asset_switch'?'asset_switch':t.type==='bank_withdraw'?'bank_withdraw':t.status==='pending'?'pending':t.status==='approved'?'approved':t.status==='declined'?'declined':'withdraw';
+            var ac = (t.type==='deposit'||t.type==='profit'||t.type==='referral')?'amount-green':t.status==='pending'?'amount-yellow':'amount-red';
             if (t.type==='asset_switch') ac = 'amount-purple';
-            var s=(t.type==='withdraw'||t.type==='bank_withdraw')?'':(t.type==='referral'||t.type==='deposit'||t.type==='profit')?'+':'';
-            var am=Math.abs(t.amount), sl=t.status==='pending'?'Pending':t.status==='approved'?'Approved':t.status==='declined'?'Declined':'Completed';
-            var det=t.description||'';
+            var s = (t.type==='withdraw'||t.type==='bank_withdraw')?'':(t.type==='referral'||t.type==='deposit'||t.type==='profit')?'+':'';
+            var am = Math.abs(t.amount);
+            var sl = t.status==='pending'?'Pending':t.status==='approved'?'Approved':t.status==='declined'?'Declined':'Completed';
             var typeLabel = t.type === 'bank_withdraw' ? 'Bank Withdraw' : (t.type === 'asset_switch' ? 'Asset Switch' : (t.type === 'withdraw' ? 'Crypto W/D' : t.type));
-            var payoutBadge = '';
-            if (t.payoutRef) {
-                payoutBadge = t.type === 'bank_withdraw' ? ' <span class="monnify-badge">PAID</span>' : ' <span class="np-badge">PAID</span>';
-            }
-            return '<tr><td>'+esc(t.date)+'</td><td><span class="badge '+bc+'">'+typeLabel+'</span>'+payoutBadge+'</td><td class="'+ac+'">'+s+fmtNaira(am)+'</td><td><span class="badge '+bc+'">'+sl+'</span></td><td style="font-size:12px;color:#b3b3b3;">'+esc(det)+'</td></tr>';
+            var payoutBadge = t.payoutRef ? (t.type === 'bank_withdraw' ? ' <span class="monnify-badge">PAID</span>' : ' <span class="np-badge">PAID</span>') : '';
+            return '<tr><td>'+esc(t.date)+'</td><td><span class="badge '+bc+'">'+typeLabel+'</span>'+payoutBadge+'</td><td class="'+ac+'">'+s+fmtNaira(am)+'</td><td><span class="badge '+bc+'">'+sl+'</span></td><td style="font-size:12px;color:#b3b3b3;">'+esc(t.description||'')+'</td></tr>';
         }).join('');
     }
 }
 
 function copyRefLink(){
-    var el=document.getElementById('refLink'),t=el.textContent;
+    var el=document.getElementById('refLink'), t=el.textContent;
     if(navigator.clipboard){
         navigator.clipboard.writeText(t).then(function(){el.textContent='Copied!';setTimeout(function(){refreshUserData();},2000);});
     } else {
-        var ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');
-        document.body.removeChild(ta);el.textContent='Copied!';setTimeout(function(){refreshUserData();},2000);
+        var ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); document.body.removeChild(ta); el.textContent='Copied!'; setTimeout(function(){refreshUserData();},2000);
     }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// ████████  SECTION 12: DEPOSIT (Monnify NGN)  ████████
-// ═══════════════════════════════════════════════════════════════════════════════
-
-function showDepositModal(){
-    loadData();
-    if(!appData.settings||!appData.settings.monnifyApiKey||!appData.settings.monnifyContractCode){
-        alert('Monnify not configured. Admin must set API Key and Contract Code first.');
-        return;
-    }
+// ================================================================
+// DEPOSIT (Monnify)
+// ================================================================
+async function showDepositModal(){
+    await getSettings();
+    if(!_cachedSettings.monnifyApiKey||!_cachedSettings.monnifyContractCode){alert('Monnify not configured.');return;}
     document.getElementById('depositError').textContent='';
     document.getElementById('depositAmount').value='';
     document.getElementById('depositEmail').value=(currentUserData&&currentUserData.email)||'';
@@ -1239,11 +1257,14 @@ function showDepositModal(){
 }
 
 function processDeposit(){
-    var amt=parseFloat(document.getElementById('depositAmount').value), em=document.getElementById('depositEmail').value.trim(), e=document.getElementById('depositError');
+    var amt=parseFloat(document.getElementById('depositAmount').value);
+    var em=document.getElementById('depositEmail').value.trim();
+    var e=document.getElementById('depositError');
     if(!amt||amt<minDep()){e.textContent='Minimum '+fmtNaira(minDep())+' NGN.';return;}
     if(!em){e.textContent='Enter email.';return;}
-    if(!appData.settings||!appData.settings.monnifyApiKey||!appData.settings.monnifyContractCode){e.textContent='Monnify not configured.';return;}
-    var apiKey=appData.settings.monnifyApiKey, cc=appData.settings.monnifyContractCode, ref='NZ-'+Date.now()+'-'+Math.random().toString(36).substring(2,8);
+    if(!_cachedSettings||!_cachedSettings.monnifyApiKey||!_cachedSettings.monnifyContractCode){e.textContent='Monnify not configured.';return;}
+    var apiKey=_cachedSettings.monnifyApiKey, cc=_cachedSettings.monnifyContractCode;
+    var ref='NZ-'+Date.now()+'-'+Math.random().toString(36).substring(2,8);
     closeModal('depositModal');
     if(typeof MonnifySDK==='undefined'){alert('Monnify SDK not loaded.');return;}
     MonnifySDK.initialize({
@@ -1257,37 +1278,36 @@ function processDeposit(){
     });
 }
 
-function creditDeposit(ref,amt,em,resp){
-    loadData();
-    var user=appData.users[currentUser];
+async function creditDeposit(ref,amt,em,resp){
+    var user = await loadUser(currentUser);
     if(!user){alert('Session expired.');return;}
     if(user.processedReferences&&user.processedReferences.indexOf(ref)!==-1)return;
-    var n=new Date(), d=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+    var n=new Date();
+    var d=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
     user.balance+=amt; user.invested+=amt;
     if(!user.processedReferences)user.processedReferences=[];
     user.processedReferences.push(ref);
     if(!user.transactions)user.transactions=[];
     var tr=(resp&&resp.transactionReference)?resp.transactionReference:ref;
     user.transactions.push({date:d, type:'deposit', amount:amt, description:'Monnify - '+tr});
-    var refPromise=Promise.resolve();
-    if(user.referredBy&&appData.users[user.referredBy])refPromise=registerReferralBonus(currentUser,amt);
-    appData.users[currentUser]=user;
-    refPromise.then(function(){
-        saveData().then(function(){
-            document.getElementById('depositResultTitle').textContent='Payment Confirmed!';
-            var extras=user.referredBy?'<br>Referrer got 20% bonus!':'';
-            document.getElementById('depositResultContent').innerHTML=fmtNaira(amt)+' credited.'+extras+'<br><br><small style="color:#808080;">Ref: '+esc(tr)+'</small>';
-            document.getElementById('depositResultModal').classList.add('active');
-        });
-    });
+    await saveUser(currentUser, user);
+    currentUserData = user;
+
+    if(user.referredBy) {
+        var refUser = await loadUser(user.referredBy);
+        if(refUser) await registerReferralBonus(currentUser, amt);
+    }
+
+    document.getElementById('depositResultTitle').textContent='Payment Confirmed!';
+    var extras=user.referredBy?'<br>Referrer got 20% bonus!':'';
+    document.getElementById('depositResultContent').innerHTML=fmtNaira(amt)+' credited.'+extras+'<br><br><small style="color:#808080;">Ref: '+esc(tr)+'</small>';
+    document.getElementById('depositResultModal').classList.add('active');
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// ████████  SECTION 13: WITHDRAWAL (Crypto & Bank)  ████████
-// ═══════════════════════════════════════════════════════════════════════════════
-
+// ================================================================
+// WITHDRAWAL
+// ================================================================
 var currentWithdrawType = 'crypto';
-
 function switchWithdrawType(type) {
     currentWithdrawType = type;
     document.querySelectorAll('.withdraw-type-tabs div').forEach(function(e){e.classList.remove('active');});
@@ -1314,122 +1334,60 @@ function showWithdrawModal(){
     document.getElementById('withdrawModal').classList.add('active');
 }
 
-function processWithdraw(){
+async function processWithdraw(){
     var e=document.getElementById('withdrawError');
     var day=wdDay(); if(day!==-1){var t=new Date();if(t.getDay()!==day){e.textContent='Restricted to '+wdName(day)+'.';return;}}
     if(currentUserData.status==='frozen'){e.textContent='Withdrawals disabled.';return;}
+
     if (currentWithdrawType === 'crypto') {
-        var amt=parseFloat(document.getElementById('withdrawAmount').value), cur=document.getElementById('withdrawCurrency').value, wal=document.getElementById('withdrawWallet').value.trim();
+        var amt=parseFloat(document.getElementById('withdrawAmount').value);
+        var cur=document.getElementById('withdrawCurrency').value;
+        var wal=document.getElementById('withdrawWallet').value.trim();
         if(!amt||amt<minWd()){e.textContent='Min '+fmtNaira(minWd())+' NGN.';return;}
         if(!wal){e.textContent='Enter wallet.';return;}
         if(wal.length<10){e.textContent='Wallet too short.';return;}
-        if(amt>currentUserData.balance){e.textContent='Insufficient balance.';return;}
-        loadData();
-        var user=appData.users[currentUser];
-        if(!user){e.textContent='Session expired.';return;}
-        if(user.status==='frozen'){e.textContent='Withdrawals disabled.';return;}
+        var user = await loadUser(currentUser);
+        if(!user||user.status==='frozen'){e.textContent='Withdrawals disabled.';return;}
         if(amt>user.balance){e.textContent='Insufficient balance.';return;}
-        var n=new Date(), ds=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+        var n=new Date();
+        var ds=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
         user.balance-=amt;
         if(!user.withdrawals)user.withdrawals=[];
         user.withdrawals.push({date:ds, amount:amt, currency:cur, wallet:wal, status:'pending', type:'crypto'});
-        appData.users[currentUser]=user;
-        saveData().then(function(){closeModal('withdrawModal');loadData();refreshUserData();alert('Crypto withdrawal submitted! Amount deducted. Admin will review and payout via NOWPayments.');});
+        await saveUser(currentUser, user);
+        currentUserData = user;
+        closeModal('withdrawModal');
+        refreshUserData();
+        alert('Crypto withdrawal submitted! Amount deducted. Admin will review and payout via NOWPayments.');
     } else {
-        var amt=parseFloat(document.getElementById('withdrawBankAmount').value), bankSel=document.getElementById('withdrawBankName').value, acc=document.getElementById('withdrawBankAccount').value.trim(), holder=document.getElementById('withdrawBankHolder').value.trim();
+        var amt=parseFloat(document.getElementById('withdrawBankAmount').value);
+        var bankSel=document.getElementById('withdrawBankName').value;
+        var acc=document.getElementById('withdrawBankAccount').value.trim();
+        var holder=document.getElementById('withdrawBankHolder').value.trim();
         if(!amt||amt<minWd()){e.textContent='Min '+fmtNaira(minWd())+' NGN.';return;}
         if(!bankSel){e.textContent='Select bank.';return;}
         if(!acc||acc.length<10){e.textContent='Enter valid 10-digit account number.';return;}
         if(!holder||holder.length<2){e.textContent='Enter account holder name.';return;}
-        if(amt>currentUserData.balance){e.textContent='Insufficient balance.';return;}
-        var bParts=bankSel.split('|'), bName=bParts[0], bCode=bParts[1];
-        loadData();
-        var user=appData.users[currentUser];
-        if(!user){e.textContent='Session expired.';return;}
-        if(user.status==='frozen'){e.textContent='Withdrawals disabled.';return;}
+        var user = await loadUser(currentUser);
+        if(!user||user.status==='frozen'){e.textContent='Withdrawals disabled.';return;}
         if(amt>user.balance){e.textContent='Insufficient balance.';return;}
-        var n=new Date(), ds=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+        var bParts=bankSel.split('|'), bName=bParts[0], bCode=bParts[1];
+        var n=new Date();
+        var ds=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
         user.balance-=amt;
         if(!user.withdrawals)user.withdrawals=[];
         user.withdrawals.push({date:ds, amount:amt, type:'bank', bankName:bName, bankCode:bCode, accountNumber:acc, accountHolder:holder, status:'pending'});
-        appData.users[currentUser]=user;
-        saveData().then(function(){closeModal('withdrawModal');loadData();refreshUserData();alert('Bank withdrawal submitted! Amount deducted. Admin will review and payout via Monnify.');});
-    }
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// ████████  SECTION 14: ASSET SWITCH MODAL  ████████
-// ═══════════════════════════════════════════════════════════════════════════════
-
-function showAssetSwitchModal() {
-    if (!currentUserData) return;
-    if (!canSwitchAsset(currentUserData)) {
-        var rem = getAssetSwitchCooldownRemaining(currentUserData);
-        var h = Math.floor(rem), m = Math.floor((rem - h)*60);
-        alert('You can only switch assets once every ' + CONFIG.ASSET_SWITCH_COOLDOWN_HOURS + ' hours. Please wait ' + h + 'h ' + m + 'm.');
-        return;
-    }
-    _pendingAssetSelection = null;
-    document.getElementById('assetSwitchError').textContent = '';
-    document.getElementById('selectedAssetDisplay').textContent = 'Click an asset above to select it.';
-    loadData();
-    var rates = (appData.settings && appData.settings.assetRates) || {};
-    for (var aid in ASSET_TYPES) {
-        var r = rates[aid];
-        if (r === undefined || r === null) r = ASSET_TYPES[aid].defaultRate;
-        document.getElementById('assetRateDisplay_' + aid).textContent = r + '% daily';
-    }
-    document.getElementById('assetSwitchModal').classList.add('active');
-}
-
-function selectAssetOption(assetId) {
-    _pendingAssetSelection = assetId;
-    var info = getAssetInfo(assetId);
-    loadData();
-    var rates = (appData.settings && appData.settings.assetRates) || {};
-    var r = rates[assetId];
-    if (r === undefined || r === null) r = info.defaultRate;
-    document.getElementById('selectedAssetDisplay').innerHTML = '✅ Selected: ' + info.icon + ' ' + info.name + ' (' + r + '% daily)';
-    document.getElementById('assetSwitchError').textContent = '';
-}
-
-function confirmAssetSwitch() {
-    if (!_pendingAssetSelection) {
-        document.getElementById('assetSwitchError').textContent = 'Please select an asset first.';
-        return;
-    }
-    if (!canSwitchAsset(currentUserData)) {
-        document.getElementById('assetSwitchError').textContent = 'Cooldown still active. Please wait.';
-        return;
-    }
-    var newAsset = _pendingAssetSelection;
-    var oldAsset = currentUserData.asset || 'metallic';
-    if (newAsset === oldAsset) {
-        document.getElementById('assetSwitchError').textContent = 'You are already invested in this asset.';
-        return;
-    }
-    loadData();
-    var u = appData.users[currentUser];
-    if (!u) { alert('Session expired.'); return; }
-    u.asset = newAsset;
-    u.lastAssetSwitch = new Date().toISOString();
-    var n = new Date(), d = n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
-    var oldInfo = getAssetInfo(oldAsset), newInfo = getAssetInfo(newAsset);
-    if (!u.transactions) u.transactions = [];
-    u.transactions.push({date:d, type:'asset_switch', amount:0, description:'Switched from ' + oldInfo.name + ' to ' + newInfo.name});
-    appData.users[currentUser] = u;
-    currentUserData = u;
-    saveData().then(function() {
-        closeModal('assetSwitchModal');
+        await saveUser(currentUser, user);
+        currentUserData = user;
+        closeModal('withdrawModal');
         refreshUserData();
-        alert('✅ Asset switched to ' + newInfo.name + '! Your interest rate has been updated.');
-    });
+        alert('Bank withdrawal submitted! Amount deducted. Admin will review and payout via Monnify.');
+    }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// ████████  SECTION 15: PROFILE MODAL  ████████
-// ═══════════════════════════════════════════════════════════════════════════════
-
+// ================================================================
+// PROFILE
+// ================================================================
 function showProfileModal(){
     var d=currentUserData;
     var assetInfo = getAssetInfo(d.asset || 'metallic');
@@ -1448,19 +1406,17 @@ function showProfileModal(){
         '<div><strong style="color:#808080;">Balance:</strong> <span class="amount-green">'+fmtNaira(d.balance)+'</span></div>';
     document.getElementById('profileModal').classList.add('active');
 }
-
 function closeModal(id){document.getElementById(id).classList.remove('active');}
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// ████████  SECTION 16: ADMIN DASHBOARD  ████████
-// ═══════════════════════════════════════════════════════════════════════════════
-
-function refreshAdminData() {
-    loadData();
-    if (!appData) { document.getElementById('adminUserCards').innerHTML = '<p style="color:#E50914;">Failed.</p>'; return; }
-    var allUsernames = Object.keys(appData.users);
+// ================================================================
+// REFRESH ADMIN DATA
+// ================================================================
+async function refreshAdminData() {
+    await getSettings();
+    var allUsers = await loadAllUsers();
+    var allUsernames = Object.keys(allUsers);
     var totalUsers = allUsernames.length;
-    var activeUsers = allUsernames.filter(function(un){ return appData.users[un].status === 'active'; }).length;
+    var activeUsers = allUsernames.filter(function(un){ return allUsers[un].status === 'active'; }).length;
     document.getElementById('adminTotalUsers').textContent = totalUsers;
     document.getElementById('adminActiveUsers').textContent = activeUsers;
 
@@ -1471,31 +1427,29 @@ function refreshAdminData() {
     document.getElementById('currentMinWithdraw').textContent = Number(minWd()).toLocaleString('en-NG');
     document.getElementById('currentWithdrawDayDisplay').textContent = wdName(wdDay());
 
-    var rates = (appData.settings && appData.settings.assetRates) || {};
+    var rates = (_cachedSettings && _cachedSettings.assetRates) || {};
     for (var aid in ASSET_TYPES) {
-        var r = rates[aid];
-        if (r === undefined || r === null) r = ASSET_TYPES[aid].defaultRate;
+        var r = rates[aid]; if (r === undefined || r === null) r = ASSET_TYPES[aid].defaultRate;
         document.getElementById('adminAssetRate_' + aid).value = r;
     }
 
-    if (appData.settings) {
-        document.getElementById('adminMonnifyApiKey').value = appData.settings.monnifyApiKey || '';
-        document.getElementById('adminMonnifyContractCode').value = appData.settings.monnifyContractCode || '';
-        document.getElementById('adminMonnifySecretKey').value = appData.settings.monnifySecretKey || '';
-        document.getElementById('adminMonnifySourceAccount').value = appData.settings.monnifySourceAccount || '';
-        document.getElementById('adminNPApiKey').value = appData.settings.npApiKey || '';
-        document.getElementById('adminNPSecretKey').value = appData.settings.npSecretKey || '';
-        document.getElementById('adminNPEmail').value = appData.settings.npEmail || '';
-        document.getElementById('adminNPPassword').value = appData.settings.npPassword || '';
+    if (_cachedSettings) {
+        document.getElementById('adminMonnifyApiKey').value = _cachedSettings.monnifyApiKey || '';
+        document.getElementById('adminMonnifyContractCode').value = _cachedSettings.monnifyContractCode || '';
+        document.getElementById('adminMonnifySecretKey').value = _cachedSettings.monnifySecretKey || '';
+        document.getElementById('adminMonnifySourceAccount').value = _cachedSettings.monnifySourceAccount || '';
+        document.getElementById('adminNPApiKey').value = _cachedSettings.npApiKey || '';
+        document.getElementById('adminNPSecretKey').value = _cachedSettings.npSecretKey || '';
+        document.getElementById('adminNPEmail').value = _cachedSettings.npEmail || '';
+        document.getElementById('adminNPPassword').value = _cachedSettings.npPassword || '';
     }
 
     var cardsEl = document.getElementById('adminUserCards');
     var sortedUsers = allUsernames.sort();
-    if (!sortedUsers.length) {
-        cardsEl.innerHTML = '<p style="color:#808080;">No users.</p>';
-    } else {
+    if (!sortedUsers.length) { cardsEl.innerHTML = '<p style="color:#808080;">No users.</p>'; }
+    else {
         cardsEl.innerHTML = sortedUsers.map(function(un) {
-            var u = appData.users[un];
+            var u = allUsers[un];
             var assetInfo = getAssetInfo(u.asset || 'metallic');
             return '<div class="admin-card">' +
                 '<div class="user-header"><h4>' + esc(un) + '</h4><span class="status-badge ' + esc(u.status || 'active') + '">' + esc(u.status || 'active') + '</span></div>' +
@@ -1516,72 +1470,78 @@ function refreshAdminData() {
                 '</div></div>';
         }).join('');
     }
-    renderPendingWithdrawals();
+    renderPendingWithdrawals(allUsers);
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// ████████  SECTION 17: ADMIN ACTIONS  ████████
-// ═══════════════════════════════════════════════════════════════════════════════
-
-function adminSaveAssetRates() {
-    loadData();
-    if (!appData.settings) appData.settings = {};
-    if (!appData.settings.assetRates) appData.settings.assetRates = {};
+// ================================================================
+// ASSET RATES SAVE
+// ================================================================
+async function adminSaveAssetRates() {
+    await getSettings();
+    if (!_cachedSettings.assetRates) _cachedSettings.assetRates = {};
     for (var aid in ASSET_TYPES) {
         var val = parseFloat(document.getElementById('adminAssetRate_' + aid).value);
-        if (!isNaN(val) && val >= 0) appData.settings.assetRates[aid] = val;
+        if (!isNaN(val) && val >= 0) _cachedSettings.assetRates[aid] = val;
     }
-    saveData().then(function() {
-        document.getElementById('assetRateMsg').textContent = 'Asset rates saved!';
-        setTimeout(function() { document.getElementById('assetRateMsg').textContent = ''; }, 3000);
-        refreshAdminData();
-    });
+    var ok = await saveSettings(_cachedSettings);
+    document.getElementById('assetRateMsg').textContent = ok ? 'Asset rates saved!' : 'Save failed!';
+    setTimeout(function() { document.getElementById('assetRateMsg').textContent = ''; }, 3000);
+    refreshAdminData();
 }
 
-function adminDeductBalance(un) {
+// ================================================================
+// ADMIN: DEDUCT BALANCE
+// ================================================================
+async function adminDeductBalance(un) {
     var amt = prompt('Amount to DEDUCT from ' + un + ' (NGN):');
     if (!amt || isNaN(amt) || parseFloat(amt) <= 0) return;
     amt = parseFloat(amt);
-    loadData();
-    if (appData.users[un]) {
-        var u = appData.users[un];
-        if (amt > u.balance) { alert('Insufficient balance. User has ' + fmtNaira(u.balance)); return; }
-        u.balance -= amt;
-        var n = new Date(), d = n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
-        if (!u.transactions) u.transactions = [];
-        u.transactions.push({date:d, type:'withdraw', amount:amt, description:'Admin deduction'});
-        appData.users[un] = u;
-        saveData().then(function() { refreshAdminData(); alert('Deducted ' + fmtNaira(amt) + ' from ' + un); });
-    }
+    var u = await loadUser(un);
+    if (!u) { alert('User not found.'); return; }
+    if (amt > u.balance) { alert('Insufficient balance. User has ' + fmtNaira(u.balance)); return; }
+    u.balance -= amt;
+    var n = new Date();
+    var d = n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+    if (!u.transactions) u.transactions = [];
+    u.transactions.push({date:d, type:'withdraw', amount:amt, description:'Admin deduction'});
+    await saveUser(un, u);
+    refreshAdminData();
+    alert('Deducted ' + fmtNaira(amt) + ' from ' + un);
 }
 
-function adminResetUserAccount(un) {
-    if (!confirm('Reset account for ' + un + '?\n\nThis will wipe:\n- Balance\n- Profit\n- Invested\n- Referral bonus\n- All transactions\n- All withdrawals\n\nUser keeps username, password, and profile.')) return;
-    loadData();
-    if (appData.users[un]) {
-        var u = appData.users[un];
-        u.balance = 0; u.invested = 0; u.profit = 0; u.referralBonus = 0;
-        u.transactions = []; u.withdrawals = []; u.referrals = [];
-        u.lastInterestDate = ''; u.asset = 'metallic'; u.lastAssetSwitch = '';
-        appData.users[un] = u;
-        saveData().then(function() { refreshAdminData(); alert('Account reset for ' + un); });
-    }
+// ================================================================
+// ADMIN: RESET USER ACCOUNT
+// ================================================================
+async function adminResetUserAccount(un) {
+    if (!confirm('Reset account for ' + un + '?\n\nThis will wipe balance, profit, invested, referral bonus, transactions, and withdrawals.')) return;
+    var u = await loadUser(un);
+    if (!u) return;
+    u.balance = 0; u.invested = 0; u.profit = 0; u.referralBonus = 0;
+    u.transactions = []; u.withdrawals = []; u.referrals = [];
+    u.lastInterestDate = ''; u.asset = 'metallic'; u.lastAssetSwitch = '';
+    await saveUser(un, u);
+    refreshAdminData();
+    alert('Account reset for ' + un);
 }
 
-function adminDeleteUser(un) {
-    if (!confirm('⚠️ PERMANENTLY DELETE ' + un + '?\n\nThis cannot be undone!')) return;
-    if (!confirm('Are you absolutely sure? All user data will be lost.')) return;
-    loadData();
-    if (appData.users[un]) {
-        delete appData.users[un];
-        saveData().then(function() { refreshAdminData(); alert('User ' + un + ' deleted.'); });
-    }
+// ================================================================
+// ADMIN: DELETE USER
+// ================================================================
+async function adminDeleteUser(un) {
+    if (!confirm('⚠️ PERMANENTLY DELETE ' + un + '? This cannot be undone!')) return;
+    if (!confirm('Are you absolutely sure?')) return;
+    await deleteUser(un);
+    refreshAdminData();
+    alert('User ' + un + ' deleted.');
 }
 
-function renderPendingWithdrawals() {
+// ================================================================
+// PENDING WITHDRAWALS
+// ================================================================
+function renderPendingWithdrawals(allUsers) {
     var pending = [];
-    for (var un in appData.users) {
-        var u = appData.users[un];
+    for (var un in allUsers) {
+        var u = allUsers[un];
         if (u.withdrawals) {
             u.withdrawals.forEach(function(w, i) {
                 if (w.status === 'pending') pending.push({ username: un, index: i, data: w });
@@ -1608,364 +1568,364 @@ function renderPendingWithdrawals() {
     }).join('');
 }
 
-function adminSetStatus(un) {
+// ================================================================
+// ADMIN: SET STATUS
+// ================================================================
+async function adminSetStatus(un) {
     var s = document.getElementById('userStatus_' + un).value;
-    loadData();
-    if (appData.users[un]) { appData.users[un].status = s; saveData().then(function() { refreshAdminData(); }); }
+    var u = await loadUser(un);
+    if (u) { u.status = s; await saveUser(un, u); refreshAdminData(); }
 }
 
-function adminAddBalance(un) {
+// ================================================================
+// ADMIN: ADD BALANCE
+// ================================================================
+async function adminAddBalance(un) {
     var amt = prompt('Amount to add to ' + un + ' (NGN):');
     if (!amt || isNaN(amt) || parseFloat(amt) <= 0) return;
-    loadData();
-    if (appData.users[un]) {
-        appData.users[un].balance += parseFloat(amt);
-        appData.users[un].invested += parseFloat(amt);
-        var n = new Date(), d = n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
-        if (!appData.users[un].transactions) appData.users[un].transactions = [];
-        appData.users[un].transactions.push({date:d, type:'deposit', amount:parseFloat(amt), description:'Admin credit'});
-        saveData().then(function() { refreshAdminData(); });
+    amt = parseFloat(amt);
+    var u = await loadUser(un);
+    if (u) {
+        u.balance += amt; u.invested += amt;
+        var n = new Date();
+        var d = n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+        if (!u.transactions) u.transactions = [];
+        u.transactions.push({date:d, type:'deposit', amount:amt, description:'Admin credit'});
+        await saveUser(un, u);
+        refreshAdminData();
     }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// ████████  SECTION 18: ADMIN WITHDRAWAL APPROVAL W/ AUTO-PAYOUT  ████████
-// ═══════════════════════════════════════════════════════════════════════════════
-
-function adminApproveWithdraw(un, idx) {
-    loadData();
-    if (!appData.users[un] || !appData.users[un].withdrawals || !appData.users[un].withdrawals[idx]) return;
-    var w = appData.users[un].withdrawals[idx];
-    if (!confirm('Approve ' + fmtNaira(w.amount) + ' withdrawal for ' + un + '?\n\nThe system will attempt to auto-payout via ' + (w.type === 'bank' ? 'Monnify API' : 'NOWPayments API') + '.')) return;
+// ================================================================
+// ADMIN: APPROVE WITHDRAW WITH AUTO-PAYOUT
+// ================================================================
+async function adminApproveWithdraw(un, idx) {
+    await getSettings();
+    var u = await loadUser(un);
+    if (!u || !u.withdrawals || !u.withdrawals[idx]) return;
+    var w = u.withdrawals[idx];
+    if (!confirm('Approve ' + fmtNaira(w.amount) + ' withdrawal for ' + un + '?')) return;
     w.status = 'approved';
     w.approvedAt = new Date().toISOString();
+
     if (w.type === 'bank') {
-        var sk = appData.settings && appData.settings.monnifySecretKey;
-        var ak = appData.settings && appData.settings.monnifyApiKey;
-        var src = appData.settings && appData.settings.monnifySourceAccount;
+        var sk = _cachedSettings.monnifySecretKey;
+        var ak = _cachedSettings.monnifyApiKey;
+        var src = _cachedSettings.monnifySourceAccount;
         var ref = 'NZ-PAY-' + Date.now() + '-' + Math.random().toString(36).substring(2,6).toUpperCase();
         if (ak && sk && src && w.bankCode && w.accountNumber) {
-            var basicAuth = btoa(ak + ':' + sk);
-            w.payoutRef = ref;
-            w.payoutStatus = 'initiating';
-            fetch('https://sandbox.monnify.com/api/v1/auth/login', {
-                method: 'POST',
-                headers: { 'Authorization': 'Basic ' + basicAuth }
-            })
-            .then(function(r){ return r.json(); })
-            .then(function(authRes){
+            w.payoutRef = ref; w.payoutStatus = 'initiating';
+            try {
+                var basicAuth = btoa(ak + ':' + sk);
+                var authRes = await fetch('https://sandbox.monnify.com/api/v1/auth/login', {
+                    method: 'POST', headers: { 'Authorization': 'Basic ' + basicAuth }
+                }).then(function(r){ return r.json(); });
                 if (!authRes || !authRes.responseBody || !authRes.responseBody.accessToken) {
                     w.payoutStatus = 'auth_failed';
-                    saveData().then(function(){ refreshAdminData(); });
-                    alert('Monnify auth failed. Withdrawal approved but payout could not be initiated.\nCheck API Key/Secret.');
-                    return;
+                    await saveUser(un, u); refreshAdminData();
+                    alert('Monnify auth failed. Check API Key/Secret.'); return;
                 }
                 var token = authRes.responseBody.accessToken;
                 var payoutData = {
-                    amount: w.amount,
-                    reference: ref,
+                    amount: w.amount, reference: ref,
                     narration: 'NetflixZone withdrawal payout to ' + un,
                     destinationBankCode: w.bankCode,
                     destinationAccountNumber: w.accountNumber,
-                    sourceAccountNumber: src,
-                    currency: 'NGN',
-                    async: true
+                    sourceAccountNumber: src, currency: 'NGN', async: true
                 };
-                return fetch('https://sandbox.monnify.com/api/v2/disbursements/single', {
-                    method: 'POST',
-                    headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+                var pRes = await fetch('https://sandbox.monnify.com/api/v2/disbursements/single', {
+                    method: 'POST', headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
                     body: JSON.stringify(payoutData)
-                });
-            })
-            .then(function(r){ return r ? r.json() : null; })
-            .then(function(pRes){
+                }).then(function(r){ return r.json(); });
                 if (pRes && pRes.requestSuccessful) {
-                    w.payoutStatus = 'paid';
-                    w.payoutResponse = JSON.stringify(pRes);
-                    saveData().then(function(){ refreshAdminData(); });
+                    w.payoutStatus = 'paid'; w.payoutResponse = JSON.stringify(pRes);
+                    await saveUser(un, u); refreshAdminData();
                     document.getElementById('payoutResultTitle').textContent = '✅ Bank Payout Initiated!';
                     document.getElementById('payoutResultContent').innerHTML = 'Monnify transfer of ' + fmtNaira(w.amount) + ' to ' + esc(w.bankName) + ' (' + esc(w.accountNumber) + ') initiated.<br><br>Ref: ' + esc(ref);
                     document.getElementById('payoutResultModal').classList.add('active');
                 } else {
-                    w.payoutStatus = 'payout_failed';
-                    w.payoutError = pRes ? pRes.responseMessage : 'Unknown error';
-                    saveData().then(function(){ refreshAdminData(); });
-                    alert('Monnify payout failed: ' + (pRes ? pRes.responseMessage : 'No response') + '\nWithdrawal approved but payment not sent.');
+                    w.payoutStatus = 'payout_failed'; w.payoutError = pRes ? pRes.responseMessage : 'Unknown error';
+                    await saveUser(un, u); refreshAdminData();
+                    alert('Monnify payout failed: ' + (pRes ? pRes.responseMessage : 'No response'));
                 }
-            })
-            .catch(function(err){
-                w.payoutStatus = 'error';
-                w.payoutError = err.message || String(err);
-                saveData().then(function(){ refreshAdminData(); });
-                alert('Monnify API error: ' + err.message + '\nWithdrawal approved but payout not sent.');
-            });
+            } catch(err) {
+                w.payoutStatus = 'error'; w.payoutError = err.message || String(err);
+                await saveUser(un, u); refreshAdminData();
+                alert('Monnify API error: ' + err.message);
+            }
         } else {
             w.payoutStatus = 'no_config';
-            saveData().then(function(){ refreshAdminData(); });
-            alert('Monnify not fully configured. Withdrawal approved but bank payout could not be sent.\nSet API Key, Secret, and Source Account in settings.');
+            await saveUser(un, u); refreshAdminData();
+            alert('Monnify not fully configured. Set API Key, Secret, and Source Account.');
         }
     } else {
-        var npKey = appData.settings && appData.settings.npApiKey;
-        var npEmail = appData.settings && appData.settings.npEmail;
-        var npPass = appData.settings && appData.settings.npPassword;
+        var npKey = _cachedSettings.npApiKey;
+        var npEmail = _cachedSettings.npEmail;
+        var npPass = _cachedSettings.npPassword;
         var ref = 'NZ-CRYPTO-' + Date.now() + '-' + Math.random().toString(36).substring(2,6).toUpperCase();
         if (npKey && npEmail && npPass && w.wallet && w.currency) {
-            w.payoutRef = ref;
-            w.payoutStatus = 'initiating';
-            var curMap = {
-                'USDT (TRC20)': 'usdttrc20', 'Bitcoin (BTC)': 'btc', 'Ethereum (ETH)': 'eth',
-                'Tron (TRX)': 'trx', 'Litecoin (LTC)': 'ltc', 'Dogecoin (DOGE)': 'doge', 'Solana (SOL)': 'sol'
-            };
+            w.payoutRef = ref; w.payoutStatus = 'initiating';
+            var curMap = { 'USDT (TRC20)': 'usdttrc20', 'Bitcoin (BTC)': 'btc', 'Ethereum (ETH)': 'eth', 'Tron (TRX)': 'trx', 'Litecoin (LTC)': 'ltc', 'Dogecoin (DOGE)': 'doge', 'Solana (SOL)': 'sol' };
             var payoutCurrency = curMap[w.currency] || w.currency.toLowerCase().replace(/[^a-z0-9]/g, '');
-            fetch('https://api.nowpayments.io/v1/auth', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: npEmail, password: npPass })
-            })
-            .then(function(r){ return r.json(); })
-            .then(function(authRes){
+            try {
+                var authRes = await fetch('https://api.nowpayments.io/v1/auth', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: npEmail, password: npPass })
+                }).then(function(r){ return r.json(); });
                 var jwt = authRes && authRes.token;
                 if (!jwt) {
                     w.payoutStatus = 'auth_failed';
-                    saveData().then(function(){ refreshAdminData(); });
-                    alert('NOWPayments auth failed. Crypto withdrawal approved but payout not sent.\nCheck email/password.');
-                    return;
+                    await saveUser(un, u); refreshAdminData();
+                    alert('NOWPayments auth failed.'); return;
                 }
-                return fetch('https://api.nowpayments.io/v1/payout', {
-                    method: 'POST',
-                    headers: { 'x-api-key': npKey, 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt },
-                    body: JSON.stringify({
-                        withdrawals: [{ address: w.wallet, currency: payoutCurrency, amount: parseFloat(w.amount) }],
-                        payout_description: 'NetflixZone withdrawal for ' + un
-                    })
-                });
-            })
-            .then(function(r){ return r ? r.json() : null; })
-            .then(function(pRes){
+                var pRes = await fetch('https://api.nowpayments.io/v1/payout', {
+                    method: 'POST', headers: { 'x-api-key': npKey, 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt },
+                    body: JSON.stringify({ withdrawals: [{ address: w.wallet, currency: payoutCurrency, amount: parseFloat(w.amount) }], payout_description: 'NetflixZone withdrawal for ' + un })
+                }).then(function(r){ return r.json(); });
                 if (pRes && pRes.id) {
-                    w.payoutStatus = 'paid';
-                    w.payoutResponse = JSON.stringify(pRes);
-                    w.payoutRef = ref;
-                    saveData().then(function(){ refreshAdminData(); });
+                    w.payoutStatus = 'paid'; w.payoutResponse = JSON.stringify(pRes); w.payoutRef = ref;
+                    await saveUser(un, u); refreshAdminData();
                     document.getElementById('payoutResultTitle').textContent = '✅ Crypto Payout Initiated!';
                     document.getElementById('payoutResultContent').innerHTML = 'NOWPayments payout of ' + fmtNaira(w.amount) + ' to ' + esc(w.currency) + ' wallet (' + esc(w.wallet.substring(0,12)) + '...) initiated.<br><br>Payout ID: ' + esc(pRes.id);
                     document.getElementById('payoutResultModal').classList.add('active');
                 } else {
-                    w.payoutStatus = 'payout_failed';
-
-                    w.payoutError = pRes ? JSON.stringify(pRes) : 'Unknown error';
-                    saveData().then(function(){ refreshAdminData(); });
-                    alert('NOWPayments payout failed: ' + (pRes ? (pRes.message || JSON.stringify(pRes)) : 'No response') + '\nWithdrawal approved but crypto not sent.');
+                    w.payoutStatus = 'payout_failed'; w.payoutError = pRes ? JSON.stringify(pRes) : 'Unknown error';
+                    await saveUser(un, u); refreshAdminData();
+                    alert('NOWPayments payout failed: ' + (pRes ? (pRes.message || JSON.stringify(pRes)) : 'No response'));
                 }
-            })
-            .catch(function(err){
-                w.payoutStatus = 'error';
-                w.payoutError = err.message || String(err);
-                saveData().then(function(){ refreshAdminData(); });
-                alert('NOWPayments API error: ' + err.message + '\nWithdrawal approved but payout not sent.');
-            });
+            } catch(err) {
+                w.payoutStatus = 'error'; w.payoutError = err.message || String(err);
+                await saveUser(un, u); refreshAdminData();
+                alert('NOWPayments API error: ' + err.message);
+            }
         } else {
             w.payoutStatus = 'no_config';
-            saveData().then(function(){ refreshAdminData(); });
-            alert('NOWPayments not fully configured. Withdrawal approved but crypto payout could not be sent.\nSet API Key, Email, and Password in settings.');
+            await saveUser(un, u); refreshAdminData();
+            alert('NOWPayments not fully configured. Set API Key, Email, and Password.');
         }
     }
-    if (!w.payoutStatus || w.payoutStatus === 'approved' || w.payoutStatus === 'no_config') {
-        saveData().then(function() { refreshAdminData(); });
+    if (w.payoutStatus === 'approved' || !w.payoutStatus) {
+        await saveUser(un, u); refreshAdminData();
     }
 }
 
-function adminDeclineWithdraw(un, idx) {
-    loadData();
-    if (!appData.users[un] || !appData.users[un].withdrawals || !appData.users[un].withdrawals[idx]) return;
+// ================================================================
+// ADMIN: DECLINE WITHDRAW
+// ================================================================
+async function adminDeclineWithdraw(un, idx) {
+    var u = await loadUser(un);
+    if (!u || !u.withdrawals || !u.withdrawals[idx]) return;
     if (!confirm('Decline withdrawal for ' + un + '? Balance will be refunded.')) return;
-    var amt = appData.users[un].withdrawals[idx].amount;
-    appData.users[un].withdrawals[idx].status = 'declined';
-    appData.users[un].balance += amt;
-    saveData().then(function() { refreshAdminData(); });
+    var amt = u.withdrawals[idx].amount;
+    u.withdrawals[idx].status = 'declined';
+    u.balance += amt;
+    await saveUser(un, u);
+    refreshAdminData();
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// ████████  SECTION 19: ADMIN SETTINGS  ████████
-// ═══════════════════════════════════════════════════════════════════════════════
-
-function adminUpdateMinAmounts() {
+// ================================================================
+// ADMIN: UPDATE MIN AMOUNTS / WITHDRAW DAY / MONNIFY / NP KEYS
+// ================================================================
+async function adminUpdateMinAmounts() {
     var d = parseFloat(document.getElementById('adminMinDeposit').value);
     var w = parseFloat(document.getElementById('adminMinWithdraw').value);
     if (isNaN(d) || d < 100 || isNaN(w) || w < 100) return;
-    loadData();
-    if (!appData.settings) appData.settings = {};
-    appData.settings.minDeposit = d;
-    appData.settings.minWithdraw = w;
-    saveData().then(function() { refreshAdminData(); document.getElementById('adminActionMsg').textContent = 'Min deposit: ' + fmtNaira(d) + ' | Min withdraw: ' + fmtNaira(w); });
+    await getSettings();
+    _cachedSettings.minDeposit = d;
+    _cachedSettings.minWithdraw = w;
+    await saveSettings(_cachedSettings);
+    refreshAdminData();
+    document.getElementById('adminActionMsg').textContent = 'Min deposit: ' + fmtNaira(d) + ' | Min withdraw: ' + fmtNaira(w);
 }
 
-function adminUpdateWithdrawDay() {
+async function adminUpdateWithdrawDay() {
     var day = parseInt(document.getElementById('adminWithdrawDay').value);
-    loadData();
-    if (!appData.settings) appData.settings = {};
-    appData.settings.withdrawDay = day;
-    saveData().then(function() { refreshAdminData(); document.getElementById('adminActionMsg').textContent = 'Withdrawal day: ' + wdName(day); });
+    await getSettings();
+    _cachedSettings.withdrawDay = day;
+    await saveSettings(_cachedSettings);
+    refreshAdminData();
+    document.getElementById('adminActionMsg').textContent = 'Withdrawal day: ' + wdName(day);
 }
 
-function adminSaveMonnifyKeys() {
+async function adminSaveMonnifyKeys() {
     var api = document.getElementById('adminMonnifyApiKey').value.trim();
     var cc = document.getElementById('adminMonnifyContractCode').value.trim();
     var sk = document.getElementById('adminMonnifySecretKey').value.trim();
     var src = document.getElementById('adminMonnifySourceAccount').value.trim();
-    loadData();
-    if (!appData.settings) appData.settings = {};
-    appData.settings.monnifyApiKey = api;
-    appData.settings.monnifyContractCode = cc;
-    appData.settings.monnifySecretKey = sk;
-    appData.settings.monnifySourceAccount = src;
-    saveData().then(function() { document.getElementById('monnifyMsg').textContent = 'Monnify keys saved!'; setTimeout(function() { document.getElementById('monnifyMsg').textContent = ''; }, 3000); });
+    await getSettings();
+    _cachedSettings.monnifyApiKey = api;
+    _cachedSettings.monnifyContractCode = cc;
+    _cachedSettings.monnifySecretKey = sk;
+    _cachedSettings.monnifySourceAccount = src;
+    await saveSettings(_cachedSettings);
+    document.getElementById('monnifyMsg').textContent = 'Monnify keys saved!';
+    setTimeout(function() { document.getElementById('monnifyMsg').textContent = ''; }, 3000);
 }
 
-function adminSaveNPKeys() {
+async function adminSaveNPKeys() {
     var apik = document.getElementById('adminNPApiKey').value.trim();
     var sk = document.getElementById('adminNPSecretKey').value.trim();
     var em = document.getElementById('adminNPEmail').value.trim();
     var pw = document.getElementById('adminNPPassword').value.trim();
-    loadData();
-    if (!appData.settings) appData.settings = {};
-    appData.settings.npApiKey = apik;
-    appData.settings.npSecretKey = sk;
-    appData.settings.npEmail = em;
-    appData.settings.npPassword = pw;
-    saveData().then(function() { document.getElementById('npMsg').textContent = 'NOWPayments keys saved!'; setTimeout(function() { document.getElementById('npMsg').textContent = ''; }, 3000); });
+    await getSettings();
+    _cachedSettings.npApiKey = apik;
+    _cachedSettings.npSecretKey = sk;
+    _cachedSettings.npEmail = em;
+    _cachedSettings.npPassword = pw;
+    await saveSettings(_cachedSettings);
+    document.getElementById('npMsg').textContent = 'NOWPayments keys saved!';
+    setTimeout(function() { document.getElementById('npMsg').textContent = ''; }, 3000);
 }
 
-function adminCreateUser() {
+// ================================================================
+// ADMIN: CREATE USER
+// ================================================================
+async function adminCreateUser() {
     var u = document.getElementById('adminNewUser').value.trim();
     var p = document.getElementById('adminNewPass').value.trim();
     var n = document.getElementById('adminNewName').value.trim();
     if (!u || !p || !n) { document.getElementById('adminCreateMsg').textContent = 'Fill all fields.'; return; }
-    loadData();
-    if (appData.users[u]) { document.getElementById('adminCreateMsg').textContent = 'Already exists.'; return; }
-    var nd = new Date(), d = nd.getFullYear()+'-'+String(nd.getMonth()+1).padStart(2,'0')+'-'+String(nd.getDate()).padStart(2,'0');
-    appData.users[u] = { fullName:n, email:u+'@netflixzone.local', phone:'', password:p, balance:0, invested:0, profit:0, referralBonus:0, referralCode:u, referredBy:'', plan:'Basic', status:'active', createdAt:d, lastInterestDate:'', transactions:[], withdrawals:[], referrals:[], processedReferences:[], asset:'metallic', lastAssetSwitch:'' };
-    saveData().then(function() { document.getElementById('adminCreateMsg').textContent = 'Created user: ' + u; ['adminNewUser','adminNewPass','adminNewName'].forEach(function(i){document.getElementById(i).value='';}); refreshAdminData(); });
+    var existing = await loadUser(u);
+    if (existing) { document.getElementById('adminCreateMsg').textContent = 'Already exists.'; return; }
+    var nd = new Date();
+    var d = nd.getFullYear()+'-'+String(nd.getMonth()+1).padStart(2,'0')+'-'+String(nd.getDate()).padStart(2,'0');
+    var newUser = {
+        fullName: n, email: u+'@netflixzone.local', phone: '', password: p,
+        balance: 0, invested: 0, profit: 0, referralBonus: 0,
+        referralCode: u, referredBy: '', plan: 'Basic', status: 'active',
+        createdAt: d, lastInterestDate: '', transactions: [], withdrawals: [],
+        referrals: [], processedReferences: [], asset: 'metallic', lastAssetSwitch: ''
+    };
+    await saveUser(u, newUser);
+    document.getElementById('adminCreateMsg').textContent = 'Created user: ' + u;
+    ['adminNewUser','adminNewPass','adminNewName'].forEach(function(i){document.getElementById(i).value='';});
+    refreshAdminData();
 }
 
-function changeAdminPassword() {
+// ================================================================
+// ADMIN: CHANGE ADMIN PASSWORD
+// ================================================================
+async function changeAdminPassword() {
     var cur = document.getElementById('adminCurrentPass').value;
     var nw = document.getElementById('adminNewPassInput').value;
     if (!cur || !nw) { document.getElementById('changePassMsg').textContent = 'Fill both fields.'; return; }
-    loadData();
-    if (appData.admin.password !== cur) { document.getElementById('changePassMsg').textContent = 'Current password wrong.'; return; }
-    appData.admin.password = nw;
-    saveData().then(function() { document.getElementById('changePassMsg').innerHTML = '✅ Changed.'; document.getElementById('adminCurrentPass').value = ''; document.getElementById('adminNewPassInput').value = ''; });
+    var adminData = await loadAdmin();
+    if (adminData.password !== cur) { document.getElementById('changePassMsg').textContent = 'Current password wrong.'; return; }
+    adminData.password = nw;
+    await saveAdmin(adminData);
+    document.getElementById('changePassMsg').innerHTML = 'Changed.';
+    document.getElementById('adminCurrentPass').value = '';
+    document.getElementById('adminNewPassInput').value = '';
 }
 
-function adminResetUserPassword() {
+// ================================================================
+// ADMIN: RESET USER PASSWORD
+// ================================================================
+async function adminResetUserPassword() {
     var u = document.getElementById('adminResetUser').value.trim();
     var p = document.getElementById('adminResetUserPass').value.trim();
     if (!u || !p) { document.getElementById('resetUserPassMsg').textContent = 'Fill both.'; return; }
-    loadData();
-    if (!appData.users[u]) { document.getElementById('resetUserPassMsg').textContent = 'User not found.'; return; }
-    appData.users[u].password = p;
-    saveData().then(function() { document.getElementById('resetUserPassMsg').innerHTML = '✅ Password reset for ' + u; document.getElementById('adminResetUser').value = ''; document.getElementById('adminResetUserPass').value = ''; });
+    var userData = await loadUser(u);
+    if (!userData) { document.getElementById('resetUserPassMsg').textContent = 'User not found.'; return; }
+    userData.password = p;
+    await saveUser(u, userData);
+    document.getElementById('resetUserPassMsg').innerHTML = 'Password reset for ' + u;
+    document.getElementById('adminResetUser').value = '';
+    document.getElementById('adminResetUserPass').value = '';
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// ████████  SECTION 20: BULK INTEREST & DATA RESET  ████████
-// ═══════════════════════════════════════════════════════════════════════════════
-
-function adminPayAllProfits() {
+// ================================================================
+// ADMIN: APPLY DAILY INTEREST TO ALL
+// ================================================================
+async function adminPayAllProfits() {
     if (!confirm('Apply daily interest to ALL active users?')) return;
-    loadData();
+    await getSettings();
+    var allUsers = await loadAllUsers();
     var today = new Date().toDateString();
     var count = 0;
-    for (var un in appData.users) {
-        var u = appData.users[un];
+    for (var un in allUsers) {
+        var u = allUsers[un];
         if (u.status === 'active' && u.balance > 0 && u.lastInterestDate !== today) {
             var rate = getUserInterestRate(u);
             var i = u.balance * (rate / 100);
             u.balance += i;
-            u.profit += i;
+            u.profit = (u.profit || 0) + i;
             if (!u.transactions) u.transactions = [];
-            var n = new Date(), d = n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+            var n = new Date();
+            var d = n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
             var assetInfo = getAssetInfo(u.asset || 'metallic');
             u.transactions.push({date:d, type:'profit', amount:i, description:assetInfo.icon+' '+assetInfo.name+' interest '+rate+'%'});
             u.lastInterestDate = today;
+            await saveUser(un, u);
             count++;
         }
     }
-    saveData().then(function() { document.getElementById('adminActionMsg').textContent = '✅ Applied to ' + count + ' users.'; refreshAdminData(); });
+    document.getElementById('adminActionMsg').textContent = 'Applied to ' + count + ' users.';
+    refreshAdminData();
 }
 
-function adminResetAll() {
-    if (!confirm('⚠️ WIPE ALL USER DATA? This cannot be undone!')) return;
-    if (!confirm('Are you sure? All users, transactions, and balances will be deleted.')) return;
-    loadData();
-    var admin = appData.admin;
-    var oldSettings = appData.settings || {};
-    appData = getDefaultData();
-    appData.admin = admin;             // Preserve admin credentials
-    appData.settings = oldSettings;    // Preserve settings
-    saveToLocalStorage();
-    saveData().then(function() { refreshAdminData(); document.getElementById('adminActionMsg').textContent = '✅ All user data reset. Settings preserved.'; });
+// ================================================================
+// ADMIN: RESET ALL DATA
+// ================================================================
+async function adminResetAll() {
+    if (!confirm('WIPE ALL USER DATA? This cannot be undone!')) return;
+    if (!confirm('Are you sure?')) return;
+
+    // Delete all users from the users table
+    var { error } = await supabase
+        .from('users')
+        .delete()
+        .neq('username', ''); // delete all rows
+    if (error) { console.error('Delete all users error', error); return; }
+
+    // Reset settings to defaults
+    var defaults = {
+        interestRate: 2, minDeposit: DEFAULT_MIN_DEPOSIT, minWithdraw: DEFAULT_MIN_WITHDRAW,
+        withdrawDay: 5, monnifyApiKey: '', monnifyContractCode: '', monnifySecretKey: '',
+        monnifySourceAccount: '', npApiKey: '', npSecretKey: '', npEmail: '', npPassword: '',
+        assetRates: { metallic: 2.0, energy: 3.0, gemstone: 4.0 }
+    };
+    await saveSettings(defaults);
+    refreshAdminData();
+    document.getElementById('adminActionMsg').textContent = 'Data reset.';
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// ████████  SECTION 21: BOOT — Initialize & Auto-restore Session  ████████
-// ═══════════════════════════════════════════════════════════════════════════════
+// ================================================================
+// BOOT — Initialize and restore session
+// ================================================================
+(async function boot() {
+    try {
+        // Load settings first
+        await getSettings();
 
-(function boot() {
-    // ★ Load data from localStorage (always succeeds, never loses data)
-    appData = loadFromLocalStorage();
-
-    // ★ Ensure default fields exist (data structure migration)
-    if (!appData.admin) appData.admin = { username: 'admin', password: 'admin123' };
-    if (!appData.settings) {
-        appData.settings = getDefaultData().settings;
-    }
-    if (!appData.settings.assetRates) {
-        appData.settings.assetRates = { metallic: 2.0, energy: 3.0, gemstone: 4.0 };
-    }
-    if (!appData.users) appData.users = {};
-    // Ensure all users have new fields (asset, lastAssetSwitch)
-    for (var un in appData.users) {
-        var u = appData.users[un];
-        if (!u.asset) u.asset = 'metallic';
-        if (!u.lastAssetSwitch) u.lastAssetSwitch = '';
-        if (!u.transactions) u.transactions = [];
-        if (!u.withdrawals) u.withdrawals = [];
-        if (!u.referrals) u.referrals = [];
-        if (!u.processedReferences) u.processedReferences = [];
-    }
-    appData._version = getDefaultData()._version;
-    saveToLocalStorage();
-
-    // ★ Fire-and-forget JSONBin sync to pull any remote changes
-    loadFromJSONBin().then(function(merged) {
-        if (merged) {
-            appData = merged;
-            saveToLocalStorage();
-        }
-    });
-
-    // ★ Try to restore session
-    var session = getSession();
-    if (session && session.username) {
-        if (session.isAdmin && session.username === 'admin') {
-            isAdminLoggedIn = true;
-            currentUser = 'admin';
-            currentUserData = null;
-            enterDashboard('admin');
-        } else if (appData.users[session.username]) {
-            currentUser = session.username;
-            currentUserData = appData.users[session.username];
-            isAdminLoggedIn = false;
-            if (currentUserData.status !== 'closed') {
-                applyDailyInterest().then(function() { enterDashboard('user'); });
+        // Try to restore session
+        var session = getSession();
+        if (session && session.username) {
+            if (session.isAdmin && session.username === 'admin') {
+                var adminData = await loadAdmin();
+                if (adminData) {
+                    isAdminLoggedIn = true;
+                    currentUser = 'admin';
+                    currentUserData = null;
+                    enterDashboard('admin');
+                    return;
+                }
             } else {
-                clearSession();
+                var userData = await loadUser(session.username);
+                if (userData && userData.status !== 'closed') {
+                    currentUser = session.username;
+                    currentUserData = userData;
+                    isAdminLoggedIn = false;
+                    await applyDailyInterest();
+                    enterDashboard('user');
+                    return;
+                } else {
+                    clearSession();
+                }
             }
-        } else {
-            clearSession();
         }
+    } catch(e) {
+        console.log('Boot error (session may be fresh):', e);
     }
 })();
 </script>
