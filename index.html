@@ -1,189 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NetflixZone - Investment Platform</title>
-    <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        :root {
-            --red: #E50914; --dark-red: #B20710; --black: #000000;
-            --bg: #141414; --card: #1a1a1a; --card-hover: #2a2a2a;
-            --border: #333; --text: #fff; --text2: #b3b3b3; --text3: #808080;
-            --green: #46d369; --blue: #0071eb; --yellow: #e6b91e; --purple: #b37feb;
-            --orange: #ff8c00; --teal: #20c997;
-        }
-        body { font-family: 'Helvetica Neue',Arial,sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; }
-        .auth-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--black); padding: 20px; position: relative; }
-        .auth-container::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(229,9,20,0.15) 0%, transparent 70%); pointer-events: none; }
-        .auth-box { background: rgba(0,0,0,0.75); border-radius: 8px; padding: 60px 68px 40px; width: 100%; max-width: 450px; position: relative; }
-        .auth-box .logo { text-align: center; margin-bottom: 28px; }
-        .auth-box .logo h1 { font-size: 36px; color: var(--red); font-weight: 800; text-transform: uppercase; letter-spacing: -1px; }
-        .auth-box .logo h1 span { color: var(--text); font-weight: 300; }
-        .auth-box .logo p { font-size: 12px; color: var(--text3); margin-top: 2px; letter-spacing: 2px; text-transform: uppercase; }
-        .auth-box h2 { font-size: 22px; font-weight: 600; margin-bottom: 24px; color: var(--text); }
-        .auth-box input,.auth-box select { width: 100%; padding: 14px 16px; margin-bottom: 14px; background: var(--card); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-size: 15px; outline: none; }
-        .auth-box input:focus { border-color: var(--text); background: var(--card-hover); }
-        .auth-box select option { background: var(--card); }
-        .auth-box .btn-primary { width: 100%; padding: 14px; background: var(--red); color: var(--text); font-weight: 700; font-size: 16px; border: none; border-radius: 4px; cursor: pointer; }
-        .auth-box .btn-primary:hover { background: var(--dark-red); }
-        .auth-box .link { text-align: center; margin-top: 16px; font-size: 14px; color: var(--text3); }
-        .auth-box .link a { color: var(--text); cursor: pointer; text-decoration: none; }
-        .auth-box .link a:hover { text-decoration: underline; }
-        .auth-box .error { color: var(--red); font-size: 13px; margin-bottom: 10px; text-align: center; }
-        .auth-box .success { color: var(--green); font-size: 13px; margin-bottom: 10px; text-align: center; }
-        .auth-tabs { display: flex; margin-bottom: 24px; border-bottom: 2px solid var(--border); }
-        .auth-tabs div { flex: 1; text-align: center; padding: 12px; font-size: 15px; font-weight: 600; cursor: pointer; color: var(--text3); border-bottom: 2px solid transparent; margin-bottom: -2px; }
-        .auth-tabs div.active { color: var(--text); border-bottom-color: var(--red); }
-        .admin-hidden-link { text-align: center; margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border); }
-        .admin-hidden-link a { color: var(--border); font-size: 11px; text-decoration: none; cursor: pointer; user-select: none; }
-        .admin-hidden-link a:hover { color: var(--text3); }
-        .admin-login-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 999; align-items: center; justify-content: center; padding: 20px; }
-        .admin-login-overlay.active { display: flex; }
-        .admin-login-box { background: var(--black); border: 1px solid var(--border); border-radius: 8px; padding: 36px; width: 100%; max-width: 380px; }
-        .admin-login-box h3 { font-size: 20px; color: var(--text); margin-bottom: 4px; }
-        .admin-login-box p.sub { font-size: 12px; color: var(--text3); margin-bottom: 20px; }
-        .admin-login-box input { width: 100%; padding: 12px 14px; margin-bottom: 12px; background: var(--card); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-size: 14px; outline: none; }
-        .admin-login-box input:focus { border-color: var(--blue); }
-        .admin-login-box .btn-admin { width: 100%; padding: 12px; background: var(--red); color: var(--text); font-weight: 600; border: none; border-radius: 4px; cursor: pointer; }
-        .admin-login-box .btn-admin:hover { background: var(--dark-red); }
-        .admin-login-box .admin-error { color: var(--red); font-size: 13px; margin-bottom: 10px; text-align: center; }
-        .admin-login-box .close-admin { float: right; background: none; border: none; color: var(--text3); font-size: 22px; cursor: pointer; }
-        .dashboard { display: none; }
-        .dashboard.active { display: block; }
-        .topbar { background: var(--black); border-bottom: 1px solid var(--border); padding: 14px 28px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-        .topbar .brand { font-size: 24px; font-weight: 800; color: var(--red); text-transform: uppercase; letter-spacing: -0.5px; }
-        .topbar .brand span { color: var(--text); font-weight: 300; }
-        .topbar .user-menu { display: flex; align-items: center; gap: 18px; }
-        .topbar .user-menu .username { font-size: 14px; color: var(--text2); }
-        .topbar .user-menu button { padding: 8px 18px; background: var(--card); color: var(--text); border: 1px solid var(--border); border-radius: 4px; cursor: pointer; font-size: 13px; }
-        .topbar .user-menu button:hover { background: var(--card-hover); }
-        .topbar .user-menu .logout-btn { background: transparent; border-color: var(--red); color: var(--red); }
-        .topbar .user-menu .logout-btn:hover { background: var(--red); color: var(--text); }
-        .dashboard-content { max-width: 1200px; margin: 0 auto; padding: 28px; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 28px; }
-        .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 22px; }
-        .stat-card:hover { border-color: var(--text3); transform: translateY(-2px); }
-        .stat-card .label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px; }
-        .stat-card .value { font-size: 28px; font-weight: 700; color: var(--text); }
-        .stat-card .green { color: var(--green); }
-        .status-badge.active { background: rgba(70,211,105,0.15); color: var(--green); padding: 4px 12px; border-radius: 12px; font-size: 13px; font-weight: 600; }
-        .status-badge.frozen { background: rgba(230,185,30,0.15); color: var(--yellow); padding: 4px 12px; border-radius: 12px; font-size: 13px; font-weight: 600; }
-        .status-badge.closed { background: rgba(229,9,20,0.15); color: var(--red); padding: 4px 12px; border-radius: 12px; font-size: 13px; font-weight: 600; }
-        .asset-badge { display: inline-block; padding: 3px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
-        .asset-badge.metallic { background: rgba(179,127,235,0.15); color: var(--purple); }
-        .asset-badge.energy { background: rgba(230,185,30,0.15); color: var(--yellow); }
-        .asset-badge.gemstone { background: rgba(0,113,235,0.15); color: var(--blue); }
-        .asset-icon { margin-right: 6px; }
-        .quick-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 28px; }
-        .quick-action { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 18px 20px; text-align: center; cursor: pointer; }
-        .quick-action:hover { border-color: var(--red); background: var(--card-hover); transform: translateY(-2px); }
-        .quick-action .icon { font-size: 30px; margin-bottom: 8px; }
-        .quick-action h3 { font-size: 15px; color: var(--text); font-weight: 600; margin-bottom: 2px; }
-        .quick-action p { font-size: 12px; color: var(--text3); }
-        .quick-action.disabled { opacity: 0.4; cursor: not-allowed; }
-        .quick-action.disabled:hover { border-color: var(--border); background: var(--card); transform: none; }
-        .section-title { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 16px; margin-top: 32px; }
-        .section-title:first-child { margin-top: 0; }
-        .table-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 28px; }
-        table { width: 100%; border-collapse: collapse; font-size: 14px; }
-        table th { background: var(--black); text-align: left; padding: 14px 18px; color: var(--text3); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--border); }
-        table td { padding: 14px 18px; border-bottom: 1px solid var(--border); }
-        table tr:last-child td { border-bottom: none; }
-        table tr:hover td { background: var(--card-hover); }
-        .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
-        .badge.deposit { background: rgba(70,211,105,0.15); color: var(--green); }
-        .badge.profit { background: rgba(0,113,235,0.15); color: var(--blue); }
-        .badge.withdraw { background: rgba(229,9,20,0.15); color: var(--red); }
-        .badge.bank_withdraw { background: rgba(0,113,235,0.15); color: var(--blue); }
-        .badge.pending { background: rgba(230,185,30,0.15); color: var(--yellow); }
-        .badge.approved { background: rgba(70,211,105,0.15); color: var(--green); }
-        .badge.declined { background: rgba(229,9,20,0.15); color: var(--red); }
-        .badge.referral { background: rgba(179,127,235,0.15); color: var(--purple); }
-        .badge.asset_switch { background: rgba(255,140,0,0.15); color: var(--orange); }
-        .amount-green { color: var(--green); font-weight: 600; }
-        .amount-red { color: var(--red); font-weight: 600; }
-        .amount-yellow { color: var(--yellow); font-weight: 600; }
-        .amount-purple { color: var(--purple); font-weight: 600; }
-        .admin-section { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 28px; margin-bottom: 28px; }
-        .admin-section h3 { font-size: 17px; color: var(--text); margin-bottom: 18px; font-weight: 700; }
-        .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 16px; }
-        .admin-card { background: var(--black); border: 1px solid var(--border); border-radius: 8px; padding: 18px; position: relative; }
-        .admin-card:hover { border-color: var(--text3); }
-        .admin-card .user-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .admin-card .user-header h4 { font-size: 16px; color: var(--text); }
-        .admin-card .user-detail { font-size: 13px; color: var(--text2); margin-bottom: 4px; }
-        .admin-card .user-detail strong { color: var(--text); }
-        .admin-card .admin-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
-        .admin-card .admin-actions input,.admin-card .admin-actions select { padding: 6px 10px; background: var(--card); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-size: 12px; width: 100px; }
-        .admin-card .admin-actions select { width: auto; }
-        .admin-card .admin-actions button { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600; }
-        .btn-green { background: var(--green); color: var(--black); }
-        .btn-blue { background: var(--blue); color: var(--text); }
-        .btn-red { background: var(--red); color: var(--text); }
-        .btn-yellow { background: var(--yellow); color: var(--black); }
-        .btn-orange { background: var(--orange); color: var(--black); }
-        .btn-teal { background: var(--teal); color: var(--black); }
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
-        .modal-overlay.active { display: flex; }
-        .modal { background: var(--black); border: 1px solid var(--border); border-radius: 8px; padding: 32px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; }
-        .modal h3 { font-size: 20px; color: var(--text); margin-bottom: 18px; font-weight: 700; }
-        .modal input,.modal select { width: 100%; padding: 12px 14px; margin-bottom: 14px; background: var(--card); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-size: 14px; outline: none; }
-        .modal input:focus { border-color: var(--text); }
-        .modal select option { background: var(--card); }
-        .modal .modal-actions { display: flex; gap: 10px; margin-top: 8px; }
-        .modal .modal-actions button { flex: 1; padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 14px; }
-        .modal .modal-actions .cancel { background: var(--card); color: var(--text2); }
-        .modal .modal-actions .cancel:hover { background: var(--card-hover); }
-        .hidden { display: none !important; }
-        .tab-buttons { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
-        .tab-buttons button { padding: 8px 20px; background: var(--card); border: 1px solid var(--border); border-radius: 4px; color: var(--text2); cursor: pointer; font-size: 13px; font-weight: 600; }
-        .tab-buttons button.active { background: rgba(229,9,20,0.2); border-color: var(--red); color: var(--red); }
-        .tab-buttons button:hover { border-color: var(--red); }
-        .referral-box { background: linear-gradient(135deg, var(--card), var(--black)); border: 1px solid rgba(0,113,235,0.3); border-radius: 8px; padding: 20px; margin-bottom: 20px; }
-        .referral-box .r-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 1.5px; }
-        .referral-box .r-code { font-size: 24px; font-weight: 700; color: var(--blue); margin: 6px 0; }
-        .referral-box .r-link { font-size: 13px; color: var(--blue); word-break: break-all; cursor: pointer; }
-        .referral-box .r-link:hover { text-decoration: underline; }
-        .reset-section { display: none; margin-top: 14px; padding: 14px; background: var(--card); border-radius: 6px; border: 1px solid var(--border); }
-        .reset-section.show { display: block; }
-        .withdraw-type-tabs { display: flex; gap: 0; margin-bottom: 16px; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
-        .withdraw-type-tabs div { flex: 1; text-align: center; padding: 10px; font-size: 13px; font-weight: 600; cursor: pointer; background: var(--card); color: var(--text3); border-right: 1px solid var(--border); }
-        .withdraw-type-tabs div:last-child { border-right: none; }
-        .withdraw-type-tabs div.active { background: rgba(229,9,20,0.2); color: var(--red); }
-        .withdraw-type-tabs div:hover:not(.active) { background: var(--card-hover); }
-        .asset-display { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 18px; margin-bottom: 20px; }
-        .asset-display .a-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px; }
-        .asset-display .a-value { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
-        .asset-display .a-rate { font-size: 13px; color: var(--text2); }
-        .asset-display .a-cooldown { font-size: 12px; color: var(--yellow); }
-        .admin-stat-red { color: var(--red); }
-        .asset-rate-input { width: 80px; padding: 6px 8px; background: var(--card); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-size: 13px; text-align: center; }
-        @media (max-width:640px){
-            .auth-box { padding: 30px 24px; }
-            .topbar { padding: 12px 16px; flex-wrap: wrap; gap: 8px; }
-            .stats-grid { grid-template-columns: 1fr 1fr; }
-            .admin-grid { grid-template-columns: 1fr; }
-            .dashboard-content { padding: 16px; }
-        }
-        .monnify-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; background: rgba(0,113,235,0.15); color: var(--blue); margin-left: 4px; }
-        .np-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; background: rgba(179,127,235,0.15); color: var(--purple); margin-left: 4px; }
-        .payout-status { font-size: 11px; color: var(--text3); }
-        .countdown-timer { font-size: 13px; color: var(--yellow); margin-top: 4px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NetflixZone - Investment Platform</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--red:#E50914;--dark-red:#B20710;--black:#000;--bg:#141414;--card:#1a1a1a;--card-hover:#2a2a2a;--border:#333;--text:#fff;--text2:#b3b3b3;--text3:#808080;--green:#46d369;--blue:#0071eb;--yellow:#e6b91e;--purple:#b37feb;--orange:#ff8c00;--teal:#20c997}
+body{font-family:'Helvetica Neue',Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
+.auth-container{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--black);padding:20px;position:relative}
+.auth-container::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(229,9,20,0.15) 0%,transparent 70%);pointer-events:none}
+.auth-box{background:rgba(0,0,0,0.75);border-radius:8px;padding:60px 68px 40px;width:100%;max-width:450px;position:relative}
+.auth-box .logo{text-align:center;margin-bottom:28px}
+.auth-box .logo h1{font-size:36px;color:var(--red);font-weight:800;text-transform:uppercase;letter-spacing:-1px}
+.auth-box .logo h1 span{color:var(--text);font-weight:300}
+.auth-box .logo p{font-size:12px;color:var(--text3);margin-top:2px;letter-spacing:2px;text-transform:uppercase}
+.auth-box h2{font-size:22px;font-weight:600;margin-bottom:24px;color:var(--text)}
+.auth-box input,.auth-box select{width:100%;padding:14px 16px;margin-bottom:14px;background:var(--card);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:15px;outline:none}
+.auth-box input:focus{border-color:var(--text);background:var(--card-hover)}
+.auth-box select option{background:var(--card)}
+.auth-box .btn-primary{width:100%;padding:14px;background:var(--red);color:var(--text);font-weight:700;font-size:16px;border:none;border-radius:4px;cursor:pointer}
+.auth-box .btn-primary:hover{background:var(--dark-red)}
+.auth-box .link{text-align:center;margin-top:16px;font-size:14px;color:var(--text3)}
+.auth-box .link a{color:var(--text);cursor:pointer;text-decoration:none}
+.auth-box .link a:hover{text-decoration:underline}
+.auth-box .error{color:var(--red);font-size:13px;margin-bottom:10px;text-align:center;min-height:18px}
+.auth-box .success{color:var(--green);font-size:13px;margin-bottom:10px;text-align:center;min-height:18px}
+.auth-tabs{display:flex;margin-bottom:24px;border-bottom:2px solid var(--border)}
+.auth-tabs div{flex:1;text-align:center;padding:12px;font-size:15px;font-weight:600;cursor:pointer;color:var(--text3);border-bottom:2px solid transparent;margin-bottom:-2px}
+.auth-tabs div.active{color:var(--text);border-bottom-color:var(--red)}
+.admin-hidden-link{text-align:center;margin-top:28px;padding-top:20px;border-top:1px solid var(--border)}
+.admin-hidden-link a{color:var(--border);font-size:11px;text-decoration:none;cursor:pointer;user-select:none}
+.admin-hidden-link a:hover{color:var(--text3)}
+.admin-login-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:999;align-items:center;justify-content:center;padding:20px}
+.admin-login-overlay.active{display:flex}
+.admin-login-box{background:var(--black);border:1px solid var(--border);border-radius:8px;padding:36px;width:100%;max-width:380px}
+.admin-login-box h3{font-size:20px;color:var(--text);margin-bottom:4px}
+.admin-login-box p.sub{font-size:12px;color:var(--text3);margin-bottom:20px}
+.admin-login-box input{width:100%;padding:12px 14px;margin-bottom:12px;background:var(--card);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:14px;outline:none}
+.admin-login-box input:focus{border-color:var(--blue)}
+.admin-login-box .btn-admin{width:100%;padding:12px;background:var(--red);color:var(--text);font-weight:600;border:none;border-radius:4px;cursor:pointer}
+.admin-login-box .btn-admin:hover{background:var(--dark-red)}
+.admin-login-box .admin-error{color:var(--red);font-size:13px;margin-bottom:10px;text-align:center;min-height:18px}
+.admin-login-box .close-admin{float:right;background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer}
+.dashboard{display:none}
+.dashboard.active{display:block}
+.topbar{background:var(--black);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100}
+.topbar .brand{font-size:24px;font-weight:800;color:var(--red);text-transform:uppercase;letter-spacing:-0.5px}
+.topbar .brand span{color:var(--text);font-weight:300}
+.topbar .user-menu{display:flex;align-items:center;gap:18px}
+.topbar .user-menu .username{font-size:14px;color:var(--text2)}
+.topbar .user-menu button{padding:8px 18px;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:4px;cursor:pointer;font-size:13px}
+.topbar .user-menu button:hover{background:var(--card-hover)}
+.topbar .user-menu .logout-btn{background:transparent;border-color:var(--red);color:var(--red)}
+.topbar .user-menu .logout-btn:hover{background:var(--red);color:var(--text)}
+.dashboard-content{max-width:1200px;margin:0 auto;padding:28px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:28px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:22px}
+.stat-card:hover{border-color:var(--text3);transform:translateY(-2px)}
+.stat-card .label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px}
+.stat-card .value{font-size:28px;font-weight:700;color:var(--text)}
+.stat-card .green{color:var(--green)}
+.status-badge.active{background:rgba(70,211,105,0.15);color:var(--green);padding:4px 12px;border-radius:12px;font-size:13px;font-weight:600}
+.status-badge.frozen{background:rgba(230,185,30,0.15);color:var(--yellow);padding:4px 12px;border-radius:12px;font-size:13px;font-weight:600}
+.status-badge.closed{background:rgba(229,9,20,0.15);color:var(--red);padding:4px 12px;border-radius:12px;font-size:13px;font-weight:600}
+.quick-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:28px}
+.quick-action{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:18px 20px;text-align:center;cursor:pointer}
+.quick-action:hover{border-color:var(--red);background:var(--card-hover);transform:translateY(-2px)}
+.quick-action .icon{font-size:30px;margin-bottom:8px}
+.quick-action h3{font-size:15px;color:var(--text);font-weight:600;margin-bottom:2px}
+.quick-action p{font-size:12px;color:var(--text3)}
+.quick-action.disabled{opacity:0.4;cursor:not-allowed}
+.quick-action.disabled:hover{border-color:var(--border);background:var(--card);transform:none}
+.section-title{font-size:20px;font-weight:700;color:var(--text);margin-bottom:16px;margin-top:32px}
+.section-title:first-child{margin-top:0}
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:28px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+table th{background:var(--black);text-align:left;padding:14px 18px;color:var(--text3);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border)}
+table td{padding:14px 18px;border-bottom:1px solid var(--border)}
+table tr:last-child td{border-bottom:none}
+table tr:hover td{background:var(--card-hover)}
+.badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600}
+.badge.deposit{background:rgba(70,211,105,0.15);color:var(--green)}
+.badge.profit{background:rgba(0,113,235,0.15);color:var(--blue)}
+.badge.withdraw{background:rgba(229,9,20,0.15);color:var(--red)}
+.badge.bank_withdraw{background:rgba(0,113,235,0.15);color:var(--blue)}
+.badge.pending{background:rgba(230,185,30,0.15);color:var(--yellow)}
+.badge.approved{background:rgba(70,211,105,0.15);color:var(--green)}
+.badge.declined{background:rgba(229,9,20,0.15);color:var(--red)}
+.badge.referral{background:rgba(179,127,235,0.15);color:var(--purple)}
+.badge.asset_switch{background:rgba(255,140,0,0.15);color:var(--orange)}
+.amount-green{color:var(--green);font-weight:600}
+.amount-red{color:var(--red);font-weight:600}
+.amount-yellow{color:var(--yellow);font-weight:600}
+.amount-purple{color:var(--purple);font-weight:600}
+.admin-section{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:28px;margin-bottom:28px}
+.admin-section h3{font-size:17px;color:var(--text);margin-bottom:18px;font-weight:700}
+.admin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:16px}
+.admin-card{background:var(--black);border:1px solid var(--border);border-radius:8px;padding:18px;position:relative}
+.admin-card:hover{border-color:var(--text3)}
+.admin-card .user-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.admin-card .user-header h4{font-size:16px;color:var(--text)}
+.admin-card .user-detail{font-size:13px;color:var(--text2);margin-bottom:4px}
+.admin-card .user-detail strong{color:var(--text)}
+.admin-card .admin-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.admin-card .admin-actions input,.admin-card .admin-actions select{padding:6px 10px;background:var(--card);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px;width:100px}
+.admin-card .admin-actions select{width:auto}
+.admin-card .admin-actions button{padding:6px 12px;border:none;border-radius:4px;cursor:pointer;font-size:12px;font-weight:600}
+.btn-green{background:var(--green);color:var(--black)}
+.btn-blue{background:var(--blue);color:var(--text)}
+.btn-red{background:var(--red);color:var(--text)}
+.btn-yellow{background:var(--yellow);color:var(--black)}
+.btn-orange{background:var(--orange);color:var(--black)}
+.btn-teal{background:var(--teal);color:var(--black)}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.active{display:flex}
+.modal{background:var(--black);border:1px solid var(--border);border-radius:8px;padding:32px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto}
+.modal h3{font-size:20px;color:var(--text);margin-bottom:18px;font-weight:700}
+.modal input,.modal select{width:100%;padding:12px 14px;margin-bottom:14px;background:var(--card);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:14px;outline:none}
+.modal input:focus{border-color:var(--text)}
+.modal select option{background:var(--card)}
+.modal .modal-actions{display:flex;gap:10px;margin-top:8px}
+.modal .modal-actions button{flex:1;padding:12px;border:none;border-radius:4px;cursor:pointer;font-weight:600;font-size:14px}
+.modal .modal-actions .cancel{background:var(--card);color:var(--text2)}
+.modal .modal-actions .cancel:hover{background:var(--card-hover)}
+.hidden{display:none!important}
+.tab-buttons{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+.tab-buttons button{padding:8px 20px;background:var(--card);border:1px solid var(--border);border-radius:4px;color:var(--text2);cursor:pointer;font-size:13px;font-weight:600}
+.tab-buttons button.active{background:rgba(229,9,20,0.2);border-color:var(--red);color:var(--red)}
+.tab-buttons button:hover{border-color:var(--red)}
+.referral-box{background:linear-gradient(135deg,var(--card),var(--black));border:1px solid rgba(0,113,235,0.3);border-radius:8px;padding:20px;margin-bottom:20px}
+.referral-box .r-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px}
+.referral-box .r-code{font-size:24px;font-weight:700;color:var(--blue);margin:6px 0}
+.referral-box .r-link{font-size:13px;color:var(--blue);word-break:break-all;cursor:pointer}
+.referral-box .r-link:hover{text-decoration:underline}
+.reset-section{display:none;margin-top:14px;padding:14px;background:var(--card);border-radius:6px;border:1px solid var(--border)}
+.reset-section.show{display:block}
+.withdraw-type-tabs{display:flex;gap:0;margin-bottom:16px;border:1px solid var(--border);border-radius:4px;overflow:hidden}
+.withdraw-type-tabs div{flex:1;text-align:center;padding:10px;font-size:13px;font-weight:600;cursor:pointer;background:var(--card);color:var(--text3);border-right:1px solid var(--border)}
+.withdraw-type-tabs div:last-child{border-right:none}
+.withdraw-type-tabs div.active{background:rgba(229,9,20,0.2);color:var(--red)}
+.withdraw-type-tabs div:hover:not(.active){background:var(--card-hover)}
+.asset-display{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:18px;margin-bottom:20px}
+.asset-display .a-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px}
+.asset-display .a-value{font-size:20px;font-weight:700;margin-bottom:4px}
+.asset-display .a-rate{font-size:13px;color:var(--text2)}
+.asset-display .a-cooldown{font-size:12px;color:var(--yellow)}
+.admin-stat-red{color:var(--red)}
+.asset-rate-input{width:80px;padding:6px 8px;background:var(--card);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:13px;text-align:center}
+@media(max-width:640px){.auth-box{padding:30px 24px}.topbar{padding:12px 16px;flex-wrap:wrap;gap:8px}.stats-grid{grid-template-columns:1fr 1fr}.admin-grid{grid-template-columns:1fr}.dashboard-content{padding:16px}}
+.monnify-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;background:rgba(0,113,235,0.15);color:var(--blue);margin-left:4px}
+.np-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;background:rgba(179,127,235,0.15);color:var(--purple);margin-left:4px}
+</style>
 </head>
 <body>
 
-<!-- ============================================================ -->
-<!-- AUTH CONTAINER -->
-<!-- ============================================================ -->
 <div id="authContainer" class="auth-container">
     <div class="auth-box">
         <div class="logo"><h1>NETFLIX<span>ZONE</span></h1><p>Investment Platform</p></div>
-        <div class="auth-tabs">
-            <div class="active" onclick="showAuthTab('login')">Sign In</div>
-            <div onclick="showAuthTab('register')">Register</div>
-        </div>
+        <div class="auth-tabs"><div class="active" onclick="showAuthTab('login')">Sign In</div><div onclick="showAuthTab('register')">Register</div></div>
         <div id="loginForm">
             <h2>Welcome back</h2>
             <div id="loginError" class="error"></div>
@@ -216,9 +191,6 @@
     </div>
 </div>
 
-<!-- ============================================================ -->
-<!-- ADMIN LOGIN OVERLAY -->
-<!-- ============================================================ -->
 <div id="adminLoginOverlay" class="admin-login-overlay">
     <div class="admin-login-box">
         <button class="close-admin" onclick="closeAdminLogin()">✕</button>
@@ -231,9 +203,6 @@
     </div>
 </div>
 
-<!-- ============================================================ -->
-<!-- USER / ADMIN DASHBOARD -->
-<!-- ============================================================ -->
 <div id="userDashboard" class="dashboard">
     <div class="topbar">
         <div class="brand">NETFLIX<span>ZONE</span></div>
@@ -244,7 +213,6 @@
         </div>
     </div>
     <div class="dashboard-content">
-        <!-- Stats Grid -->
         <div class="stats-grid">
             <div class="stat-card"><div class="label">Balance (NGN)</div><div class="value green" id="userBalance">₦0.00</div></div>
             <div class="stat-card"><div class="label">Invested (NGN)</div><div class="value" id="userInvested">₦0.00</div></div>
@@ -252,15 +220,11 @@
             <div class="stat-card"><div class="label">Referral Bonus</div><div class="value" style="color:var(--purple);" id="userReferralBonus">₦0.00</div></div>
             <div class="stat-card"><div class="label">Status</div><div class="value" id="userPlan" style="font-size:20px;">-</div></div>
         </div>
-
-        <!-- Referral Box -->
         <div class="referral-box">
             <div class="r-label">Your Referral Code</div>
             <div class="r-code" id="refCode">-</div>
             <div class="r-link" id="refLink" onclick="copyRefLink()">Click to copy</div>
         </div>
-
-        <!-- ASSET INVESTMENT SECTION -->
         <div class="asset-display" id="assetDisplay">
             <div class="a-label">Current Investment Asset</div>
             <div class="a-value" id="currentAssetDisplay">⛏️ Metallic Minerals</div>
@@ -268,19 +232,13 @@
             <div class="a-cooldown" id="assetCooldownDisplay"></div>
             <button class="btn-blue" onclick="showAssetSwitchModal()" id="switchAssetBtn" style="margin-top:8px;padding:8px 18px;border:none;border-radius:4px;cursor:pointer;font-weight:600;font-size:13px;">Switch Asset</button>
         </div>
-
-        <!-- Quick Actions -->
         <div class="quick-actions">
             <div class="quick-action" onclick="showDepositModal()"><div class="icon">💰</div><h3>Deposit</h3><p>Fund via Monnify</p></div>
             <div class="quick-action" id="withdrawBtn" onclick="showWithdrawModal()"><div class="icon">💸</div><h3>Withdraw</h3><p>To wallet / bank</p></div>
             <div class="quick-action" onclick="showProfileModal()"><div class="icon">👤</div><h3>Profile</h3><p>Account details</p></div>
             <div class="quick-action" onclick="refreshUserData()"><div class="icon">🔄</div><h3>Refresh</h3><p>Update data</p></div>
         </div>
-
-        <!-- Interest Status -->
         <div class="section-title" id="interestStatus" style="font-size:13px;color:var(--blue);margin-bottom:8px;"></div>
-
-        <!-- Transaction History -->
         <div class="section-title">Transaction History</div>
         <div class="tab-buttons">
             <button class="active" onclick="showTxTab('all')">All</button>
@@ -292,42 +250,24 @@
         </div>
         <div class="table-wrap"><table><thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Status</th><th>Details</th></tr></thead><tbody id="userTransactions"></tbody></table></div>
 
-        <!-- ADMIN SECTION -->
         <div id="adminSection" class="hidden">
             <div class="section-title" style="color:var(--red);">⚙ Admin Dashboard</div>
-
             <div class="section-title" style="font-size:15px;color:var(--text2);margin-top:0;">Platform Overview</div>
-            <div class="stats-grid" style="grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));">
+            <div class="stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));">
                 <div class="stat-card"><div class="label">Total Users</div><div class="value admin-stat-red" id="adminTotalUsers">0</div></div>
                 <div class="stat-card"><div class="label">Active Users</div><div class="value green" id="adminActiveUsers">0</div></div>
             </div>
-
-            <!-- ASSET INTEREST RATES SETTINGS -->
             <div class="admin-section">
                 <h3>⛏️ Asset Interest Rates</h3>
-                <p style="font-size:12px;color:var(--text3);margin-bottom:12px;">Set daily interest rate (%) for each investment asset. Users earn interest based on their chosen asset.</p>
+                <p style="font-size:12px;color:var(--text3);margin-bottom:12px;">Set daily interest rate (%) for each investment asset.</p>
                 <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:center;">
-                    <div style="text-align:center;">
-                        <div style="font-size:12px;color:var(--purple);font-weight:600;margin-bottom:4px;">⛏️ Metallic Minerals</div>
-                        <input type="number" id="adminAssetRate_metallic" step="0.1" min="0" class="asset-rate-input" value="2.0">
-                        <span style="font-size:12px;color:var(--text3);">%</span>
-                    </div>
-                    <div style="text-align:center;">
-                        <div style="font-size:12px;color:var(--yellow);font-weight:600;margin-bottom:4px;">⚡ Energy Minerals</div>
-                        <input type="number" id="adminAssetRate_energy" step="0.1" min="0" class="asset-rate-input" value="3.0">
-                        <span style="font-size:12px;color:var(--text3);">%</span>
-                    </div>
-                    <div style="text-align:center;">
-                        <div style="font-size:12px;color:var(--blue);font-weight:600;margin-bottom:4px;">💎 Gemstones</div>
-                        <input type="number" id="adminAssetRate_gemstone" step="0.1" min="0" class="asset-rate-input" value="4.0">
-                        <span style="font-size:12px;color:var(--text3);">%</span>
-                    </div>
+                    <div style="text-align:center;"><div style="font-size:12px;color:var(--purple);font-weight:600;margin-bottom:4px;">⛏️ Metallic Minerals</div><input type="number" id="adminAssetRate_metallic" step="0.1" min="0" class="asset-rate-input" value="2.0"><span style="font-size:12px;color:var(--text3);">%</span></div>
+                    <div style="text-align:center;"><div style="font-size:12px;color:var(--yellow);font-weight:600;margin-bottom:4px;">⚡ Energy Minerals</div><input type="number" id="adminAssetRate_energy" step="0.1" min="0" class="asset-rate-input" value="3.0"><span style="font-size:12px;color:var(--text3);">%</span></div>
+                    <div style="text-align:center;"><div style="font-size:12px;color:var(--blue);font-weight:600;margin-bottom:4px;">💎 Gemstones</div><input type="number" id="adminAssetRate_gemstone" step="0.1" min="0" class="asset-rate-input" value="4.0"><span style="font-size:12px;color:var(--text3);">%</span></div>
                     <button onclick="adminSaveAssetRates()" class="btn-blue" style="padding:10px 24px;">💾 Save Asset Rates</button>
                 </div>
                 <div id="assetRateMsg" style="font-size:12px;color:var(--green);margin-top:8px;"></div>
             </div>
-
-            <!-- Platform Settings -->
             <div class="admin-section">
                 <h3>⚙️ Platform Settings</h3>
                 <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-bottom:14px;">
@@ -338,16 +278,11 @@
                 </div>
                 <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;">
                     <label style="font-size:12px;color:var(--text3);">Withdrawal Day</label>
-                    <select id="adminWithdrawDay" style="padding:10px;background:var(--card);border:1px solid var(--border);border-radius:4px;color:var(--text);">
-                        <option value="5">Friday</option><option value="0">Sunday</option><option value="1">Monday</option><option value="2">Tuesday</option>
-                        <option value="3">Wednesday</option><option value="4">Thursday</option><option value="6">Saturday</option><option value="-1">Any day</option>
-                    </select>
+                    <select id="adminWithdrawDay" style="padding:10px;background:var(--card);border:1px solid var(--border);border-radius:4px;color:var(--text);"><option value="5">Friday</option><option value="0">Sunday</option><option value="1">Monday</option><option value="2">Tuesday</option><option value="3">Wednesday</option><option value="4">Thursday</option><option value="6">Saturday</option><option value="-1">Any day</option></select>
                     <button onclick="adminUpdateWithdrawDay()" class="btn-yellow" style="padding:10px 20px;">Set</button>
                     <div style="font-size:12px;color:var(--text2);">Current: <span id="currentWithdrawDayDisplay">Friday</span></div>
                 </div>
             </div>
-
-            <!-- Monnify Settings -->
             <div class="admin-section">
                 <h3>👑 Monnify Settings (Bank Payouts)</h3>
                 <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
@@ -360,11 +295,8 @@
                     <input type="text" id="adminMonnifySourceAccount" placeholder="Source Account Number" style="padding:10px;background:var(--card);border:1px solid var(--border);border-radius:4px;color:var(--text);flex:2;">
                     <div style="font-size:12px;color:var(--text3);padding:10px 0;">(Your Monnify wallet account number)</div>
                 </div>
-                <div style="font-size:12px;color:var(--text2);">Keys from <a href="https://app.monnify.com" target="_blank" style="color:var(--blue);">app.monnify.com</a> → Developers | Disbursements API v2</div>
                 <div id="monnifyMsg" style="font-size:12px;color:var(--green);margin-top:6px;"></div>
             </div>
-
-            <!-- NOWPayments Settings -->
             <div class="admin-section">
                 <h3>🔮 NOWPayments Settings (Crypto Payouts)</h3>
                 <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
@@ -374,23 +306,10 @@
                     <input type="password" id="adminNPPassword" placeholder="NP Account Password (JWT)" style="padding:10px;background:var(--card);border:1px solid var(--border);border-radius:4px;color:var(--text);flex:2;">
                     <button onclick="adminSaveNPKeys()" class="btn-yellow" style="padding:10px 20px;">💾 Save</button>
                 </div>
-                <div style="font-size:12px;color:var(--text2);">From <a href="https://nowpayments.io" target="_blank" style="color:var(--blue);">nowpayments.io</a> → API Settings | Mass Payouts</div>
                 <div id="npMsg" style="font-size:12px;color:var(--green);margin-top:6px;"></div>
             </div>
-
-            <!-- Pending Withdrawals -->
-            <div class="admin-section">
-                <h3>⏳ Pending Withdrawals (Approve or Decline)</h3>
-                <div id="pendingWithdrawals"></div>
-            </div>
-
-            <!-- All Users Cards -->
-            <div class="admin-section">
-                <h3>All Users</h3>
-                <div id="adminUserCards" class="admin-grid"></div>
-            </div>
-
-            <!-- Create User -->
+            <div class="admin-section"><h3>⏳ Pending Withdrawals</h3><div id="pendingWithdrawals"></div></div>
+            <div class="admin-section"><h3>All Users</h3><div id="adminUserCards" class="admin-grid"></div></div>
             <div class="admin-section">
                 <h3>Create User</h3>
                 <div style="display:flex;gap:10px;flex-wrap:wrap;">
@@ -401,8 +320,6 @@
                 </div>
                 <div id="adminCreateMsg" style="margin-top:8px;font-size:13px;color:var(--green);"></div>
             </div>
-
-            <!-- Change Admin Password -->
             <div class="admin-section">
                 <h3>🔑 Change Admin Password</h3>
                 <div style="display:flex;gap:10px;flex-wrap:wrap;">
@@ -412,8 +329,6 @@
                 </div>
                 <div id="changePassMsg" style="font-size:13px;"></div>
             </div>
-
-            <!-- Reset User Password -->
             <div class="admin-section">
                 <h3>🔑 Reset User Password</h3>
                 <div style="display:flex;gap:10px;flex-wrap:wrap;">
@@ -423,8 +338,6 @@
                 </div>
                 <div id="resetUserPassMsg" style="font-size:13px;"></div>
             </div>
-
-            <!-- System Actions -->
             <div class="admin-section">
                 <h3>System Actions</h3>
                 <div style="display:flex;gap:10px;flex-wrap:wrap;">
@@ -438,599 +351,211 @@
     </div>
 </div>
 
-<!-- ============================================================ -->
-<!-- DEPOSIT MODAL -->
-<!-- ============================================================ -->
-<div id="depositModal" class="modal-overlay">
-    <div class="modal">
-        <h3>💰 Make a Deposit (NGN)</h3>
-        <div id="depositError" class="error"></div>
-        <div id="depositInfo" style="font-size:13px;color:var(--text2);margin-bottom:12px;"></div>
-        <input type="number" id="depositAmount" placeholder="Amount (NGN)" min="1000" step="100">
-        <div style="font-size:12px;color:var(--text3);margin-bottom:6px;">Email (required):</div>
-        <input type="email" id="depositEmail" placeholder="your@email.com">
-        <div class="modal-actions">
-            <button class="cancel" onclick="closeModal('depositModal')">Cancel</button>
-            <button class="btn-green" onclick="processDeposit()" style="background:var(--red);color:var(--text);">💳 Pay with Monnify</button>
-        </div>
-    </div>
-</div>
+<div id="depositModal" class="modal-overlay"><div class="modal">
+    <h3>💰 Make a Deposit (NGN)</h3>
+    <div id="depositError" class="error"></div>
+    <div id="depositInfo" style="font-size:13px;color:var(--text2);margin-bottom:12px;"></div>
+    <input type="number" id="depositAmount" placeholder="Amount (NGN)" min="1000" step="100">
+    <div style="font-size:12px;color:var(--text3);margin-bottom:6px;">Email (required):</div>
+    <input type="email" id="depositEmail" placeholder="your@email.com">
+    <div class="modal-actions"><button class="cancel" onclick="closeModal('depositModal')">Cancel</button><button class="btn-green" onclick="processDeposit()" style="background:var(--red);color:var(--text);">💳 Pay with Monnify</button></div>
+</div></div>
 
-<!-- ============================================================ -->
-<!-- WITHDRAW MODAL -->
-<!-- ============================================================ -->
-<div id="withdrawModal" class="modal-overlay">
-    <div class="modal">
-        <h3>💸 Withdraw Funds</h3>
-        <div id="withdrawError" class="error"></div>
-        <div id="withdrawInfo" style="color:var(--yellow);font-size:13px;margin-bottom:12px;"></div>
-        <div class="withdraw-type-tabs">
-            <div class="active" onclick="switchWithdrawType('crypto')">💎 Crypto</div>
-            <div onclick="switchWithdrawType('bank')">🏦 Bank</div>
-        </div>
-        <div id="cryptoWithdrawFields">
-            <input type="number" id="withdrawAmount" placeholder="Amount (NGN)" min="500" step="100">
-            <select id="withdrawCurrency" style="margin-bottom:12px;">
-                <option value="USDT (TRC20)">USDT (TRC20)</option>
-                <option value="Bitcoin (BTC)">Bitcoin (BTC)</option>
-                <option value="Ethereum (ETH)">Ethereum (ETH)</option>
-                <option value="Tron (TRX)">Tron (TRX)</option>
-                <option value="Litecoin (LTC)">Litecoin (LTC)</option>
-                <option value="Dogecoin (DOGE)">Dogecoin (DOGE)</option>
-                <option value="Solana (SOL)">Solana (SOL)</option>
-            </select>
-            <input type="text" id="withdrawWallet" placeholder="Wallet address">
-        </div>
-        <div id="bankWithdrawFields" class="hidden">
-            <input type="number" id="withdrawBankAmount" placeholder="Amount (NGN)" min="500" step="100">
-            <select id="withdrawBankName" style="margin-bottom:12px;">
-                <option value="">-- Select Bank --</option>
-                <option value="Access Bank|044">Access Bank</option>
-                <option value="Ecobank|050">Ecobank</option>
-                <option value="Fidelity Bank|070">Fidelity Bank</option>
-                <option value="First Bank|011">First Bank of Nigeria</option>
-                <option value="First City Monument Bank|214">First City Monument Bank (FCMB)</option>
-                <option value="GTBank|058">GTBank</option>
-                <option value="Jaiz Bank|301">Jaiz Bank</option>
-                <option value="Keystone Bank|082">Keystone Bank</option>
-                <option value="Polaris Bank|076">Polaris Bank</option>
-                <option value="Stanbic IBTC|221">Stanbic IBTC</option>
-                <option value="Sterling Bank|232">Sterling Bank</option>
-                <option value="Union Bank|032">Union Bank</option>
-                <option value="United Bank for Africa|033">United Bank for Africa (UBA)</option>
-                <option value="Unity Bank|215">Unity Bank</option>
-                <option value="Wema Bank|035">Wema Bank</option>
-                <option value="Zenith Bank|057">Zenith Bank</option>
-            </select>
-            <input type="text" id="withdrawBankAccount" placeholder="Account number">
-            <input type="text" id="withdrawBankHolder" placeholder="Account holder name">
-        </div>
-        <div style="font-size:11px;color:var(--text3);margin-bottom:12px;">⚠️ Requires admin approval.</div>
-        <div class="modal-actions">
-            <button class="cancel" onclick="closeModal('withdrawModal')">Cancel</button>
-            <button class="btn-yellow" onclick="processWithdraw()" style="background:var(--yellow);color:var(--black);">Submit</button>
-        </div>
+<div id="withdrawModal" class="modal-overlay"><div class="modal">
+    <h3>💸 Withdraw Funds</h3>
+    <div id="withdrawError" class="error"></div>
+    <div id="withdrawInfo" style="color:var(--yellow);font-size:13px;margin-bottom:12px;"></div>
+    <div class="withdraw-type-tabs"><div class="active" onclick="switchWithdrawType('crypto')">💎 Crypto</div><div onclick="switchWithdrawType('bank')">🏦 Bank</div></div>
+    <div id="cryptoWithdrawFields">
+        <input type="number" id="withdrawAmount" placeholder="Amount (NGN)" min="500" step="100">
+        <select id="withdrawCurrency" style="margin-bottom:12px;"><option value="USDT (TRC20)">USDT (TRC20)</option><option value="Bitcoin (BTC)">Bitcoin (BTC)</option><option value="Ethereum (ETH)">Ethereum (ETH)</option><option value="Tron (TRX)">Tron (TRX)</option><option value="Litecoin (LTC)">Litecoin (LTC)</option><option value="Dogecoin (DOGE)">Dogecoin (DOGE)</option><option value="Solana (SOL)">Solana (SOL)</option></select>
+        <input type="text" id="withdrawWallet" placeholder="Wallet address">
     </div>
-</div>
-
-<!-- ============================================================ -->
-<!-- ASSET SWITCH MODAL -->
-<!-- ============================================================ -->
-<div id="assetSwitchModal" class="modal-overlay">
-    <div class="modal">
-        <h3>⛏️ Switch Investment Asset</h3>
-        <p style="font-size:13px;color:var(--text2);margin-bottom:12px;">Choose your investment asset class. Different assets earn different daily interest rates. You can only switch once every 24 hours.</p>
-        <div id="assetSwitchError" class="error"></div>
-        <div id="assetSwitchOptions" style="margin-bottom:14px;">
-            <div class="admin-card" style="cursor:pointer;margin-bottom:8px;background:var(--card);" onclick="selectAssetOption('metallic')">
-                <div style="display:flex;justify-content:space-between;align-items:center;">
-                    <div><strong style="color:var(--purple);font-size:15px;">⛏️ Metallic Minerals</strong></div>
-                    <div style="font-size:13px;color:var(--text2);" id="assetRateDisplay_metallic">2.0% daily</div>
-                </div>
-                <div style="font-size:12px;color:var(--text3);margin-top:4px;">Iron, Copper, Gold, Silver, Platinum</div>
-            </div>
-            <div class="admin-card" style="cursor:pointer;margin-bottom:8px;background:var(--card);" onclick="selectAssetOption('energy')">
-                <div style="display:flex;justify-content:space-between;align-items:center;">
-                    <div><strong style="color:var(--yellow);font-size:15px;">⚡ Energy Minerals</strong></div>
-                    <div style="font-size:13px;color:var(--text2);" id="assetRateDisplay_energy">3.0% daily</div>
-                </div>
-                <div style="font-size:12px;color:var(--text3);margin-top:4px;">Crude Oil, Natural Gas, Coal, Uranium</div>
-            </div>
-            <div class="admin-card" style="cursor:pointer;margin-bottom:8px;background:var(--card);" onclick="selectAssetOption('gemstone')">
-                <div style="display:flex;justify-content:space-between;align-items:center;">
-                    <div><strong style="color:var(--blue);font-size:15px;">💎 Gemstones</strong></div>
-                    <div style="font-size:13px;color:var(--text2);" id="assetRateDisplay_gemstone">4.0% daily</div>
-                </div>
-                <div style="font-size:12px;color:var(--text3);margin-top:4px;">Diamond, Ruby, Sapphire, Emerald, Opal</div>
-            </div>
-        </div>
-        <div id="selectedAssetDisplay" style="font-size:14px;color:var(--green);margin-bottom:12px;text-align:center;"></div>
-        <div class="modal-actions">
-            <button class="cancel" onclick="closeModal('assetSwitchModal')">Cancel</button>
-            <button class="btn-blue" onclick="confirmAssetSwitch()" style="background:var(--green);color:var(--black);">Confirm Switch</button>
-        </div>
+    <div id="bankWithdrawFields" class="hidden">
+        <input type="number" id="withdrawBankAmount" placeholder="Amount (NGN)" min="500" step="100">
+        <select id="withdrawBankName" style="margin-bottom:12px;"><option value="">-- Select Bank --</option><option value="Access Bank|044">Access Bank</option><option value="Ecobank|050">Ecobank</option><option value="Fidelity Bank|070">Fidelity Bank</option><option value="First Bank|011">First Bank of Nigeria</option><option value="FCMB|214">FCMB</option><option value="GTBank|058">GTBank</option><option value="Jaiz Bank|301">Jaiz Bank</option><option value="Keystone Bank|082">Keystone Bank</option><option value="Polaris Bank|076">Polaris Bank</option><option value="Stanbic IBTC|221">Stanbic IBTC</option><option value="Sterling Bank|232">Sterling Bank</option><option value="Union Bank|032">Union Bank</option><option value="UBA|033">UBA</option><option value="Unity Bank|215">Unity Bank</option><option value="Wema Bank|035">Wema Bank</option><option value="Zenith Bank|057">Zenith Bank</option></select>
+        <input type="text" id="withdrawBankAccount" placeholder="Account number">
+        <input type="text" id="withdrawBankHolder" placeholder="Account holder name">
     </div>
-</div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:12px;">⚠️ Requires admin approval.</div>
+    <div class="modal-actions"><button class="cancel" onclick="closeModal('withdrawModal')">Cancel</button><button class="btn-yellow" onclick="processWithdraw()" style="background:var(--yellow);color:var(--black);">Submit</button></div>
+</div></div>
 
-<!-- ============================================================ -->
-<!-- PROFILE MODAL -->
-<!-- ============================================================ -->
-<div id="profileModal" class="modal-overlay">
-    <div class="modal">
-        <h3>👤 Account Profile</h3>
-        <div id="profileInfo"></div>
-        <div class="modal-actions"><button class="cancel" onclick="closeModal('profileModal')" style="width:100%;">Close</button></div>
+<div id="assetSwitchModal" class="modal-overlay"><div class="modal">
+    <h3>⛏️ Switch Investment Asset</h3>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px;">Choose your investment asset class. Different assets earn different daily interest rates. You can only switch once every 24 hours.</p>
+    <div id="assetSwitchError" class="error"></div>
+    <div id="assetSwitchOptions" style="margin-bottom:14px;">
+        <div class="admin-card" style="cursor:pointer;margin-bottom:8px;background:var(--card);" onclick="selectAssetOption('metallic')"><div style="display:flex;justify-content:space-between;align-items:center;"><div><strong style="color:var(--purple);font-size:15px;">⛏️ Metallic Minerals</strong></div><div style="font-size:13px;color:var(--text2);" id="assetRateDisplay_metallic">2.0% daily</div></div><div style="font-size:12px;color:var(--text3);margin-top:4px;">Iron, Copper, Gold, Silver, Platinum</div></div>
+        <div class="admin-card" style="cursor:pointer;margin-bottom:8px;background:var(--card);" onclick="selectAssetOption('energy')"><div style="display:flex;justify-content:space-between;align-items:center;"><div><strong style="color:var(--yellow);font-size:15px;">⚡ Energy Minerals</strong></div><div style="font-size:13px;color:var(--text2);" id="assetRateDisplay_energy">3.0% daily</div></div><div style="font-size:12px;color:var(--text3);margin-top:4px;">Crude Oil, Natural Gas, Coal, Uranium</div></div>
+        <div class="admin-card" style="cursor:pointer;margin-bottom:8px;background:var(--card);" onclick="selectAssetOption('gemstone')"><div style="display:flex;justify-content:space-between;align-items:center;"><div><strong style="color:var(--blue);font-size:15px;">💎 Gemstones</strong></div><div style="font-size:13px;color:var(--text2);" id="assetRateDisplay_gemstone">4.0% daily</div></div><div style="font-size:12px;color:var(--text3);margin-top:4px;">Diamond, Ruby, Sapphire, Emerald, Opal</div></div>
     </div>
-</div>
+    <div id="selectedAssetDisplay" style="font-size:14px;color:var(--green);margin-bottom:12px;text-align:center;"></div>
+    <div class="modal-actions"><button class="cancel" onclick="closeModal('assetSwitchModal')">Cancel</button><button class="btn-blue" onclick="confirmAssetSwitch()" style="background:var(--green);color:var(--black);">Confirm Switch</button></div>
+</div></div>
 
-<!-- ============================================================ -->
-<!-- DEPOSIT RESULT MODAL -->
-<!-- ============================================================ -->
-<div id="depositResultModal" class="modal-overlay">
-    <div class="modal" style="text-align:center;">
-        <h3 id="depositResultTitle">✅ Payment Confirmed</h3>
-        <div id="depositResultContent" style="font-size:14px;color:var(--text2);margin:16px 0;"></div>
-        <div class="modal-actions">
-            <button class="btn-green" onclick="closeModal('depositResultModal');refreshUserData();" style="background:var(--red);color:var(--text);width:100%;">OK</button>
-        </div>
-    </div>
-</div>
+<div id="profileModal" class="modal-overlay"><div class="modal">
+    <h3>👤 Account Profile</h3>
+    <div id="profileInfo"></div>
+    <div class="modal-actions"><button class="cancel" onclick="closeModal('profileModal')" style="width:100%;">Close</button></div>
+</div></div>
 
-<!-- ============================================================ -->
-<!-- PAYOUT RESULT MODAL -->
-<!-- ============================================================ -->
-<div id="payoutResultModal" class="modal-overlay">
-    <div class="modal" style="text-align:center;">
-        <h3 id="payoutResultTitle">✅ Payout Initiated</h3>
-        <div id="payoutResultContent" style="font-size:14px;color:var(--text2);margin:16px 0;"></div>
-        <div class="modal-actions">
-            <button class="btn-green" onclick="closeModal('payoutResultModal');refreshAdminData();" style="background:var(--red);color:var(--text);width:100%;">OK</button>
-        </div>
-    </div>
-</div>
+<div id="depositResultModal" class="modal-overlay"><div class="modal" style="text-align:center;">
+    <h3 id="depositResultTitle">✅ Payment Confirmed</h3>
+    <div id="depositResultContent" style="font-size:14px;color:var(--text2);margin:16px 0;"></div>
+    <div class="modal-actions"><button class="btn-green" onclick="closeModal('depositResultModal');refreshUserData();" style="background:var(--red);color:var(--text);width:100%;">OK</button></div>
+</div></div>
 
-<!-- ============================================================ -->
-<!-- Monnify SDK -->
-<!-- ============================================================ -->
+<div id="payoutResultModal" class="modal-overlay"><div class="modal" style="text-align:center;">
+    <h3 id="payoutResultTitle">✅ Payout Initiated</h3>
+    <div id="payoutResultContent" style="font-size:14px;color:var(--text2);margin:16px 0;"></div>
+    <div class="modal-actions"><button class="btn-green" onclick="closeModal('payoutResultModal');refreshAdminData();" style="background:var(--red);color:var(--text);width:100%;">OK</button></div>
+</div></div>
+
 <script src="https://sdk.monnify.com/plugin/monnify.js"></script>
-
-<!-- ============================================================ -->
-<!-- Supabase JS SDK v2 (CDN) -->
-<!-- ============================================================ -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-/* ================================================================
- * ══════════════════════════════════════════════════════════════════
- * SUPABASE CONFIGURATION — EDIT YOUR SUPABASE CREDENTIALS HERE
- * ══════════════════════════════════════════════════════════════════
- * ================================================================
- * ┌─────────────────────────────────────────────────────────────────┐
- * │  Go to: https://supabase.com → Project → Settings → API        │
- * │  Paste your Supabase URL and anon key below.                   │
- * │  The anon key is safe for client-side use (RLS-protected).     │
- * └─────────────────────────────────────────────────────────────────┘
- */
-var SUPABASE_URL = "https://ujpclzwomftjubpopjio.supabase.co";    // <-- PLACEHOLDER: Replace with your Supabase project URL
-var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqcGNsendvbWZ0anVicG9wamlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyODkwODQsImV4cCI6MjA5Nzg2NTA4NH0.BdTKASFrGi9pND0brkcXSqNSWb5eONAUFwnZF-YjPFg"; // <-- PLACEHOLDER: Replace with your Supabase anon key
+/* ══════════════════════════════════════════════════════════════════
+   NETFLIXZONE - WORKING SUPABASE VERSION
+   ══════════════════════════════════════════════════════════════════
+   Replace SUPABASE_URL and SUPABASE_ANON_KEY below with YOUR project
+   credentials from https://supabase.com → Project → Settings → API.
+   
+   Run this SQL in Supabase SQL Editor first:
+   CREATE TABLE IF NOT EXISTS settings (id integer PRIMARY KEY DEFAULT 1, data jsonb NOT NULL DEFAULT '{}'::jsonb, CONSTRAINT single_row CHECK (id = 1));
+   INSERT INTO settings (id, data) VALUES (1, '{}'::jsonb) ON CONFLICT (id) DO NOTHING;
+   CREATE TABLE IF NOT EXISTS users (username text PRIMARY KEY, data jsonb NOT NULL DEFAULT '{}'::jsonb);
+   CREATE TABLE IF NOT EXISTS admin (id integer PRIMARY KEY DEFAULT 1, username text NOT NULL DEFAULT 'admin', password text NOT NULL DEFAULT 'admin123', CONSTRAINT single_admin_row CHECK (id = 1));
+   INSERT INTO admin (id, username, password) VALUES (1, 'admin', 'admin123') ON CONFLICT (id) DO NOTHING;
+   
+   Default admin: admin / admin123
+   ══════════════════════════════════════════════════════════════════ */
+
+var SUPABASE_URL = "https://YOUR-PROJECT.supabase.co";
+var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...";
 
 var supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-/* ================================================================
- * ══════════════════════════════════════════════════════════════════
- * SUPABASE DATABASE SETUP — RUN THIS SQL IN YOUR SUPABASE SQL EDITOR
- * ══════════════════════════════════════════════════════════════════
- *
- * Copy and paste the SQL below into Supabase SQL Editor and click RUN.
- * This creates all required tables and inserts the default admin user.
- *
- * ┌─────────────────────────────────────────────────────────────────┐
- * │  CREATE TABLE IF NOT EXISTS settings (                         │
- * │    id integer PRIMARY KEY DEFAULT 1,                           │
- * │    data jsonb NOT NULL DEFAULT '{}'::jsonb,                    │
- * │    CONSTRAINT single_row CHECK (id = 1)                        │
- * │  );                                                            │
- * │  INSERT INTO settings (id, data) VALUES (1, '{}'::jsonb)       │
- * │    ON CONFLICT (id) DO NOTHING;                                │
- * │                                                                │
- * │  CREATE TABLE IF NOT EXISTS users (                            │
- * │    username text PRIMARY KEY,                                  │
- * │    data jsonb NOT NULL DEFAULT '{}'::jsonb                     │
- * │  );                                                            │
- * │                                                                │
- * │  CREATE TABLE IF NOT EXISTS admin (                            │
- * │    id integer PRIMARY KEY DEFAULT 1,                           │
- * │    username text NOT NULL DEFAULT 'admin',                     │
- * │    password text NOT NULL DEFAULT 'admin123',                   │
- * │    CONSTRAINT single_admin_row CHECK (id = 1)                  │
- * │  );                                                            │
- * │  INSERT INTO admin (id, username, password) VALUES             │
- * │    (1, 'admin', 'admin123')                                    │
- * │    ON CONFLICT (id) DO NOTHING;                                │
- * └─────────────────────────────────────────────────────────────────┘
- * ================================================================ */
-
-// ================================================================
-// CONFIG
-// ================================================================
 var CURRENCY_SYMBOL = "\u20A6";
-var CURRENCY_CODE = "NGN";
 var DEFAULT_MIN_DEPOSIT = 1000;
 var DEFAULT_MIN_WITHDRAW = 500;
-
-// ================================================================
-// ASSET CONFIGURATION
-// ================================================================
-var ASSET_TYPES = {
-    metallic: {
-        id: 'metallic',
-        name: 'Metallic Minerals',
-        icon: '⛏️',
-        color: 'var(--purple)',
-        description: 'Iron, Copper, Gold, Silver, Platinum',
-        defaultRate: 2.0
-    },
-    energy: {
-        id: 'energy',
-        name: 'Energy Minerals',
-        icon: '⚡',
-        color: 'var(--yellow)',
-        description: 'Crude Oil, Natural Gas, Coal, Uranium',
-        defaultRate: 3.0
-    },
-    gemstone: {
-        id: 'gemstone',
-        name: 'Gemstones',
-        icon: '💎',
-        color: 'var(--blue)',
-        description: 'Diamond, Ruby, Sapphire, Emerald, Opal',
-        defaultRate: 4.0
-    }
-};
 var ASSET_SWITCH_COOLDOWN_HOURS = 24;
 
-// ================================================================
-// STATE
-// ================================================================
+var ASSET_TYPES = {
+    metallic: { id: 'metallic', name: 'Metallic Minerals', icon: '⛏️', color: 'var(--purple)', description: 'Iron, Copper, Gold, Silver, Platinum', defaultRate: 2.0 },
+    energy: { id: 'energy', name: 'Energy Minerals', icon: '⚡', color: 'var(--yellow)', description: 'Crude Oil, Natural Gas, Coal, Uranium', defaultRate: 3.0 },
+    gemstone: { id: 'gemstone', name: 'Gemstones', icon: '💎', color: 'var(--blue)', description: 'Diamond, Ruby, Sapphire, Emerald, Opal', defaultRate: 4.0 }
+};
+
 var currentUser = null;
 var currentUserData = null;
 var isAdminLoggedIn = false;
 var currentTxTab = 'all';
 var _pendingAssetSelection = null;
-var _cachedSettings = null; // Holds settings row from Supabase
+var _cachedSettings = null;
 
-// ================================================================
-// SESSION PERSISTENCE
-// ================================================================
-function saveSession(username, isAdmin) {
-    try {
-        localStorage.setItem('nfz_session', JSON.stringify({
-            username: username,
-            isAdmin: isAdmin || false,
-            timestamp: Date.now()
-        }));
-    } catch(e) {}
-}
-function clearSession() {
-    try { localStorage.removeItem('nfz_session'); } catch(e) {}
-}
-function getSession() {
-    try { var s = localStorage.getItem('nfz_session'); return s ? JSON.parse(s) : null; } catch(e) { return null; }
-}
-
-// ================================================================
-// ══════════════════════════════════════════════════════════════════
-// SUPABASE DATA LAYER — All database reads/writes go through these
-// ══════════════════════════════════════════════════════════════════
-// ================================================================
-
-/** Fetch the settings row (id=1) from Supabase */
+// ===== SUPABASE DATA LAYER =====
 async function loadSettings() {
-    var { data, error } = await supabase
-        .from('settings')
-        .select('data')
-        .eq('id', 1)
-        .single();
+    var { data, error } = await supabase.from('settings').select('data').eq('id', 1).single();
     if (error || !data) {
-        // Initialize if missing
-        var defaults = {
-            interestRate: 2,
-            minDeposit: DEFAULT_MIN_DEPOSIT,
-            minWithdraw: DEFAULT_MIN_WITHDRAW,
-            withdrawDay: 5,
-            monnifyApiKey: '',
-            monnifyContractCode: '',
-            monnifySecretKey: '',
-            monnifySourceAccount: '',
-            npApiKey: '',
-            npSecretKey: '',
-            npEmail: '',
-            npPassword: '',
-            assetRates: { metallic: 2.0, energy: 3.0, gemstone: 4.0 }
-        };
-        var { data: ins, error: insErr } = await supabase
-            .from('settings')
-            .upsert({ id: 1, data: defaults })
-            .select('data')
-            .single();
-        if (insErr) { console.error('Settings init error', insErr); return defaults; }
-        _cachedSettings = ins.data;
-        return ins.data;
+        var defaults = { interestRate: 2, minDeposit: DEFAULT_MIN_DEPOSIT, minWithdraw: DEFAULT_MIN_WITHDRAW, withdrawDay: 5, monnifyApiKey: '', monnifyContractCode: '', monnifySecretKey: '', monnifySourceAccount: '', npApiKey: '', npSecretKey: '', npEmail: '', npPassword: '', assetRates: { metallic: 2.0, energy: 3.0, gemstone: 4.0 } };
+        var { data: ins, error: insErr } = await supabase.from('settings').upsert({ id: 1, data: defaults }).select('data').single();
+        return insErr ? defaults : ins.data;
     }
-    _cachedSettings = data.data;
-    return data.data;
+    _cachedSettings = data.data; return data.data;
 }
+async function saveSettings(newData) { _cachedSettings = newData; var { error } = await supabase.from('settings').update({ data: newData }).eq('id', 1); return !error; }
+async function loadAllUsers() { var { data, error } = await supabase.from('users').select('username, data'); if (error || !data) return {}; var map = {}; data.forEach(function(r) { map[r.username] = r.data; }); return map; }
+async function loadUser(username) { var { data, error } = await supabase.from('users').select('data').eq('username', username).single(); if (error || !data) return null; return data.data; }
+async function saveUser(username, userData) { var { error } = await supabase.from('users').upsert({ username: username, data: userData }).eq('username', username); return !error; }
+async function deleteUser(username) { var { error } = await supabase.from('users').delete().eq('username', username); return !error; }
+async function loadAdmin() { var { data, error } = await supabase.from('admin').select('username, password').eq('id', 1).single(); if (error || !data) return { username: 'admin', password: 'admin123' }; return data; }
+async function saveAdmin(a) { var { error } = await supabase.from('admin').update({ username: a.username, password: a.password }).eq('id', 1); return !error; }
 
-/** Save settings row */
-async function saveSettings(newData) {
-    _cachedSettings = newData;
-    var { error } = await supabase
-        .from('settings')
-        .update({ data: newData })
-        .eq('id', 1);
-    if (error) { console.error('saveSettings error', error); return false; }
-    return true;
-}
+function saveSession(username, isAdmin) { try { localStorage.setItem('nfz_session', JSON.stringify({ username: username, isAdmin: isAdmin || false })); } catch(e) {} }
+function clearSession() { try { localStorage.removeItem('nfz_session'); } catch(e) {} }
+function getSession() { try { var s = localStorage.getItem('nfz_session'); return s ? JSON.parse(s) : null; } catch(e) { return null; } }
 
-/** Fetch all users from Supabase (returns { username: data } map) */
-async function loadAllUsers() {
-    var { data, error } = await supabase
-        .from('users')
-        .select('username, data');
-    if (error || !data) { console.error('loadAllUsers error', error); return {}; }
-    var map = {};
-    data.forEach(function(row) { map[row.username] = row.data; });
-    return map;
-}
-
-/** Fetch a single user's data by username */
-async function loadUser(username) {
-    var { data, error } = await supabase
-        .from('users')
-        .select('data')
-        .eq('username', username)
-        .single();
-    if (error || !data) return null;
-    return data.data;
-}
-
-/** Upsert a user's data (insert if not exists, update if exists) */
-async function saveUser(username, userData) {
-    var { error } = await supabase
-        .from('users')
-        .upsert({ username: username, data: userData })
-        .eq('username', username);
-    if (error) { console.error('saveUser error', error); return false; }
-    return true;
-}
-
-/** Delete a user */
-async function deleteUser(username) {
-    var { error } = await supabase
-        .from('users')
-        .delete()
-        .eq('username', username);
-    if (error) { console.error('deleteUser error', error); return false; }
-    return true;
-}
-
-/** Fetch admin credentials */
-async function loadAdmin() {
-    var { data, error } = await supabase
-        .from('admin')
-        .select('username, password')
-        .eq('id', 1)
-        .single();
-    if (error || !data) return { username: 'admin', password: 'admin123' };
-    return data;
-}
-
-    /** Save admin credentials */
-async function saveAdmin(adminData) {
-    var { error } = await supabase
-        .from('admin')
-        .update({ username: adminData.username, password: adminData.password })
-        .eq('id', 1);
-    return !error;
-}
-
-    // ================================================================
-// HELPERS
-// ================================================================
 function esc(s) { if(!s)return''; var d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
-
-async function getSettings() {
-    if (!_cachedSettings) _cachedSettings = await loadSettings();
-    return _cachedSettings;
-}
-
+function getSettings() { return _cachedSettings || loadSettings(); }
 function minDep() { return (_cachedSettings && _cachedSettings.minDeposit) || DEFAULT_MIN_DEPOSIT; }
 function minWd() { return (_cachedSettings && _cachedSettings.minWithdraw) || DEFAULT_MIN_WITHDRAW; }
-function wdDay() { if(!_cachedSettings || _cachedSettings.withdrawDay === undefined) return 5; return parseInt(_cachedSettings.withdrawDay); }
+function wdDay() { return (_cachedSettings && _cachedSettings.withdrawDay !== undefined) ? parseInt(_cachedSettings.withdrawDay) : 5; }
 function wdName(d) { var a=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']; return d===-1?'Any day':a[d]; }
-function fmtNaira(amount) { return CURRENCY_SYMBOL + Number(amount).toLocaleString('en-NG',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fmtNaira(a) { return CURRENCY_SYMBOL + Number(a).toLocaleString('en-NG',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function getUserInterestRate(u) { if(!u) u=currentUserData; var a=(u&&u.asset)||'metallic'; var r=(_cachedSettings&&_cachedSettings.assetRates)||{}; var rt=r[a]; if(rt===undefined||rt===null)rt=(ASSET_TYPES[a]||ASSET_TYPES.metallic).defaultRate; return parseFloat(rt); }
+function getAssetInfo(a) { return ASSET_TYPES[a]||ASSET_TYPES.metallic; }
+function canSwitchAsset(u) { if(!u||!u.lastAssetSwitch)return true; return (Date.now()-new Date(u.lastAssetSwitch).getTime())/(1000*60*60)>=ASSET_SWITCH_COOLDOWN_HOURS; }
+function getAssetSwitchCooldownRemaining(u) { if(!u||!u.lastAssetSwitch)return 0; return Math.max(0,ASSET_SWITCH_COOLDOWN_HOURS-(Date.now()-new Date(u.lastAssetSwitch).getTime())/(1000*60*60)); }
 
-// ================================================================
-// ASSET & INTEREST HELPERS
-// ================================================================
-function getUserInterestRate(userData) {
-    if (!userData) userData = currentUserData;
-    var asset = (userData && userData.asset) || 'metallic';
-    var rates = (_cachedSettings && _cachedSettings.assetRates) || {};
-    var rate = rates[asset];
-    if (rate === undefined || rate === null) rate = (ASSET_TYPES[asset] || ASSET_TYPES.metallic).defaultRate;
-    return parseFloat(rate);
-}
-
-function getAssetInfo(assetId) { return ASSET_TYPES[assetId] || ASSET_TYPES.metallic; }
-
-function canSwitchAsset(userData) {
-    if (!userData || !userData.lastAssetSwitch) return true;
-    var diff = Date.now() - new Date(userData.lastAssetSwitch).getTime();
-    return diff / (1000 * 60 * 60) >= ASSET_SWITCH_COOLDOWN_HOURS;
-}
-
-function getAssetSwitchCooldownRemaining(userData) {
-    if (!userData || !userData.lastAssetSwitch) return 0;
-    var diff = Date.now() - new Date(userData.lastAssetSwitch).getTime();
-    return Math.max(0, ASSET_SWITCH_COOLDOWN_HOURS - diff / (1000 * 60 * 60));
-}
-
-// ================================================================
-// AUTH UI
-// ================================================================
+// ===== AUTH UI =====
 function showAuthTab(t) {
     document.querySelectorAll('.auth-tabs div').forEach(function(e){e.classList.remove('active');});
-    if(t==='login'){
-        document.getElementById('loginForm').classList.remove('hidden');
-        document.getElementById('registerForm').classList.add('hidden');
-        document.querySelector('.auth-tabs div:first-child').classList.add('active');
-    } else {
-        document.getElementById('loginForm').classList.add('hidden');
-        document.getElementById('registerForm').classList.remove('hidden');
-        document.querySelector('.auth-tabs div:last-child').classList.add('active');
-    }
+    if(t==='login'){ document.getElementById('loginForm').classList.remove('hidden'); document.getElementById('registerForm').classList.add('hidden'); document.querySelector('.auth-tabs div:first-child').classList.add('active'); }
+    else{ document.getElementById('loginForm').classList.add('hidden'); document.getElementById('registerForm').classList.remove('hidden'); document.querySelector('.auth-tabs div:last-child').classList.add('active'); }
     ['loginError','registerError','registerSuccess'].forEach(function(i){document.getElementById(i).textContent='';});
 }
+function toggleResetPassword() { var s=document.getElementById('resetSection'); s.classList.toggle('show'); document.getElementById('resetUsername').value=''; document.getElementById('resetMsg').textContent=''; }
+async function resetPasswordRequest() { var u=document.getElementById('resetUsername').value.trim(); var m=document.getElementById('resetMsg'); if(!u){m.textContent='Enter your username.';m.style.color='#E50914';return;} var ud=await loadUser(u); if(!ud){m.textContent='Username not found.';m.style.color='#E50914';return;} m.textContent='Contact admin to reset your password.';m.style.color='#e6b91e'; }
 
-function toggleResetPassword() {
-    var s=document.getElementById('resetSection');
-    s.classList.toggle('show');
-    document.getElementById('resetUsername').value='';
-    document.getElementById('resetMsg').textContent='';
-}
-
-function resetPasswordRequest() {
-    var u=document.getElementById('resetUsername').value.trim();
-    var m=document.getElementById('resetMsg');
-    if(!u){m.textContent='Enter your username.';m.style.color='#E50914';return;}
-    loadUser(u).then(function(userData){
-        if(!userData){m.textContent='Username not found.';m.style.color='#E50914';return;}
-        m.textContent='Contact admin to reset your password.';m.style.color='#e6b91e';
-    });
-}
-
-// ================================================================
-// USER LOGIN
-// ================================================================
+// ===== USER LOGIN (FIXED) =====
 async function userLogin() {
-    var u=document.getElementById('loginUsername').value.trim();
-    var p=document.getElementById('loginPassword').value.trim();
-    var e=document.getElementById('loginError');
+    var u=document.getElementById('loginUsername').value.trim(), p=document.getElementById('loginPassword').value.trim(), e=document.getElementById('loginError');
+    e.textContent='';
     if(!u||!p){e.textContent='Enter username and password.';return;}
-
-    await getSettings();
-    var userData = await loadUser(u);
-    if(!userData || userData.password !== p) { e.textContent='Invalid credentials.'; return; }
-    if(userData.status === 'closed') { e.textContent='Account closed.'; return; }
-
-    isAdminLoggedIn = false;
-    currentUser = u;
-    currentUserData = userData;
-    saveSession(u, false);
-    await applyDailyInterest();
-    enterDashboard('user');
+    try {
+        await getSettings();
+        var ud=await loadUser(u);
+        if(!ud){e.textContent='Invalid credentials.';return;}
+        if(ud.password!==p){e.textContent='Invalid credentials.';return;}
+        if(ud.status==='closed'){e.textContent='Account closed.';return;}
+        isAdminLoggedIn=false; currentUser=u; currentUserData=ud; saveSession(u,false);
+        await applyDailyInterest();
+        enterDashboard('user');
+    } catch(err) { e.textContent='Connection error: '+err.message; }
 }
 
-// ================================================================
-// REFERRAL BONUS
-// ================================================================
+// ===== REFERRAL BONUS =====
 async function registerReferralBonus(referee, amt) {
-    var refereeData = await loadUser(referee);
-    if(!refereeData || !refereeData.referredBy) return;
-    var ru = refereeData.referredBy;
-    var rr = await loadUser(ru);
-    if(!rr) return;
-    var b = amt * 0.20;
-    rr.balance = (rr.balance || 0) + b;
-    rr.referralBonus = (rr.referralBonus || 0) + b;
-    if(!rr.transactions) rr.transactions = [];
-    if(!rr.referrals) rr.referrals = [];
-    var n = new Date();
-    var d = n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
-    rr.transactions.push({date:d, type:'referral', amount:b, description:'Referral bonus 20% from '+referee});
-    rr.referrals.push({date:d, referee:referee, bonus:b});
-    await saveUser(ru, rr);
+    var users=await loadAllUsers(), rd=users[referee]; if(!rd||!rd.referredBy)return;
+    var ru=rd.referredBy, rr=users[ru]; if(!rr)return;
+    var b=amt*0.20; rr.balance=(rr.balance||0)+b; rr.referralBonus=(rr.referralBonus||0)+b;
+    if(!rr.transactions)rr.transactions=[]; if(!rr.referrals)rr.referrals=[];
+    var n=new Date(), d=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+    rr.transactions.push({date:d,type:'referral',amount:b,description:'Referral bonus 20% from '+referee});
+    rr.referrals.push({date:d,referee:referee,bonus:b}); await saveUser(ru,rr);
 }
 
-// ================================================================
-// APPLY DAILY INTEREST
-// ================================================================
+// ===== APPLY DAILY INTEREST =====
 async function applyDailyInterest() {
-    await getSettings();
-    if(!currentUser || !currentUserData) return;
-    var u = currentUserData;
-    var rate = getUserInterestRate(u);
-    var today = new Date().toDateString();
-    if(u.lastInterestDate === today) {
-        document.getElementById('interestStatus').textContent = 'Interest already applied today.';
-        return;
-    }
-    if(u.balance > 0 && u.status === 'active') {
-        var i = u.balance * (rate / 100);
-        u.balance += i;
-        u.profit = (u.profit || 0) + i;
-        if(!u.transactions) u.transactions = [];
-        var n = new Date();
-        var d = n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
-        var assetInfo = getAssetInfo(u.asset || 'metallic');
-        u.transactions.push({date:d, type:'profit', amount:i, description:assetInfo.icon+' '+assetInfo.name+' interest '+rate+'%'});
-        u.lastInterestDate = today;
-        currentUserData = u;
-        await saveUser(currentUser, u);
-        document.getElementById('interestStatus').textContent = rate+'% '+assetInfo.icon+' '+assetInfo.name+' interest ('+fmtNaira(i)+') applied!';
-    } else {
-        u.lastInterestDate = today;
-        currentUserData = u;
-        await saveUser(currentUser, u);
-        document.getElementById('interestStatus').textContent = u.status!=='active' ? 'Only active accounts earn interest.' : 'No balance to earn interest.';
-    }
+    await getSettings(); if(!currentUser||!currentUserData)return;
+    var u=currentUserData, rate=getUserInterestRate(u), today=new Date().toDateString();
+    if(u.lastInterestDate===today){document.getElementById('interestStatus').textContent='Interest already applied today.';return;}
+    if(u.balance>0&&u.status==='active'){
+        var i=u.balance*(rate/100); u.balance+=i; u.profit=(u.profit||0)+i;
+        if(!u.transactions)u.transactions=[]; var n=new Date(), d=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+        var ai=getAssetInfo(u.asset||'metallic'); u.transactions.push({date:d,type:'profit',amount:i,description:ai.icon+' '+ai.name+' interest '+rate+'%'});
+        u.lastInterestDate=today; currentUserData=u; await saveUser(currentUser,u);
+        document.getElementById('interestStatus').textContent=rate+'% '+ai.icon+' '+ai.name+' interest ('+fmtNaira(i)+') applied!';
+    } else { u.lastInterestDate=today; currentUserData=u; await saveUser(currentUser,u); document.getElementById('interestStatus').textContent=u.status!=='active'?'Only active accounts earn interest.':'No balance to earn interest.'; }
 }
 
-function resolveRef(ref, usersMap) {
-    if(usersMap[ref]) return ref;
-    for(var un in usersMap) { if(usersMap[un].referralCode === ref) return un; }
-    return null;
-}
+function resolveRef(ref,usersMap){if(usersMap[ref])return ref; for(var un in usersMap){if(usersMap[un].referralCode===ref)return un;} return null;}
 
-// ================================================================
-// USER REGISTER
-// ================================================================
+// ===== USER REGISTER (FIXED) =====
 async function userRegister() {
-    var u=document.getElementById('regUsername').value.trim();
-    var fn=document.getElementById('regFullname').value.trim();
-    var em=document.getElementById('regEmail').value.trim();
-    var ph=document.getElementById('regPhone').value.trim();
-    var pw=document.getElementById('regPassword').value.trim();
-    var ref=document.getElementById('regReferral').value.trim();
-    var err=document.getElementById('registerError');
-    var suc=document.getElementById('registerSuccess');
-    if(!u||!fn||!em||!pw){err.textContent='Fill required fields.';suc.textContent='';return;}
+    var u=document.getElementById('regUsername').value.trim(), fn=document.getElementById('regFullname').value.trim(), em=document.getElementById('regEmail').value.trim(), ph=document.getElementById('regPhone').value.trim(), pw=document.getElementById('regPassword').value.trim(), ref=document.getElementById('regReferral').value.trim(), err=document.getElementById('registerError'), suc=document.getElementById('registerSuccess');
+    err.textContent=''; suc.textContent=''; if(!u||!fn||!em||!pw){err.textContent='Fill required fields.';return;}
+    try {
+        await getSettings(); var existing=await loadUser(u); if(existing){err.textContent='Username taken.';return;}
+        var allUsers=await loadAllUsers(), rbu=''; if(ref){rbu=resolveRef(ref,allUsers); if(!rbu){err.textContent='Invalid referral code.';return;}}
+        var n=new Date(), d=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');
+        var nu={fullName:fn,email:em,phone:ph||'',password:pw,balance:0,invested:0,profit:0,referralBonus:0,referralCode:u,referredBy:rbu,plan:'Basic',status:'active',createdAt:d,lastInterestDate:'',transactions:[],withdrawals:[],referrals:[],processedReferences:[],asset:'metallic',lastAssetSwitch:''};
+        await saveUser(u,nu); suc.textContent='Account created! Sign in now.';
+        ['regUsername','regFullname','regEmail','reg
 
-    await getSettings();
-    var existing = await loadUser(u);
-    if(existing) { err.textContent='Username taken.'; suc.textContent=''; return; }
-
-    var allUsers = await loadAllUsers();
-    var rbu = '';
-    if(ref) { rbu = resolveRef(ref, allUsers); if(!rbu){err.textContent='Invalid referral code.';suc.textContent='';return;} }
-
-    var n = new Date();
-    var d = n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');
-    var newUser = {
-        fullName: fn, email: em, phone: ph || '', password: pw,
-        balance: 0, invested: 0, profit: 0, referralBonus: 0,
-        referralCode: u, referredBy: rbu, plan: 'Basic', status: 'active',
-        createdAt: d, lastInterestDate: '', transactions: [], withdrawals: [],
-        referrals: [], processedReferences: [], asset: 'metallic', lastAssetSwitch: ''
-    };
-    await saveUser(u, newUser);
-    err.textContent='';
-    suc.textContent='Account created! Sign in now.';
-    ['regUsername','regFullname','regEmail','regPhone','regPassword','regReferral'].forEach(function(i){document.getElementById(i).value='';});
-}
-
-function userLogout() {
+         function userLogout() {
     currentUser=null; currentUserData=null; isAdminLoggedIn=false;
     clearSession();
     document.getElementById('authContainer').classList.remove('hidden');
@@ -1039,9 +564,7 @@ function userLogout() {
     document.getElementById('loginPassword').value='';
 }
 
-// ================================================================
-// ADMIN LOGIN
-// ================================================================
+// ===== ADMIN LOGIN (FIXED) =====
 function openAdminLogin(){
     document.getElementById('adminLoginError').textContent='';
     document.getElementById('adminLoginUser').value='';
@@ -1054,17 +577,18 @@ async function adminLogin(){
     var u=document.getElementById('adminLoginUser').value.trim();
     var p=document.getElementById('adminLoginPass').value.trim();
     var e=document.getElementById('adminLoginError');
+    e.textContent='';
     if(!u||!p){e.textContent='Enter credentials.';return;}
-    var adminData = await loadAdmin();
-    if(u === adminData.username && p === adminData.password){
-        isAdminLoggedIn=true; currentUser='admin'; currentUserData=null;
-        closeAdminLogin(); saveSession('admin',true); enterDashboard('admin');
-    } else { e.textContent='Invalid admin credentials.'; }
+    try {
+        var adminData=await loadAdmin();
+        if(u===adminData.username&&p===adminData.password){
+            isAdminLoggedIn=true; currentUser='admin'; currentUserData=null;
+            closeAdminLogin(); saveSession('admin',true); enterDashboard('admin');
+        } else { e.textContent='Invalid admin credentials.'; }
+    } catch(err) { e.textContent='Connection error: '+err.message; }
 }
 
-// ================================================================
-// DASHBOARD ENTRY
-// ================================================================
+// ===== DASHBOARD ENTRY =====
 function enterDashboard(t){
     document.getElementById('authContainer').classList.add('hidden');
     document.getElementById('userDashboard').classList.add('active');
@@ -1088,164 +612,118 @@ function showTxTab(tab){
     refreshUserData();
 }
 
-    // ================================================================
-// RENDER ASSET DISPLAY
-// ================================================================
+// ===== RENDER ASSET DISPLAY =====
 function renderAssetDisplay() {
-    if (!currentUserData) return;
-    var assetId = currentUserData.asset || 'metallic';
-    var info = getAssetInfo(assetId);
-    var rate = getUserInterestRate(currentUserData);
-    document.getElementById('currentAssetDisplay').innerHTML = info.icon + ' ' + info.name;
-    document.getElementById('currentAssetRateDisplay').innerHTML = 'Interest: ' + rate + '% daily';
-    var canSwitch = canSwitchAsset(currentUserData);
-    var switchBtn = document.getElementById('switchAssetBtn');
-    if (canSwitch) {
-        switchBtn.disabled = false; switchBtn.style.opacity = '1'; switchBtn.textContent = 'Switch Asset';
-        document.getElementById('assetCooldownDisplay').textContent = '';
-    } else {
-        var remaining = getAssetSwitchCooldownRemaining(currentUserData);
-        var hrs = Math.floor(remaining), mins = Math.floor((remaining - hrs) * 60);
-        switchBtn.disabled = true; switchBtn.style.opacity = '0.5'; switchBtn.textContent = '⏳ Cooldown';
-        document.getElementById('assetCooldownDisplay').textContent = 'Can switch in ' + hrs + 'h ' + mins + 'm';
-    }
+    if(!currentUserData)return;
+    var assetId=currentUserData.asset||'metallic';
+    var info=getAssetInfo(assetId);
+    var rate=getUserInterestRate(currentUserData);
+    document.getElementById('currentAssetDisplay').innerHTML=info.icon+' '+info.name;
+    document.getElementById('currentAssetRateDisplay').innerHTML='Interest: '+rate+'% daily';
+    var cs=canSwitchAsset(currentUserData);
+    var sb=document.getElementById('switchAssetBtn');
+    if(cs){sb.disabled=false;sb.style.opacity='1';sb.textContent='Switch Asset';document.getElementById('assetCooldownDisplay').textContent='';}
+    else{var rem=getAssetSwitchCooldownRemaining(currentUserData);var h=Math.floor(rem),m=Math.floor((rem-h)*60);sb.disabled=true;sb.style.opacity='0.5';sb.textContent='⏳ Cooldown';document.getElementById('assetCooldownDisplay').textContent='Can switch in '+h+'h '+m+'m';}
 }
 
-// ================================================================
-// ASSET SWITCH MODAL
-// ================================================================
-function showAssetSwitchModal() {
-    if (!currentUserData) return;
-    if (!canSwitchAsset(currentUserData)) {
-        var rem = getAssetSwitchCooldownRemaining(currentUserData);
-        var h = Math.floor(rem), m = Math.floor((rem - h)*60);
-        alert('You can only switch assets once every ' + ASSET_SWITCH_COOLDOWN_HOURS + ' hours. Please wait ' + h + 'h ' + m + 'm.');
-        return;
-    }
-    _pendingAssetSelection = null;
-    document.getElementById('assetSwitchError').textContent = '';
-    document.getElementById('selectedAssetDisplay').textContent = 'Click an asset above to select it.';
-    var rates = (_cachedSettings && _cachedSettings.assetRates) || {};
-    for (var aid in ASSET_TYPES) {
-        var r = rates[aid]; if (r === undefined || r === null) r = ASSET_TYPES[aid].defaultRate;
-        document.getElementById('assetRateDisplay_' + aid).textContent = r + '% daily';
-    }
+// ===== ASSET SWITCH MODAL =====
+function showAssetSwitchModal(){
+    if(!currentUserData)return;
+    if(!canSwitchAsset(currentUserData)){var rem=getAssetSwitchCooldownRemaining(currentUserData);var h=Math.floor(rem),m=Math.floor((rem-h)*60);alert('Please wait '+h+'h '+m+'m before switching again.');return;}
+    _pendingAssetSelection=null;
+    document.getElementById('assetSwitchError').textContent='';
+    document.getElementById('selectedAssetDisplay').textContent='Click an asset above to select it.';
+    var rates=(_cachedSettings&&_cachedSettings.assetRates)||{};
+    for(var aid in ASSET_TYPES){var r=rates[aid];if(r===undefined||r===null)r=ASSET_TYPES[aid].defaultRate;document.getElementById('assetRateDisplay_'+aid).textContent=r+'% daily';}
     document.getElementById('assetSwitchModal').classList.add('active');
 }
 
-function selectAssetOption(assetId) {
-    _pendingAssetSelection = assetId;
-    var info = getAssetInfo(assetId);
-    var rates = (_cachedSettings && _cachedSettings.assetRates) || {};
-    var r = rates[assetId]; if (r === undefined || r === null) r = info.defaultRate;
-    document.getElementById('selectedAssetDisplay').innerHTML = '✅ Selected: ' + info.icon + ' ' + info.name + ' (' + r + '% daily)';
-    document.getElementById('assetSwitchError').textContent = '';
+function selectAssetOption(assetId){
+    _pendingAssetSelection=assetId;
+    var info=getAssetInfo(assetId);
+    var rates=(_cachedSettings&&_cachedSettings.assetRates)||{};
+    var r=rates[assetId];if(r===undefined||r===null)r=info.defaultRate;
+    document.getElementById('selectedAssetDisplay').innerHTML='✅ Selected: '+info.icon+' '+info.name+' ('+r+'% daily)';
+    document.getElementById('assetSwitchError').textContent='';
 }
 
-async function confirmAssetSwitch() {
-    if (!_pendingAssetSelection) { document.getElementById('assetSwitchError').textContent = 'Please select an asset first.'; return; }
-    if (!canSwitchAsset(currentUserData)) { document.getElementById('assetSwitchError').textContent = 'Cooldown still active. Please wait.'; return; }
-    var newAsset = _pendingAssetSelection;
-    var oldAsset = currentUserData.asset || 'metallic';
-    if (newAsset === oldAsset) { document.getElementById('assetSwitchError').textContent = 'You are already invested in this asset.'; return; }
-
-    var u = await loadUser(currentUser);
-    if (!u) { alert('Session expired.'); return; }
-    u.asset = newAsset;
-    u.lastAssetSwitch = new Date().toISOString();
-    var n = new Date();
-    var d = n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
-    var oldInfo = getAssetInfo(oldAsset), newInfo = getAssetInfo(newAsset);
-    if (!u.transactions) u.transactions = [];
-    u.transactions.push({date:d, type:'asset_switch', amount:0, description:'Switched from ' + oldInfo.name + ' to ' + newInfo.name});
-    await saveUser(currentUser, u);
-    currentUserData = u;
-    closeModal('assetSwitchModal');
-    refreshUserData();
-    alert('✅ Asset switched to ' + newInfo.name + '! Your interest rate has been updated.');
+async function confirmAssetSwitch(){
+    if(!_pendingAssetSelection){document.getElementById('assetSwitchError').textContent='Please select an asset first.';return;}
+    if(!canSwitchAsset(currentUserData)){document.getElementById('assetSwitchError').textContent='Cooldown still active.';return;}
+    var newAsset=_pendingAssetSelection,oldAsset=currentUserData.asset||'metallic';
+    if(newAsset===oldAsset){document.getElementById('assetSwitchError').textContent='Already invested in this asset.';return;}
+    var u=await loadUser(currentUser);if(!u){alert('Session expired.');return;}
+    u.asset=newAsset;u.lastAssetSwitch=new Date().toISOString();
+    var n=new Date(),d=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+    var oi=getAssetInfo(oldAsset),ni=getAssetInfo(newAsset);
+    if(!u.transactions)u.transactions=[];
+    u.transactions.push({date:d,type:'asset_switch',amount:0,description:'Switched from '+oi.name+' to '+ni.name});
+    await saveUser(currentUser,u);currentUserData=u;
+    closeModal('assetSwitchModal');refreshUserData();
+    alert('✅ Asset switched to '+ni.name+'!');
 }
 
-// ================================================================
-// REFRESH USER DATA
-// ================================================================
+// ===== REFRESH USER DATA =====
 async function refreshUserData() {
     await getSettings();
-    var u = await loadUser(currentUser);
-    if (!u) { alert('Session expired.'); userLogout(); return; }
-    currentUserData = u;
-
-    document.getElementById('userBalance').textContent = fmtNaira(u.balance);
-    document.getElementById('userInvested').textContent = fmtNaira(u.invested);
-    document.getElementById('userProfit').textContent = fmtNaira(u.profit);
-    document.getElementById('userReferralBonus').textContent = fmtNaira(u.referralBonus || 0);
-    document.getElementById('userPlan').textContent = u.plan;
-    document.getElementById('refCode').textContent = currentUser;
-    document.getElementById('refLink').textContent = currentUser;
-
-    var b = document.getElementById('userStatusBadge');
-    b.textContent = u.status.charAt(0).toUpperCase() + u.status.slice(1);
-    b.className = 'status-badge ' + u.status;
-
-    var w = document.getElementById('withdrawBtn');
-    if (u.status === 'frozen') { w.classList.add('disabled'); w.onclick = function(){alert('Withdrawals disabled.');}; }
-    else { w.classList.remove('disabled'); w.onclick = function(){showWithdrawModal();}; }
-
+    var u=await loadUser(currentUser);
+    if(!u){alert('Session expired.');userLogout();return;}
+    currentUserData=u;
+    document.getElementById('userBalance').textContent=fmtNaira(u.balance);
+    document.getElementById('userInvested').textContent=fmtNaira(u.invested);
+    document.getElementById('userProfit').textContent=fmtNaira(u.profit);
+    document.getElementById('userReferralBonus').textContent=fmtNaira(u.referralBonus||0);
+    document.getElementById('userPlan').textContent=u.plan;
+    document.getElementById('refCode').textContent=currentUser;
+    document.getElementById('refLink').textContent=currentUser;
+    var b=document.getElementById('userStatusBadge');
+    b.textContent=u.status.charAt(0).toUpperCase()+u.status.slice(1);
+    b.className='status-badge '+u.status;
+    var w=document.getElementById('withdrawBtn');
+    if(u.status==='frozen'){w.classList.add('disabled');w.onclick=function(){alert('Withdrawals disabled.');};}
+    else{w.classList.remove('disabled');w.onclick=function(){showWithdrawModal();};}
     renderAssetDisplay();
-
-    var a = [];
-    (u.transactions||[]).forEach(function(t){ a.push(Object.assign({},t)); });
+    var a=[];
+    (u.transactions||[]).forEach(function(t){a.push(Object.assign({},t));});
     (u.withdrawals||[]).forEach(function(w){
-        var wType = w.type === 'bank' ? 'bank_withdraw' : 'withdraw';
-        var det = '';
-        if (w.type === 'bank') {
-            det = w.bankName + ': ' + w.accountNumber + ' (' + w.accountHolder + ')';
-            if (w.payoutRef) det += ' | Ref: ' + w.payoutRef;
-        } else {
-            det = '→ '+w.currency+': '+(w.wallet||'').substring(0,16)+'...'+(w.wallet||'').substring((w.wallet||'').length-4);
-            if (w.payoutRef) det += ' | Ref: ' + w.payoutRef;
-        }
-        a.push({date:w.date, type: wType, amount:-w.amount, status:w.status, description:det, payoutRef: w.payoutRef, isBank: w.type === 'bank'});
+        var wt=w.type==='bank'?'bank_withdraw':'withdraw';
+        var det='';
+        if(w.type==='bank'){det=w.bankName+': '+w.accountNumber+' ('+w.accountHolder+')';if(w.payoutRef)det+=' | Ref: '+w.payoutRef;}
+        else{det='→ '+w.currency+': '+(w.wallet||'').substring(0,16)+'...'+(w.wallet||'').substring((w.wallet||'').length-4);if(w.payoutRef)det+=' | Ref: '+w.payoutRef;}
+        a.push({date:w.date,type:wt,amount:-w.amount,status:w.status,description:det,payoutRef:w.payoutRef,isBank:w.type==='bank'});
     });
-    (u.referrals||[]).forEach(function(r){ a.push({date:r.date, type:'referral', amount:r.bonus, status:'approved', description:'Bonus from '+r.referee}); });
-
-    var f = a;
-    if(currentTxTab==='deposits') f=a.filter(function(t){return t.type==='deposit';});
-    else if(currentTxTab==='withdrawals') f=a.filter(function(t){return t.type==='withdraw'||t.type==='bank_withdraw';});
-    else if(currentTxTab==='profits') f=a.filter(function(t){return t.type==='profit';});
-    else if(currentTxTab==='referrals') f=a.filter(function(t){return t.type==='referral';});
-    else if(currentTxTab==='asset_switch') f=a.filter(function(t){return t.type==='asset_switch';});
-
-    var tb = document.getElementById('userTransactions');
-    if(!f.length){ tb.innerHTML='<tr><td colspan="5" style="text-align:center;color:#808080;">No transactions.</td></tr>'; }
-    else {
+    (u.referrals||[]).forEach(function(r){a.push({date:r.date,type:'referral',amount:r.bonus,status:'approved',description:'Bonus from '+r.referee});});
+    var f=a;
+    if(currentTxTab==='deposits')f=a.filter(function(t){return t.type==='deposit';});
+    else if(currentTxTab==='withdrawals')f=a.filter(function(t){return t.type==='withdraw'||t.type==='bank_withdraw';});
+    else if(currentTxTab==='profits')f=a.filter(function(t){return t.type==='profit';});
+    else if(currentTxTab==='referrals')f=a.filter(function(t){return t.type==='referral';});
+    else if(currentTxTab==='asset_switch')f=a.filter(function(t){return t.type==='asset_switch';});
+    var tb=document.getElementById('userTransactions');
+    if(!f.length){tb.innerHTML='<tr><td colspan="5" style="text-align:center;color:#808080;">No transactions.</td></tr>';}
+    else{
         f.sort(function(a,b){return new Date(b.date)-new Date(a.date);});
-        tb.innerHTML = f.map(function(t){
-            var bc = t.type==='deposit'?'deposit':t.type==='profit'?'profit':t.type==='referral'?'referral':t.type==='asset_switch'?'asset_switch':t.type==='bank_withdraw'?'bank_withdraw':t.status==='pending'?'pending':t.status==='approved'?'approved':t.status==='declined'?'declined':'withdraw';
-            var ac = (t.type==='deposit'||t.type==='profit'||t.type==='referral')?'amount-green':t.status==='pending'?'amount-yellow':'amount-red';
-            if (t.type==='asset_switch') ac = 'amount-purple';
-            var s = (t.type==='withdraw'||t.type==='bank_withdraw')?'':(t.type==='referral'||t.type==='deposit'||t.type==='profit')?'+':'';
-            var am = Math.abs(t.amount);
-            var sl = t.status==='pending'?'Pending':t.status==='approved'?'Approved':t.status==='declined'?'Declined':'Completed';
-            var typeLabel = t.type === 'bank_withdraw' ? 'Bank Withdraw' : (t.type === 'asset_switch' ? 'Asset Switch' : (t.type === 'withdraw' ? 'Crypto W/D' : t.type));
-            var payoutBadge = t.payoutRef ? (t.type === 'bank_withdraw' ? ' <span class="monnify-badge">PAID</span>' : ' <span class="np-badge">PAID</span>') : '';
+        tb.innerHTML=f.map(function(t){
+            var bc=t.type==='deposit'?'deposit':t.type==='profit'?'profit':t.type==='referral'?'referral':t.type==='asset_switch'?'asset_switch':t.type==='bank_withdraw'?'bank_withdraw':t.status==='pending'?'pending':t.status==='approved'?'approved':t.status==='declined'?'declined':'withdraw';
+            var ac=(t.type==='deposit'||t.type==='profit'||t.type==='referral')?'amount-green':t.status==='pending'?'amount-yellow':'amount-red';
+            if(t.type==='asset_switch')ac='amount-purple';
+            var s=(t.type==='withdraw'||t.type==='bank_withdraw')?'':(t.type==='referral'||t.type==='deposit'||t.type==='profit')?'+':'';
+            var am=Math.abs(t.amount);
+            var sl=t.status==='pending'?'Pending':t.status==='approved'?'Approved':t.status==='declined'?'Declined':'Completed';
+            var typeLabel=t.type==='bank_withdraw'?'Bank Withdraw':(t.type==='asset_switch'?'Asset Switch':(t.type==='withdraw'?'Crypto W/D':t.type));
+            var payoutBadge=t.payoutRef?(t.type==='bank_withdraw'?' <span class="monnify-badge">PAID</span>':' <span class="np-badge">PAID</span>'):'';
             return '<tr><td>'+esc(t.date)+'</td><td><span class="badge '+bc+'">'+typeLabel+'</span>'+payoutBadge+'</td><td class="'+ac+'">'+s+fmtNaira(am)+'</td><td><span class="badge '+bc+'">'+sl+'</span></td><td style="font-size:12px;color:#b3b3b3;">'+esc(t.description||'')+'</td></tr>';
         }).join('');
     }
 }
 
 function copyRefLink(){
-    var el=document.getElementById('refLink'), t=el.textContent;
-    if(navigator.clipboard){
-        navigator.clipboard.writeText(t).then(function(){el.textContent='Copied!';setTimeout(function(){refreshUserData();},2000);});
-    } else {
-        var ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select();
-        document.execCommand('copy'); document.body.removeChild(ta); el.textContent='Copied!'; setTimeout(function(){refreshUserData();},2000);
-    }
+    var el=document.getElementById('refLink'),t=el.textContent;
+    if(navigator.clipboard){navigator.clipboard.writeText(t).then(function(){el.textContent='Copied!';setTimeout(function(){refreshUserData();},2000);});}
+    else{var ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);el.textContent='Copied!';setTimeout(function(){refreshUserData();},2000);}
 }
 
-// ================================================================
-// DEPOSIT (Monnify)
-// ================================================================
+// ===== DEPOSIT (Monnify) =====
 async function showDepositModal(){
     await getSettings();
     if(!_cachedSettings.monnifyApiKey||!_cachedSettings.monnifyContractCode){alert('Monnify not configured.');return;}
@@ -1263,69 +741,55 @@ function processDeposit(){
     if(!amt||amt<minDep()){e.textContent='Minimum '+fmtNaira(minDep())+' NGN.';return;}
     if(!em){e.textContent='Enter email.';return;}
     if(!_cachedSettings||!_cachedSettings.monnifyApiKey||!_cachedSettings.monnifyContractCode){e.textContent='Monnify not configured.';return;}
-    var apiKey=_cachedSettings.monnifyApiKey, cc=_cachedSettings.monnifyContractCode;
+    var apiKey=_cachedSettings.monnifyApiKey,cc=_cachedSettings.monnifyContractCode;
     var ref='NZ-'+Date.now()+'-'+Math.random().toString(36).substring(2,8);
     closeModal('depositModal');
     if(typeof MonnifySDK==='undefined'){alert('Monnify SDK not loaded.');return;}
     MonnifySDK.initialize({
-        amount:amt, currency:"NGN", reference:ref,
+        amount:amt,currency:"NGN",reference:ref,
         customerFullName:(currentUserData&&(currentUserData.fullName||currentUser))||currentUser,
-        customerEmail:em, apiKey:apiKey, contractCode:cc,
-        paymentDescription:"NetflixZone deposit for "+currentUser, isTestMode:true,
-        metadata:{username:currentUser, depositType:"user_deposit"},
+        customerEmail:em,apiKey:apiKey,contractCode:cc,
+        paymentDescription:"NetflixZone deposit for "+currentUser,isTestMode:true,
+        metadata:{username:currentUser,depositType:"user_deposit"},
         onComplete:function(resp){creditDeposit(ref,amt,em,resp);},
         onClose:function(data){}
     });
 }
 
 async function creditDeposit(ref,amt,em,resp){
-    var user = await loadUser(currentUser);
+    var user=await loadUser(currentUser);
     if(!user){alert('Session expired.');return;}
     if(user.processedReferences&&user.processedReferences.indexOf(ref)!==-1)return;
     var n=new Date();
     var d=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
-    user.balance+=amt; user.invested+=amt;
+    user.balance+=amt;user.invested+=amt;
     if(!user.processedReferences)user.processedReferences=[];
     user.processedReferences.push(ref);
     if(!user.transactions)user.transactions=[];
     var tr=(resp&&resp.transactionReference)?resp.transactionReference:ref;
-    user.transactions.push({date:d, type:'deposit', amount:amt, description:'Monnify - '+tr});
-    await saveUser(currentUser, user);
-    currentUserData = user;
-
-    if(user.referredBy) {
-        var refUser = await loadUser(user.referredBy);
-        if(refUser) await registerReferralBonus(currentUser, amt);
-    }
-
+    user.transactions.push({date:d,type:'deposit',amount:amt,description:'Monnify - '+tr});
+    await saveUser(currentUser,user);
+    currentUserData=user;
+    if(user.referredBy){var refUser=await loadUser(user.referredBy);if(refUser)await registerReferralBonus(currentUser,amt);}
     document.getElementById('depositResultTitle').textContent='Payment Confirmed!';
     var extras=user.referredBy?'<br>Referrer got 20% bonus!':'';
     document.getElementById('depositResultContent').innerHTML=fmtNaira(amt)+' credited.'+extras+'<br><br><small style="color:#808080;">Ref: '+esc(tr)+'</small>';
     document.getElementById('depositResultModal').classList.add('active');
 }
 
-// ================================================================
-// WITHDRAWAL
-// ================================================================
-var currentWithdrawType = 'crypto';
-function switchWithdrawType(type) {
-    currentWithdrawType = type;
+// ===== WITHDRAWAL =====
+var currentWithdrawType='crypto';
+function switchWithdrawType(type){
+    currentWithdrawType=type;
     document.querySelectorAll('.withdraw-type-tabs div').forEach(function(e){e.classList.remove('active');});
-    if (type === 'crypto') {
-        document.querySelector('.withdraw-type-tabs div:first-child').classList.add('active');
-        document.getElementById('cryptoWithdrawFields').classList.remove('hidden');
-        document.getElementById('bankWithdrawFields').classList.add('hidden');
-    } else {
-        document.querySelector('.withdraw-type-tabs div:last-child').classList.add('active');
-        document.getElementById('cryptoWithdrawFields').classList.add('hidden');
-        document.getElementById('bankWithdrawFields').classList.remove('hidden');
-    }
-    document.getElementById('withdrawError').textContent = '';
+    if(type==='crypto'){document.querySelector('.withdraw-type-tabs div:first-child').classList.add('active');document.getElementById('cryptoWithdrawFields').classList.remove('hidden');document.getElementById('bankWithdrawFields').classList.add('hidden');}
+    else{document.querySelector('.withdraw-type-tabs div:last-child').classList.add('active');document.getElementById('cryptoWithdrawFields').classList.add('hidden');document.getElementById('bankWithdrawFields').classList.remove('hidden');}
+    document.getElementById('withdrawError').textContent='';
 }
 
 function showWithdrawModal(){
     if(currentUserData.status==='frozen'){alert('Withdrawals disabled.');return;}
-    var day=wdDay(); if(day!==-1){var t=new Date();if(t.getDay()!==day){alert('Withdrawals on '+wdName(day)+' only.');return;}}
+    var day=wdDay();if(day!==-1){var t=new Date();if(t.getDay()!==day){alert('Withdrawals on '+wdName(day)+' only.');return;}}
     document.getElementById('withdrawError').textContent='';
     document.getElementById('withdrawInfo').textContent='Balance: '+fmtNaira(currentUserData.balance)+' - Min: '+fmtNaira(minWd())+' NGN';
     document.getElementById('withdrawAmount').value='';document.getElementById('withdrawCurrency').value='USDT (TRC20)';document.getElementById('withdrawWallet').value='';
@@ -1336,29 +800,25 @@ function showWithdrawModal(){
 
 async function processWithdraw(){
     var e=document.getElementById('withdrawError');
-    var day=wdDay(); if(day!==-1){var t=new Date();if(t.getDay()!==day){e.textContent='Restricted to '+wdName(day)+'.';return;}}
+    var day=wdDay();if(day!==-1){var t=new Date();if(t.getDay()!==day){e.textContent='Restricted to '+wdName(day)+'.';return;}}
     if(currentUserData.status==='frozen'){e.textContent='Withdrawals disabled.';return;}
-
-    if (currentWithdrawType === 'crypto') {
+    if(currentWithdrawType==='crypto'){
         var amt=parseFloat(document.getElementById('withdrawAmount').value);
         var cur=document.getElementById('withdrawCurrency').value;
         var wal=document.getElementById('withdrawWallet').value.trim();
         if(!amt||amt<minWd()){e.textContent='Min '+fmtNaira(minWd())+' NGN.';return;}
         if(!wal){e.textContent='Enter wallet.';return;}
-        if(wal.length<10){e.textContent='Wallet too short.';return;}
-        var user = await loadUser(currentUser);
+        var user=await loadUser(currentUser);
         if(!user||user.status==='frozen'){e.textContent='Withdrawals disabled.';return;}
         if(amt>user.balance){e.textContent='Insufficient balance.';return;}
         var n=new Date();
         var ds=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
         user.balance-=amt;
         if(!user.withdrawals)user.withdrawals=[];
-        user.withdrawals.push({date:ds, amount:amt, currency:cur, wallet:wal, status:'pending', type:'crypto'});
-        await saveUser(currentUser, user);
-        currentUserData = user;
-        closeModal('withdrawModal');
-        refreshUserData();
-        alert('Crypto withdrawal submitted! Amount deducted. Admin will review and payout via NOWPayments.');
+        user.withdrawals.push({date:ds,amount:amt,currency:cur,wallet:wal,status:'pending',type:'crypto'});
+        await saveUser(currentUser,user);currentUserData=user;
+        closeModal('withdrawModal');refreshUserData();
+        alert('Crypto withdrawal submitted! Amount deducted. Admin will review.');
     } else {
         var amt=parseFloat(document.getElementById('withdrawBankAmount').value);
         var bankSel=document.getElementById('withdrawBankName').value;
@@ -1368,29 +828,25 @@ async function processWithdraw(){
         if(!bankSel){e.textContent='Select bank.';return;}
         if(!acc||acc.length<10){e.textContent='Enter valid 10-digit account number.';return;}
         if(!holder||holder.length<2){e.textContent='Enter account holder name.';return;}
-        var user = await loadUser(currentUser);
+        var user=await loadUser(currentUser);
         if(!user||user.status==='frozen'){e.textContent='Withdrawals disabled.';return;}
         if(amt>user.balance){e.textContent='Insufficient balance.';return;}
-        var bParts=bankSel.split('|'), bName=bParts[0], bCode=bParts[1];
+        var bParts=bankSel.split('|'),bName=bParts[0],bCode=bParts[1];
         var n=new Date();
         var ds=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
         user.balance-=amt;
         if(!user.withdrawals)user.withdrawals=[];
-        user.withdrawals.push({date:ds, amount:amt, type:'bank', bankName:bName, bankCode:bCode, accountNumber:acc, accountHolder:holder, status:'pending'});
-        await saveUser(currentUser, user);
-        currentUserData = user;
-        closeModal('withdrawModal');
-        refreshUserData();
-        alert('Bank withdrawal submitted! Amount deducted. Admin will review and payout via Monnify.');
+        user.withdrawals.push({date:ds,amount:amt,type:'bank',bankName:bName,bankCode:bCode,accountNumber:acc,accountHolder:holder,status:'pending'});
+        await saveUser(currentUser,user);currentUserData=user;
+        closeModal('withdrawModal');refreshUserData();
+        alert('Bank withdrawal submitted! Amount deducted. Admin will review.');
     }
 }
 
-// ================================================================
-// PROFILE
-// ================================================================
+// ===== PROFILE =====
 function showProfileModal(){
     var d=currentUserData;
-    var assetInfo = getAssetInfo(d.asset || 'metallic');
+    var ai=getAssetInfo(d.asset||'metallic');
     document.getElementById('profileInfo').innerHTML=
         '<div style="margin-bottom:12px;"><strong style="color:#808080;">Name:</strong> '+esc(d.fullName)+'</div>'+
         '<div style="margin-bottom:12px;"><strong style="color:#808080;">Username:</strong> '+esc(currentUser)+'</div>'+
@@ -1398,7 +854,7 @@ function showProfileModal(){
         '<div style="margin-bottom:12px;"><strong style="color:#808080;">Phone:</strong> '+esc(d.phone||'N/A')+'</div>'+
         '<div style="margin-bottom:12px;"><strong style="color:#808080;">Plan:</strong> '+esc(d.plan)+'</div>'+
         '<div style="margin-bottom:12px;"><strong style="color:#808080;">Status:</strong> <span class="badge '+d.status+'">'+esc(d.status)+'</span></div>'+
-        '<div style="margin-bottom:12px;"><strong style="color:#808080;">Investment Asset:</strong> '+assetInfo.icon+' '+assetInfo.name+'</div>'+
+        '<div style="margin-bottom:12px;"><strong style="color:#808080;">Investment Asset:</strong> '+ai.icon+' '+ai.name+'</div>'+
         '<div style="margin-bottom:12px;"><strong style="color:#808080;">Referral Code:</strong> '+esc(currentUser)+'</div>'+
         '<div style="margin-bottom:12px;"><strong style="color:#808080;">Referred By:</strong> '+(d.referredBy||'None')+'</div>'+
         '<div style="margin-bottom:12px;"><strong style="color:#808080;">Referral Bonus:</strong> <span class="amount-green">'+fmtNaira(d.referralBonus||0)+'</span></div>'+
@@ -1408,526 +864,361 @@ function showProfileModal(){
 }
 function closeModal(id){document.getElementById(id).classList.remove('active');}
 
-// ================================================================
-// REFRESH ADMIN DATA
-// ================================================================
+// ===== REFRESH ADMIN DATA =====
 async function refreshAdminData() {
     await getSettings();
-    var allUsers = await loadAllUsers();
-    var allUsernames = Object.keys(allUsers);
-    var totalUsers = allUsernames.length;
-    var activeUsers = allUsernames.filter(function(un){ return allUsers[un].status === 'active'; }).length;
-    document.getElementById('adminTotalUsers').textContent = totalUsers;
-    document.getElementById('adminActiveUsers').textContent = activeUsers;
-
-    document.getElementById('adminMinDeposit').value = minDep();
-    document.getElementById('adminMinWithdraw').value = minWd();
-    document.getElementById('adminWithdrawDay').value = wdDay();
-    document.getElementById('currentMinDeposit').textContent = Number(minDep()).toLocaleString('en-NG');
-    document.getElementById('currentMinWithdraw').textContent = Number(minWd()).toLocaleString('en-NG');
-    document.getElementById('currentWithdrawDayDisplay').textContent = wdName(wdDay());
-
-    var rates = (_cachedSettings && _cachedSettings.assetRates) || {};
-    for (var aid in ASSET_TYPES) {
-        var r = rates[aid]; if (r === undefined || r === null) r = ASSET_TYPES[aid].defaultRate;
-        document.getElementById('adminAssetRate_' + aid).value = r;
+    var allUsers=await loadAllUsers();
+    var allUsernames=Object.keys(allUsers);
+    document.getElementById('adminTotalUsers').textContent=allUsernames.length;
+    document.getElementById('adminActiveUsers').textContent=allUsernames.filter(function(un){return allUsers[un].status==='active';}).length;
+    document.getElementById('adminMinDeposit').value=minDep();
+    document.getElementById('adminMinWithdraw').value=minWd();
+    document.getElementById('adminWithdrawDay').value=wdDay();
+    document.getElementById('currentMinDeposit').textContent=Number(minDep()).toLocaleString('en-NG');
+    document.getElementById('currentMinWithdraw').textContent=Number(minWd()).toLocaleString('en-NG');
+    document.getElementById('currentWithdrawDayDisplay').textContent=wdName(wdDay());
+    var rates=(_cachedSettings&&_cachedSettings.assetRates)||{};
+    for(var aid in ASSET_TYPES){var r=rates[aid];if(r===undefined||r===null)r=ASSET_TYPES[aid].defaultRate;document.getElementById('adminAssetRate_'+aid).value=r;}
+    if(_cachedSettings){
+        document.getElementById('adminMonnifyApiKey').value=_cachedSettings.monnifyApiKey||'';
+        document.getElementById('adminMonnifyContractCode').value=_cachedSettings.monnifyContractCode||'';
+        document.getElementById('adminMonnifySecretKey').value=_cachedSettings.monnifySecretKey||'';
+        document.getElementById('adminMonnifySourceAccount').value=_cachedSettings.monnifySourceAccount||'';
+        document.getElementById('adminNPApiKey').value=_cachedSettings.npApiKey||'';
+        document.getElementById('adminNPSecretKey').value=_cachedSettings.npSecretKey||'';
+        document.getElementById('adminNPEmail').value=_cachedSettings.npEmail||'';
+        document.getElementById('adminNPPassword').value=_cachedSettings.npPassword||'';
     }
-
-    if (_cachedSettings) {
-        document.getElementById('adminMonnifyApiKey').value = _cachedSettings.monnifyApiKey || '';
-        document.getElementById('adminMonnifyContractCode').value = _cachedSettings.monnifyContractCode || '';
-        document.getElementById('adminMonnifySecretKey').value = _cachedSettings.monnifySecretKey || '';
-        document.getElementById('adminMonnifySourceAccount').value = _cachedSettings.monnifySourceAccount || '';
-        document.getElementById('adminNPApiKey').value = _cachedSettings.npApiKey || '';
-        document.getElementById('adminNPSecretKey').value = _cachedSettings.npSecretKey || '';
-        document.getElementById('adminNPEmail').value = _cachedSettings.npEmail || '';
-        document.getElementById('adminNPPassword').value = _cachedSettings.npPassword || '';
-    }
-
-    var cardsEl = document.getElementById('adminUserCards');
-    var sortedUsers = allUsernames.sort();
-    if (!sortedUsers.length) { cardsEl.innerHTML = '<p style="color:#808080;">No users.</p>'; }
-    else {
-        cardsEl.innerHTML = sortedUsers.map(function(un) {
-            var u = allUsers[un];
-            var assetInfo = getAssetInfo(u.asset || 'metallic');
-            return '<div class="admin-card">' +
-                '<div class="user-header"><h4>' + esc(un) + '</h4><span class="status-badge ' + esc(u.status || 'active') + '">' + esc(u.status || 'active') + '</span></div>' +
-                '<div class="user-detail"><strong>Name:</strong> ' + esc(u.fullName) + '</div>' +
-                '<div class="user-detail"><strong>Email:</strong> ' + esc(u.email) + '</div>' +
-                '<div class="user-detail"><strong>Asset:</strong> ' + assetInfo.icon + ' ' + assetInfo.name + '</div>' +
-                '<div class="user-detail"><strong>Balance:</strong> ' + fmtNaira(u.balance) + '</div>' +
-                '<div class="user-detail"><strong>Invested:</strong> ' + fmtNaira(u.invested) + '</div>' +
-                '<div class="user-detail"><strong>Profit:</strong> ' + fmtNaira(u.profit) + '</div>' +
-                '<div class="user-detail"><strong>Ref Bonus:</strong> ' + fmtNaira(u.referralBonus || 0) + '</div>' +
-                '<div class="admin-actions">' +
-                '<select id="userStatus_' + un + '"><option value="active"' + (u.status === 'active' ? ' selected' : '') + '>Active</option><option value="frozen"' + (u.status === 'frozen' ? ' selected' : '') + '>Frozen</option><option value="closed"' + (u.status === 'closed' ? ' selected' : '') + '>Closed</option></select>' +
-                '<button class="btn-blue" onclick="adminSetStatus(\'' + un + '\')">Set</button>' +
-                '<button class="btn-green" onclick="adminAddBalance(\'' + un + '\')">+Add</button>' +
-                '<button class="btn-orange" onclick="adminDeductBalance(\'' + un + '\')">-Deduct</button>' +
-                '<button class="btn-yellow" onclick="adminResetUserAccount(\'' + un + '\')">Reset Acct</button>' +
-                '<button class="btn-red" onclick="adminDeleteUser(\'' + un + '\')">🗑 Delete</button>' +
+    var cardsEl=document.getElementById('adminUserCards');
+    var sortedUsers=allUsernames.sort();
+    if(!sortedUsers.length){cardsEl.innerHTML='<p style="color:#808080;">No users.</p>';}
+    else{
+        cardsEl.innerHTML=sortedUsers.map(function(un){
+            var u=allUsers[un];
+            var ai=getAssetInfo(u.asset||'metallic');
+            return '<div class="admin-card">'+
+                '<div class="user-header"><h4>'+esc(un)+'</h4><span class="status-badge '+esc(u.status||'active')+'">'+esc(u.status||'active')+'</span></div>'+
+                '<div class="user-detail"><strong>Name:</strong> '+esc(u.fullName)+'</div>'+
+                '<div class="user-detail"><strong>Email:</strong> '+esc(u.email)+'</div>'+
+                '<div class="user-detail"><strong>Asset:</strong> '+ai.icon+' '+ai.name+'</div>'+
+                '<div class="user-detail"><strong>Balance:</strong> '+fmtNaira(u.balance)+'</div>'+
+                '<div class="user-detail"><strong>Invested:</strong> '+fmtNaira(u.invested)+'</div>'+
+                '<div class="user-detail"><strong>Profit:</strong> '+fmtNaira(u.profit)+'</div>'+
+                '<div class="user-detail"><strong>Ref Bonus:</strong> '+fmtNaira(u.referralBonus||0)+'</div>'+
+                '<div class="admin-actions">'+
+                '<select id="userStatus_'+un+'"><option value="active"'+(u.status==='active'?' selected':'')+'>Active</option><option value="frozen"'+(u.status==='frozen'?' selected':'')+'>Frozen</option><option value="closed"'+(u.status==='closed'?' selected':'')+'>Closed</option></select>'+
+                '<button class="btn-blue" onclick="adminSetStatus(\''+un+'\')">Set</button>'+
+                '<button class="btn-green" onclick="adminAddBalance(\''+un+'\')">+Add</button>'+
+                '<button class="btn-orange" onclick="adminDeductBalance(\''+un+'\')">-Deduct</button>'+
+                '<button class="btn-yellow" onclick="adminResetUserAccount(\''+un+'\')">Reset Acct</button>'+
+                '<button class="btn-red" onclick="adminDeleteUser(\''+un+'\')">🗑 Delete</button>'+
                 '</div></div>';
         }).join('');
     }
     renderPendingWithdrawals(allUsers);
 }
 
-// ================================================================
-// ASSET RATES SAVE
-// ================================================================
+// ===== ASSET RATES SAVE =====
 async function adminSaveAssetRates() {
     await getSettings();
-    if (!_cachedSettings.assetRates) _cachedSettings.assetRates = {};
-    for (var aid in ASSET_TYPES) {
-        var val = parseFloat(document.getElementById('adminAssetRate_' + aid).value);
-        if (!isNaN(val) && val >= 0) _cachedSettings.assetRates[aid] = val;
-    }
-    var ok = await saveSettings(_cachedSettings);
-    document.getElementById('assetRateMsg').textContent = ok ? 'Asset rates saved!' : 'Save failed!';
-    setTimeout(function() { document.getElementById('assetRateMsg').textContent = ''; }, 3000);
+    if(!_cachedSettings.assetRates)_cachedSettings.assetRates={};
+    for(var aid in ASSET_TYPES){var val=parseFloat(document.getElementById('adminAssetRate_'+aid).value);if(!isNaN(val)&&val>=0)_cachedSettings.assetRates[aid]=val;}
+    var ok=await saveSettings(_cachedSettings);
+    document.getElementById('assetRateMsg').textContent=ok?'Asset rates saved!':'Save failed!';
+    setTimeout(function(){document.getElementById('assetRateMsg').textContent='';},3000);
     refreshAdminData();
 }
 
-// ================================================================
-// ADMIN: DEDUCT BALANCE
-// ================================================================
+// ===== ADMIN: DEDUCT BALANCE =====
 async function adminDeductBalance(un) {
-    var amt = prompt('Amount to DEDUCT from ' + un + ' (NGN):');
-    if (!amt || isNaN(amt) || parseFloat(amt) <= 0) return;
-    amt = parseFloat(amt);
-    var u = await loadUser(un);
-    if (!u) { alert('User not found.'); return; }
-    if (amt > u.balance) { alert('Insufficient balance. User has ' + fmtNaira(u.balance)); return; }
-    u.balance -= amt;
-    var n = new Date();
-    var d = n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
-    if (!u.transactions) u.transactions = [];
-    u.transactions.push({date:d, type:'withdraw', amount:amt, description:'Admin deduction'});
-    await saveUser(un, u);
+    var amt=prompt('Amount to DEDUCT from '+un+' (NGN):');
+    if(!amt||isNaN(amt)||parseFloat(amt)<=0)return;
+    amt=parseFloat(amt);
+    var u=await loadUser(un);
+    if(!u){alert('User not found.');return;}
+    if(amt>u.balance){alert('Insufficient balance. User has '+fmtNaira(u.balance));return;}
+    u.balance-=amt;
+    var n=new Date();
+    var d=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+    if(!u.transactions)u.transactions=[];
+    u.transactions.push({date:d,type:'withdraw',amount:amt,description:'Admin deduction'});
+    await saveUser(un,u);
     refreshAdminData();
-    alert('Deducted ' + fmtNaira(amt) + ' from ' + un);
+    alert('Deducted '+fmtNaira(amt)+' from '+un);
 }
 
-// ================================================================
-// ADMIN: RESET USER ACCOUNT
-// ================================================================
+// ===== ADMIN: RESET USER ACCOUNT =====
 async function adminResetUserAccount(un) {
-    if (!confirm('Reset account for ' + un + '?\n\nThis will wipe balance, profit, invested, referral bonus, transactions, and withdrawals.')) return;
-    var u = await loadUser(un);
-    if (!u) return;
-    u.balance = 0; u.invested = 0; u.profit = 0; u.referralBonus = 0;
-    u.transactions = []; u.withdrawals = []; u.referrals = [];
-    u.lastInterestDate = ''; u.asset = 'metallic'; u.lastAssetSwitch = '';
-    await saveUser(un, u);
+    if(!confirm('Reset account for '+un+'?\n\nThis will wipe balance, profit, invested, referral bonus, transactions, and withdrawals.'))return;
+    var u=await loadUser(un);
+    if(!u)return;
+    u.balance=0;u.invested=0;u.profit=0;u.referralBonus=0;
+    u.transactions=[];u.withdrawals=[];u.referrals=[];
+    u.lastInterestDate='';u.asset='metallic';u.lastAssetSwitch='';
+    await saveUser(un,u);
     refreshAdminData();
-    alert('Account reset for ' + un);
+    alert('Account reset for '+un);
 }
 
-// ================================================================
-// ADMIN: DELETE USER
-// ================================================================
+// ===== ADMIN: DELETE USER =====
 async function adminDeleteUser(un) {
-    if (!confirm('⚠️ PERMANENTLY DELETE ' + un + '? This cannot be undone!')) return;
-    if (!confirm('Are you absolutely sure?')) return;
+    if(!confirm('⚠️ PERMANENTLY DELETE '+un+'? This cannot be undone!'))return;
+    if(!confirm('Are you absolutely sure?'))return;
     await deleteUser(un);
     refreshAdminData();
-    alert('User ' + un + ' deleted.');
+    alert('User '+un+' deleted.');
 }
 
-// ================================================================
-// PENDING WITHDRAWALS
-// ================================================================
+// ===== PENDING WITHDRAWALS =====
 function renderPendingWithdrawals(allUsers) {
-    var pending = [];
-    for (var un in allUsers) {
-        var u = allUsers[un];
-        if (u.withdrawals) {
-            u.withdrawals.forEach(function(w, i) {
-                if (w.status === 'pending') pending.push({ username: un, index: i, data: w });
-            });
-        }
+    var pending=[];
+    for(var un in allUsers){
+        var u=allUsers[un];
+        if(u.withdrawals){u.withdrawals.forEach(function(w,i){if(w.status==='pending')pending.push({username:un,index:i,data:w});});}
     }
-    var el = document.getElementById('pendingWithdrawals');
-    if (!pending.length) { el.innerHTML = '<p style="color:#808080;">None pending.</p>'; return; }
-    el.innerHTML = pending.map(function(p) {
-        var w = p.data;
-        var isBank = w.type === 'bank';
-        var detailHtml = isBank
-            ? '<div style="font-size:12px;color:#b3b3b3;">🏦 ' + esc(w.bankName) + ' | Acct: ' + esc(w.accountNumber) + ' | ' + esc(w.accountHolder) + '</div>'
-            : '<div style="font-size:12px;color:#b3b3b3;">💎 ' + esc(w.currency) + ' → ' + esc(w.wallet) + '</div>';
-        var typeLabel = isBank ? '<span class="badge bank_withdraw">Bank</span>' : '<span class="badge withdraw">Crypto</span>';
-        return '<div style="background:var(--card);border:1px solid var(--border);border-radius:6px;padding:14px;margin-bottom:10px;">' +
-            '<div style="font-size:14px;"><strong>User:</strong> ' + esc(p.username) + ' - <strong>' + fmtNaira(w.amount) + '</strong> ' + typeLabel + '</div>' +
-            detailHtml +
-            '<div style="font-size:11px;color:#808080;">' + esc(w.date) + '</div>' +
-            '<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">' +
-            '<button class="btn-green" onclick="adminApproveWithdraw(\'' + p.username + '\',' + p.index + ')">✅ Approve & Auto-Payout</button>' +
-            '<button class="btn-red" onclick="adminDeclineWithdraw(\'' + p.username + '\',' + p.index + ')">❌ Decline</button>' +
+    var el=document.getElementById('pendingWithdrawals');
+    if(!pending.length){el.innerHTML='<p style="color:#808080;">None pending.</p>';return;}
+    el.innerHTML=pending.map(function(p){
+        var w=p.data,isBank=w.type==='bank';
+        var detailHtml=isBank?'<div style="font-size:12px;color:#b3b3b3;">🏦 '+esc(w.bankName)+' | Acct: '+esc(w.accountNumber)+' | '+esc(w.accountHolder)+'</div>':'<div style="font-size:12px;color:#b3b3b3;">💎 '+esc(w.currency)+' → '+esc(w.wallet)+'</div>';
+        var typeLabel=isBank?'<span class="badge bank_withdraw">Bank</span>':'<span class="badge withdraw">Crypto</span>';
+        return '<div style="background:var(--card);border:1px solid var(--border);border-radius:6px;padding:14px;margin-bottom:10px;">'+
+            '<div style="font-size:14px;"><strong>User:</strong> '+esc(p.username)+' - <strong>'+fmtNaira(w.amount)+'</strong> '+typeLabel+'</div>'+
+            detailHtml+'<div style="font-size:11px;color:#808080;">'+esc(w.date)+'</div>'+
+            '<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">'+
+            '<button class="btn-green" onclick="adminApproveWithdraw(\''+p.username+'\','+p.index+')">✅ Approve & Auto-Payout</button>'+
+            '<button class="btn-red" onclick="adminDeclineWithdraw(\''+p.username+'\','+p.index+')">❌ Decline</button>'+
             '</div></div>';
     }).join('');
 }
 
-// ================================================================
-// ADMIN: SET STATUS
-// ================================================================
+// ===== ADMIN: SET STATUS =====
 async function adminSetStatus(un) {
-    var s = document.getElementById('userStatus_' + un).value;
-    var u = await loadUser(un);
-    if (u) { u.status = s; await saveUser(un, u); refreshAdminData(); }
+    var s=document.getElementById('userStatus_'+un).value;
+    var u=await loadUser(un);
+    if(u){u.status=s;await saveUser(un,u);refreshAdminData();}
 }
 
-// ================================================================
-// ADMIN: ADD BALANCE
-// ================================================================
+// ===== ADMIN: ADD BALANCE =====
 async function adminAddBalance(un) {
-    var amt = prompt('Amount to add to ' + un + ' (NGN):');
-    if (!amt || isNaN(amt) || parseFloat(amt) <= 0) return;
-    amt = parseFloat(amt);
-    var u = await loadUser(un);
-    if (u) {
-        u.balance += amt; u.invested += amt;
-        var n = new Date();
-        var d = n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
-        if (!u.transactions) u.transactions = [];
-        u.transactions.push({date:d, type:'deposit', amount:amt, description:'Admin credit'});
-        await saveUser(un, u);
+    var amt=prompt('Amount to add to '+un+' (NGN):');
+    if(!amt||isNaN(amt)||parseFloat(amt)<=0)return;
+    amt=parseFloat(amt);
+    var u=await loadUser(un);
+    if(u){
+        u.balance+=amt;u.invested+=amt;
+        var n=new Date();
+        var d=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+        if(!u.transactions)u.transactions=[];
+        u.transactions.push({date:d,type:'deposit',amount:amt,description:'Admin credit'});
+        await saveUser(un,u);
         refreshAdminData();
     }
 }
 
-// ================================================================
-// ADMIN: APPROVE WITHDRAW WITH AUTO-PAYOUT
-// ================================================================
-async function adminApproveWithdraw(un, idx) {
+// ===== ADMIN: APPROVE WITHDRAW =====
+async function adminApproveWithdraw(un,idx) {
     await getSettings();
-    var u = await loadUser(un);
-    if (!u || !u.withdrawals || !u.withdrawals[idx]) return;
-    var w = u.withdrawals[idx];
-    if (!confirm('Approve ' + fmtNaira(w.amount) + ' withdrawal for ' + un + '?')) return;
-    w.status = 'approved';
-    w.approvedAt = new Date().toISOString();
-
-    if (w.type === 'bank') {
-        var sk = _cachedSettings.monnifySecretKey;
-        var ak = _cachedSettings.monnifyApiKey;
-        var src = _cachedSettings.monnifySourceAccount;
-        var ref = 'NZ-PAY-' + Date.now() + '-' + Math.random().toString(36).substring(2,6).toUpperCase();
-        if (ak && sk && src && w.bankCode && w.accountNumber) {
-            w.payoutRef = ref; w.payoutStatus = 'initiating';
-            try {
-                var basicAuth = btoa(ak + ':' + sk);
-                var authRes = await fetch('https://sandbox.monnify.com/api/v1/auth/login', {
-                    method: 'POST', headers: { 'Authorization': 'Basic ' + basicAuth }
-                }).then(function(r){ return r.json(); });
-                if (!authRes || !authRes.responseBody || !authRes.responseBody.accessToken) {
-                    w.payoutStatus = 'auth_failed';
-                    await saveUser(un, u); refreshAdminData();
-                    alert('Monnify auth failed. Check API Key/Secret.'); return;
-                }
-                var token = authRes.responseBody.accessToken;
-                var payoutData = {
-                    amount: w.amount, reference: ref,
-                    narration: 'NetflixZone withdrawal payout to ' + un,
-                    destinationBankCode: w.bankCode,
-                    destinationAccountNumber: w.accountNumber,
-                    sourceAccountNumber: src, currency: 'NGN', async: true
-                };
-                var pRes = await fetch('https://sandbox.monnify.com/api/v2/disbursements/single', {
-                    method: 'POST', headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payoutData)
-                }).then(function(r){ return r.json(); });
-                if (pRes && pRes.requestSuccessful) {
-                    w.payoutStatus = 'paid'; w.payoutResponse = JSON.stringify(pRes);
-                    await saveUser(un, u); refreshAdminData();
-                    document.getElementById('payoutResultTitle').textContent = '✅ Bank Payout Initiated!';
-                    document.getElementById('payoutResultContent').innerHTML = 'Monnify transfer of ' + fmtNaira(w.amount) + ' to ' + esc(w.bankName) + ' (' + esc(w.accountNumber) + ') initiated.<br><br>Ref: ' + esc(ref);
-                    document.getElementById('payoutResultModal').classList.add('active');
-                } else {
-                    w.payoutStatus = 'payout_failed'; w.payoutError = pRes ? pRes.responseMessage : 'Unknown error';
-                    await saveUser(un, u); refreshAdminData();
-                    alert('Monnify payout failed: ' + (pRes ? pRes.responseMessage : 'No response'));
-                }
-            } catch(err) {
-                w.payoutStatus = 'error'; w.payoutError = err.message || String(err);
-                await saveUser(un, u); refreshAdminData();
-                alert('Monnify API error: ' + err.message);
-            }
-        } else {
-            w.payoutStatus = 'no_config';
-            await saveUser(un, u); refreshAdminData();
-            alert('Monnify not fully configured. Set API Key, Secret, and Source Account.');
-        }
+    var u=await loadUser(un);
+    if(!u||!u.withdrawals||!u.withdrawals[idx])return;
+    var w=u.withdrawals[idx];
+    if(!confirm('Approve '+fmtNaira(w.amount)+' withdrawal for '+un+'?'))return;
+    w.status='approved';
+    w.approvedAt=new Date().toISOString();
+    if(w.type==='bank'){
+        var sk=_cachedSettings.monnifySecretKey,ak=_cachedSettings.monnifyApiKey,src=_cachedSettings.monnifySourceAccount;
+        var ref='NZ-PAY-'+Date.now()+'-'+Math.random().toString(36).substring(2,6).toUpperCase();
+        if(ak&&sk&&src&&w.bankCode&&w.accountNumber){
+            w.payoutRef=ref;w.payoutStatus='initiating';
+            try{
+                var basicAuth=btoa(ak+':'+sk);
+                var authRes=await fetch('https://sandbox.monnify.com/api/v1/auth/login',{method:'POST',headers:{'Authorization':'Basic '+basicAuth}}).then(function(r){return r.json();});
+                if(!authRes||!authRes.responseBody||!authRes.responseBody.accessToken){w.payoutStatus='auth_failed';await saveUser(un,u);refreshAdminData();alert('Monnify auth failed.');return;}
+                var token=authRes.responseBody.accessToken;
+                var payoutData={amount:w.amount,reference:ref,narration:'NetflixZone payout to '+un,destinationBankCode:w.bankCode,destinationAccountNumber:w.accountNumber,sourceAccountNumber:src,currency:'NGN',async:true};
+                var pRes=await fetch('https://sandbox.monnify.com/api/v2/disbursements/single',{method:'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify(payoutData)}).then(function(r){return r.json();});
+                if(pRes&&pRes.requestSuccessful){w.payoutStatus='paid';w.payoutResponse=JSON.stringify(pRes);await saveUser(un,u);refreshAdminData();document.getElementById('payoutResultTitle').textContent='✅ Bank Payout Initiated!';document.getElementById('payoutResultContent').innerHTML='Monnify transfer of '+fmtNaira(w.amount)+' to '+esc(w.bankName)+' ('+esc(w.accountNumber)+') initiated.<br><br>Ref: '+esc(ref);document.getElementById('payoutResultModal').classList.add('active');}
+                else{w.payoutStatus='payout_failed';w.payoutError=pRes?pRes.responseMessage:'Unknown error';await saveUser(un,u);refreshAdminData();alert('Monnify payout failed: '+(pRes?pRes.responseMessage:'No response'));}
+            }catch(err){w.payoutStatus='error';w.payoutError=err.message||String(err);await saveUser(un,u);refreshAdminData();alert('Monnify API error: '+err.message);}
+        } else {w.payoutStatus='no_config';await saveUser(un,u);refreshAdminData();alert('Monnify not fully configured.');}
     } else {
-        var npKey = _cachedSettings.npApiKey;
-        var npEmail = _cachedSettings.npEmail;
-        var npPass = _cachedSettings.npPassword;
-        var ref = 'NZ-CRYPTO-' + Date.now() + '-' + Math.random().toString(36).substring(2,6).toUpperCase();
-        if (npKey && npEmail && npPass && w.wallet && w.currency) {
-            w.payoutRef = ref; w.payoutStatus = 'initiating';
-            var curMap = { 'USDT (TRC20)': 'usdttrc20', 'Bitcoin (BTC)': 'btc', 'Ethereum (ETH)': 'eth', 'Tron (TRX)': 'trx', 'Litecoin (LTC)': 'ltc', 'Dogecoin (DOGE)': 'doge', 'Solana (SOL)': 'sol' };
-            var payoutCurrency = curMap[w.currency] || w.currency.toLowerCase().replace(/[^a-z0-9]/g, '');
-            try {
-                var authRes = await fetch('https://api.nowpayments.io/v1/auth', {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: npEmail, password: npPass })
-                }).then(function(r){ return r.json(); });
-                var jwt = authRes && authRes.token;
-                if (!jwt) {
-                    w.payoutStatus = 'auth_failed';
-                    await saveUser(un, u); refreshAdminData();
-                    alert('NOWPayments auth failed.'); return;
-                }
-                var pRes = await fetch('https://api.nowpayments.io/v1/payout', {
-                    method: 'POST', headers: { 'x-api-key': npKey, 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt },
-                    body: JSON.stringify({ withdrawals: [{ address: w.wallet, currency: payoutCurrency, amount: parseFloat(w.amount) }], payout_description: 'NetflixZone withdrawal for ' + un })
-                }).then(function(r){ return r.json(); });
-                if (pRes && pRes.id) {
-                    w.payoutStatus = 'paid'; w.payoutResponse = JSON.stringify(pRes); w.payoutRef = ref;
-                    await saveUser(un, u); refreshAdminData();
-                    document.getElementById('payoutResultTitle').textContent = '✅ Crypto Payout Initiated!';
-                    document.getElementById('payoutResultContent').innerHTML = 'NOWPayments payout of ' + fmtNaira(w.amount) + ' to ' + esc(w.currency) + ' wallet (' + esc(w.wallet.substring(0,12)) + '...) initiated.<br><br>Payout ID: ' + esc(pRes.id);
-                    document.getElementById('payoutResultModal').classList.add('active');
-                } else {
-                    w.payoutStatus = 'payout_failed'; w.payoutError = pRes ? JSON.stringify(pRes) : 'Unknown error';
-                    await saveUser(un, u); refreshAdminData();
-                    alert('NOWPayments payout failed: ' + (pRes ? (pRes.message || JSON.stringify(pRes)) : 'No response'));
-                }
-            } catch(err) {
-                w.payoutStatus = 'error'; w.payoutError = err.message || String(err);
-                await saveUser(un, u); refreshAdminData();
-                alert('NOWPayments API error: ' + err.message);
-            }
-        } else {
-            w.payoutStatus = 'no_config';
-            await saveUser(un, u); refreshAdminData();
-            alert('NOWPayments not fully configured. Set API Key, Email, and Password.');
-        }
+        var npKey=_cachedSettings.npApiKey,npEmail=_cachedSettings.npEmail,npPass=_cachedSettings.npPassword;
+        var ref='NZ-CRYPTO-'+Date.now()+'-'+Math.random().toString(36).substring(2,6).toUpperCase();
+        if(npKey&&npEmail&&npPass&&w.wallet&&w.currency){
+            w.payoutRef=ref;w.payoutStatus='initiating';
+            var curMap={'USDT (TRC20)':'usdttrc20','Bitcoin (BTC)':'btc','Ethereum (ETH)':'eth','Tron (TRX)':'trx','Litecoin (LTC)':'ltc','Dogecoin (DOGE)':'doge','Solana (SOL)':'sol'};
+            var payoutCurrency=curMap[w.currency]||w.currency.toLowerCase().replace(/[^a-z0-9]/g,'');
+            try{
+                var authRes=await fetch('https://api.nowpayments.io/v1/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:npEmail,password:npPass})}).then(function(r){return r.json();});
+                var jwt=authRes&&authRes.token;
+                if(!jwt){w.payoutStatus='auth_failed';await saveUser(un,u);refreshAdminData();alert('NOWPayments auth failed.');return;}
+                var pRes=await fetch('https://api.nowpayments.io/v1/payout',{method:'POST',headers:{'x-api-key':npKey,'Content-Type':'application/json','Authorization':'Bearer '+jwt},body:JSON.stringify({withdrawals:[{address:w.wallet,currency:payoutCurrency,amount:parseFloat(w.amount)}],payout_description:'NetflixZone withdrawal for '+un})}).then(function(r){return r.json();});
+                if(pRes&&pRes.id){w.payoutStatus='paid';w.payoutResponse=JSON.stringify(pRes);w.payoutRef=ref;await saveUser(un,u);refreshAdminData();document.getElementById('payoutResultTitle').textContent='✅ Crypto Payout Initiated!';document.getElementById('payoutResultContent').innerHTML='NOWPayments payout of '+fmtNaira(w.amount)+' to '+esc(w.currency)+' wallet ('+esc(w.wallet.substring(0,12))+'...) initiated.<br><br>Payout ID: '+esc(pRes.id);document.getElementById('payoutResultModal').classList.add('active');}
+                else{w.payoutStatus='payout_failed';w.payoutError=pRes?JSON.stringify(pRes):'Unknown error';await saveUser(un,u);refreshAdminData();alert('NOWPayments payout failed: '+(pRes?(pRes.message||JSON.stringify(pRes)):'No response'));}
+            }catch(err){w.payoutStatus='error';w.payoutError=err.message||String(err);await saveUser(un,u);refreshAdminData();alert('NOWPayments API error: '+err.message);}
+        } else {w.payoutStatus='no_config';await saveUser(un,u);refreshAdminData();alert('NOWPayments not fully configured.');}
     }
-    if (w.payoutStatus === 'approved' || !w.payoutStatus) {
-        await saveUser(un, u); refreshAdminData();
-    }
+    if(w.payoutStatus==='approved'||!w.payoutStatus){await saveUser(un,u);refreshAdminData();}
 }
 
-// ================================================================
-// ADMIN: DECLINE WITHDRAW
-// ================================================================
-async function adminDeclineWithdraw(un, idx) {
-    var u = await loadUser(un);
-    if (!u || !u.withdrawals || !u.withdrawals[idx]) return;
-    if (!confirm('Decline withdrawal for ' + un + '? Balance will be refunded.')) return;
-    var amt = u.withdrawals[idx].amount;
-    u.withdrawals[idx].status = 'declined';
-    u.balance += amt;
-    await saveUser(un, u);
+// ===== ADMIN: DECLINE WITHDRAW =====
+async function adminDeclineWithdraw(un,idx) {
+    var u=await loadUser(un);
+    if(!u||!u.withdrawals||!u.withdrawals[idx])return;
+    if(!confirm('Decline withdrawal for '+un+'? Balance will be refunded.'))return;
+    var amt=u.withdrawals[idx].amount;
+    u.withdrawals[idx].status='declined';
+    u.balance+=amt;
+    await saveUser(un,u);
     refreshAdminData();
 }
 
-// ================================================================
-// ADMIN: UPDATE MIN AMOUNTS / WITHDRAW DAY / MONNIFY / NP KEYS
-// ================================================================
+// ===== ADMIN: UPDATE MIN AMOUNTS / WITHDRAW DAY / MONNIFY / NP KEYS =====
 async function adminUpdateMinAmounts() {
-    var d = parseFloat(document.getElementById('adminMinDeposit').value);
-    var w = parseFloat(document.getElementById('adminMinWithdraw').value);
-    if (isNaN(d) || d < 100 || isNaN(w) || w < 100) return;
+    var d=parseFloat(document.getElementById('adminMinDeposit').value);
+    var w=parseFloat(document.getElementById('adminMinWithdraw').value);
+    if(isNaN(d)||d<100||isNaN(w)||w<100)return;
     await getSettings();
-    _cachedSettings.minDeposit = d;
-    _cachedSettings.minWithdraw = w;
+    _cachedSettings.minDeposit=d;_cachedSettings.minWithdraw=w;
     await saveSettings(_cachedSettings);
     refreshAdminData();
-    document.getElementById('adminActionMsg').textContent = 'Min deposit: ' + fmtNaira(d) + ' | Min withdraw: ' + fmtNaira(w);
+    document.getElementById('adminActionMsg').textContent='Min deposit: '+fmtNaira(d)+' | Min withdraw: '+fmtNaira(w);
 }
 
 async function adminUpdateWithdrawDay() {
-    var day = parseInt(document.getElementById('adminWithdrawDay').value);
+    var day=parseInt(document.getElementById('adminWithdrawDay').value);
     await getSettings();
-    _cachedSettings.withdrawDay = day;
+    _cachedSettings.withdrawDay=day;
     await saveSettings(_cachedSettings);
     refreshAdminData();
-    document.getElementById('adminActionMsg').textContent = 'Withdrawal day: ' + wdName(day);
+    document.getElementById('adminActionMsg').textContent='Withdrawal day: '+wdName(day);
 }
 
 async function adminSaveMonnifyKeys() {
-    var api = document.getElementById('adminMonnifyApiKey').value.trim();
-    var cc = document.getElementById('adminMonnifyContractCode').value.trim();
-    var sk = document.getElementById('adminMonnifySecretKey').value.trim();
-    var src = document.getElementById('adminMonnifySourceAccount').value.trim();
+    var api=document.getElementById('adminMonnifyApiKey').value.trim();
+    var cc=document.getElementById('adminMonnifyContractCode').value.trim();
+    var sk=document.getElementById('adminMonnifySecretKey').value.trim();
+    var src=document.getElementById('adminMonnifySourceAccount').value.trim();
     await getSettings();
-    _cachedSettings.monnifyApiKey = api;
-    _cachedSettings.monnifyContractCode = cc;
-    _cachedSettings.monnifySecretKey = sk;
-    _cachedSettings.monnifySourceAccount = src;
+    _cachedSettings.monnifyApiKey=api;_cachedSettings.monnifyContractCode=cc;_cachedSettings.monnifySecretKey=sk;_cachedSettings.monnifySourceAccount=src;
     await saveSettings(_cachedSettings);
-    document.getElementById('monnifyMsg').textContent = 'Monnify keys saved!';
-    setTimeout(function() { document.getElementById('monnifyMsg').textContent = ''; }, 3000);
+    document.getElementById('monnifyMsg').textContent='Monnify keys saved!';
+    setTimeout(function(){document.getElementById('monnifyMsg').textContent='';},3000);
 }
 
 async function adminSaveNPKeys() {
-    var apik = document.getElementById('adminNPApiKey').value.trim();
-    var sk = document.getElementById('adminNPSecretKey').value.trim();
-    var em = document.getElementById('adminNPEmail').value.trim();
-    var pw = document.getElementById('adminNPPassword').value.trim();
+    var apik=document.getElementById('adminNPApiKey').value.trim();
+    var sk=document.getElementById('adminNPSecretKey').value.trim();
+    var em=document.getElementById('adminNPEmail').value.trim();
+    var pw=document.getElementById('adminNPPassword').value.trim();
     await getSettings();
-    _cachedSettings.npApiKey = apik;
-    _cachedSettings.npSecretKey = sk;
-    _cachedSettings.npEmail = em;
-    _cachedSettings.npPassword = pw;
+    _cachedSettings.npApiKey=apik;_cachedSettings.npSecretKey=sk;_cachedSettings.npEmail=em;_cachedSettings.npPassword=pw;
     await saveSettings(_cachedSettings);
-    document.getElementById('npMsg').textContent = 'NOWPayments keys saved!';
-    setTimeout(function() { document.getElementById('npMsg').textContent = ''; }, 3000);
+    document.getElementById('npMsg').textContent='NOWPayments keys saved!';
+    setTimeout(function(){document.getElementById('npMsg').textContent='';},3000);
 }
 
-// ================================================================
-// ADMIN: CREATE USER
-// ================================================================
+// ===== ADMIN: CREATE USER =====
 async function adminCreateUser() {
-    var u = document.getElementById('adminNewUser').value.trim();
-    var p = document.getElementById('adminNewPass').value.trim();
-    var n = document.getElementById('adminNewName').value.trim();
-    if (!u || !p || !n) { document.getElementById('adminCreateMsg').textContent = 'Fill all fields.'; return; }
-    var existing = await loadUser(u);
-    if (existing) { document.getElementById('adminCreateMsg').textContent = 'Already exists.'; return; }
-    var nd = new Date();
-    var d = nd.getFullYear()+'-'+String(nd.getMonth()+1).padStart(2,'0')+'-'+String(nd.getDate()).padStart(2,'0');
-    var newUser = {
-        fullName: n, email: u+'@netflixzone.local', phone: '', password: p,
-        balance: 0, invested: 0, profit: 0, referralBonus: 0,
-        referralCode: u, referredBy: '', plan: 'Basic', status: 'active',
-        createdAt: d, lastInterestDate: '', transactions: [], withdrawals: [],
-        referrals: [], processedReferences: [], asset: 'metallic', lastAssetSwitch: ''
-    };
-    await saveUser(u, newUser);
-    document.getElementById('adminCreateMsg').textContent = 'Created user: ' + u;
+    var u=document.getElementById('adminNewUser').value.trim();
+    var p=document.getElementById('adminNewPass').value.trim();
+    var n=document.getElementById('adminNewName').value.trim();
+    if(!u||!p||!n){document.getElementById('adminCreateMsg').textContent='Fill all fields.';return;}
+    var existing=await loadUser(u);
+    if(existing){document.getElementById('adminCreateMsg').textContent='Already exists.';return;}
+    var nd=new Date();
+    var d=nd.getFullYear()+'-'+String(nd.getMonth()+1).padStart(2,'0')+'-'+String(nd.getDate()).padStart(2,'0');
+    var nu={fullName:n,email:u+'@netflixzone.local',phone:'',password:p,balance:0,invested:0,profit:0,referralBonus:0,referralCode:u,referredBy:'',plan:'Basic',status:'active',createdAt:d,lastInterestDate:'',transactions:[],withdrawals:[],referrals:[],processedReferences:[],asset:'metallic',lastAssetSwitch:''};
+    await saveUser(u,nu);
+    document.getElementById('adminCreateMsg').textContent='Created user: '+u;
     ['adminNewUser','adminNewPass','adminNewName'].forEach(function(i){document.getElementById(i).value='';});
     refreshAdminData();
 }
 
-// ================================================================
-// ADMIN: CHANGE ADMIN PASSWORD
-// ================================================================
+// ===== ADMIN: CHANGE ADMIN PASSWORD =====
 async function changeAdminPassword() {
-    var cur = document.getElementById('adminCurrentPass').value;
-    var nw = document.getElementById('adminNewPassInput').value;
-    if (!cur || !nw) { document.getElementById('changePassMsg').textContent = 'Fill both fields.'; return; }
-    var adminData = await loadAdmin();
-    if (adminData.password !== cur) { document.getElementById('changePassMsg').textContent = 'Current password wrong.'; return; }
-    adminData.password = nw;
+    var cur=document.getElementById('adminCurrentPass').value;
+    var nw=document.getElementById('adminNewPassInput').value;
+    if(!cur||!nw){document.getElementById('changePassMsg').textContent='Fill both fields.';return;}
+    var adminData=await loadAdmin();
+    if(adminData.password!==cur){document.getElementById('changePassMsg').textContent='Current password wrong.';return;}
+    adminData.password=nw;
     await saveAdmin(adminData);
-    document.getElementById('changePassMsg').innerHTML = 'Changed.';
-    document.getElementById('adminCurrentPass').value = '';
-    document.getElementById('adminNewPassInput').value = '';
+    document.getElementById('changePassMsg').innerHTML='Changed.';
+    document.getElementById('adminCurrentPass').value='';
+    document.getElementById('adminNewPassInput').value='';
 }
 
-// ================================================================
-// ADMIN: RESET USER PASSWORD
-// ================================================================
+// ===== ADMIN: RESET USER PASSWORD =====
 async function adminResetUserPassword() {
-    var u = document.getElementById('adminResetUser').value.trim();
-    var p = document.getElementById('adminResetUserPass').value.trim();
-    if (!u || !p) { document.getElementById('resetUserPassMsg').textContent = 'Fill both.'; return; }
-    var userData = await loadUser(u);
-    if (!userData) { document.getElementById('resetUserPassMsg').textContent = 'User not found.'; return; }
-    userData.password = p;
-    await saveUser(u, userData);
-    document.getElementById('resetUserPassMsg').innerHTML = 'Password reset for ' + u;
-    document.getElementById('adminResetUser').value = '';
-    document.getElementById('adminResetUserPass').value = '';
+    var u=document.getElementById('adminResetUser').value.trim();
+    var p=document.getElementById('adminResetUserPass').value.trim();
+    if(!u||!p){document.getElementById('resetUserPassMsg').textContent='Fill both.';return;}
+    var userData=await loadUser(u);
+    if(!userData){document.getElementById('resetUserPassMsg').textContent='User not found.';return;}
+    userData.password=p;
+    await saveUser(u,userData);
+    document.getElementById('resetUserPassMsg').innerHTML='Password reset for '+u;
+    document.getElementById('adminResetUser').value='';
+    document.getElementById('adminResetUserPass').value='';
 }
 
-// ================================================================
-// ADMIN: APPLY DAILY INTEREST TO ALL
-// ================================================================
+// ===== ADMIN: APPLY DAILY INTEREST TO ALL =====
 async function adminPayAllProfits() {
-    if (!confirm('Apply daily interest to ALL active users?')) return;
+    if(!confirm('Apply daily interest to ALL active users?'))return;
     await getSettings();
-    var allUsers = await loadAllUsers();
-    var today = new Date().toDateString();
-    var count = 0;
-    for (var un in allUsers) {
-        var u = allUsers[un];
-        if (u.status === 'active' && u.balance > 0 && u.lastInterestDate !== today) {
-            var rate = getUserInterestRate(u);
-            var i = u.balance * (rate / 100);
-            u.balance += i;
-            u.profit = (u.profit || 0) + i;
-            if (!u.transactions) u.transactions = [];
-            var n = new Date();
-            var d = n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
-            var assetInfo = getAssetInfo(u.asset || 'metallic');
-            u.transactions.push({date:d, type:'profit', amount:i, description:assetInfo.icon+' '+assetInfo.name+' interest '+rate+'%'});
-            u.lastInterestDate = today;
-            await saveUser(un, u);
+    var allUsers=await loadAllUsers();
+    var today=new Date().toDateString();
+    var count=0;
+    for(var un in allUsers){
+        var u=allUsers[un];
+        if(u.status==='active'&&u.balance>0&&u.lastInterestDate!==today){
+            var rate=getUserInterestRate(u);
+            var i=u.balance*(rate/100);
+            u.balance+=i;u.profit=(u.profit||0)+i;
+            if(!u.transactions)u.transactions=[];
+            var n=new Date();
+            var d=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+            var ai=getAssetInfo(u.asset||'metallic');
+            u.transactions.push({date:d,type:'profit',amount:i,description:ai.icon+' '+ai.name+' interest '+rate+'%'});
+            u.lastInterestDate=today;
+            await saveUser(un,u);
             count++;
         }
     }
-    document.getElementById('adminActionMsg').textContent = 'Applied to ' + count + ' users.';
+    document.getElementById('adminActionMsg').textContent='Applied to '+count+' users.';
     refreshAdminData();
 }
 
-// ================================================================
-// ADMIN: RESET ALL DATA
-// ================================================================
+// ===== ADMIN: RESET ALL DATA =====
 async function adminResetAll() {
-    if (!confirm('WIPE ALL USER DATA? This cannot be undone!')) return;
-    if (!confirm('Are you sure?')) return;
-
-    // Delete all users from the users table
-    var { error } = await supabase
-        .from('users')
-        .delete()
-        .neq('username', ''); // delete all rows
-    if (error) { console.error('Delete all users error', error); return; }
-
-    // Reset settings to defaults
-    var defaults = {
-        interestRate: 2, minDeposit: DEFAULT_MIN_DEPOSIT, minWithdraw: DEFAULT_MIN_WITHDRAW,
-        withdrawDay: 5, monnifyApiKey: '', monnifyContractCode: '', monnifySecretKey: '',
-        monnifySourceAccount: '', npApiKey: '', npSecretKey: '', npEmail: '', npPassword: '',
-        assetRates: { metallic: 2.0, energy: 3.0, gemstone: 4.0 }
-    };
+    if(!confirm('WIPE ALL USER DATA? This cannot be undone!'))return;
+    if(!confirm('Are you sure?'))return;
+    var {error}=await supabase.from('users').delete().neq('username','');
+    if(error){console.error('Delete all users error',error);return;}
+    var defaults={interestRate:2,minDeposit:DEFAULT_MIN_DEPOSIT,minWithdraw:DEFAULT_MIN_WITHDRAW,withdrawDay:5,monnifyApiKey:'',monnifyContractCode:'',monnifySecretKey:'',monnifySourceAccount:'',npApiKey:'',npSecretKey:'',npEmail:'',npPassword:'',assetRates:{metallic:2.0,energy:3.0,gemstone:4.0}};
     await saveSettings(defaults);
     refreshAdminData();
-    document.getElementById('adminActionMsg').textContent = 'Data reset.';
+    document.getElementById('adminActionMsg').textContent='Data reset.';
 }
 
-// ================================================================
-// BOOT — Initialize and restore session
-// ================================================================
+// ===== BOOT =====
 (async function boot() {
     try {
-        // Load settings first
-        await getSettings();
-
-        // Try to restore session
-        var session = getSession();
-        if (session && session.username) {
-            if (session.isAdmin && session.username === 'admin') {
-                var adminData = await loadAdmin();
-                if (adminData) {
-                    isAdminLoggedIn = true;
-                    currentUser = 'admin';
-                    currentUserData = null;
-                    enterDashboard('admin');
-                    return;
-                }
+        await loadSettings();
+        var session=getSession();
+        if(session&&session.username){
+            if(session.isAdmin&&session.username==='admin'){
+                var adminData=await loadAdmin();
+                if(adminData){isAdminLoggedIn=true;currentUser='admin';currentUserData=null;enterDashboard('admin');return;}
             } else {
-                var userData = await loadUser(session.username);
-                if (userData && userData.status !== 'closed') {
-                    currentUser = session.username;
-                    currentUserData = userData;
-                    isAdminLoggedIn = false;
-                    await applyDailyInterest();
-                    enterDashboard('user');
-                    return;
-                } else {
-                    clearSession();
-                }
+                var userData=await loadUser(session.username);
+                if(userData&&userData.status!=='closed'){currentUser=session.username;currentUserData=userData;isAdminLoggedIn=false;await applyDailyInterest();enterDashboard('user');return;}
+                else clearSession();
             }
         }
-    } catch(e) {
-        console.log('Boot error (session may be fresh):', e);
-    }
+    } catch(e) { console.log('Boot error:',e); }
 })();
 </script>
 </body>
-</html>
+</html>    
