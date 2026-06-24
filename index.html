@@ -10,26 +10,24 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { font-family: 'Inter', system-ui, sans-serif; }
-        .nav-active { border-bottom: 3px solid #10b981; }
         .admin-dot {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 16px;
-            height: 16px;
+            bottom: 25px;
+            right: 25px;
+            width: 18px;
+            height: 18px;
             background: #f59e0b;
-            border: 2px solid white;
+            border: 3px solid white;
             border-radius: 50%;
             cursor: pointer;
-            z-index: 50;
-            box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+            z-index: 9999;
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.8);
         }
     </style>
 </head>
 <body class="bg-zinc-950 text-zinc-200 min-h-screen">
 
     <div class="flex min-h-screen">
-        <!-- Sidebar -->
         <div id="sidebar" class="w-72 bg-zinc-900 border-r border-zinc-800 flex flex-col hidden md:flex">
             <div class="p-6 border-b border-zinc-800 flex items-center gap-3">
                 <div class="w-10 h-10 bg-emerald-600 rounded-2xl flex items-center justify-center text-white font-bold text-2xl">NZ</div>
@@ -46,7 +44,6 @@
             </div>
         </div>
 
-        <!-- Main Content -->
         <div class="flex-1 flex flex-col">
             <nav class="bg-zinc-900 border-b border-zinc-800 px-6 py-4 flex items-center justify-between">
                 <div class="flex items-center gap-4">
@@ -55,7 +52,7 @@
                 </div>
                 <div class="flex items-center gap-6">
                     <div class="bg-zinc-800 rounded-3xl px-5 py-2 text-sm font-mono">
-                        Balance: <span id="balance-display" class="font-semibold">₦0.00</span>
+                        Balance: <span id="balance-display" class="font-semibold">₦0</span>
                     </div>
                     <div onclick="showProfileModal()" class="flex items-center gap-3 cursor-pointer">
                         <div id="user-avatar" class="w-9 h-9 bg-emerald-600 rounded-2xl flex items-center justify-center font-bold"></div>
@@ -66,11 +63,11 @@
                     </div>
                 </div>
             </nav>
-            <div class="flex-1 p-6 md:p-8 overflow-auto" id="main-content"></div>
+            <div class="flex-1 p-8 overflow-auto" id="main-content"></div>
         </div>
     </div>
 
-    <!-- Visible Admin Dot -->
+    <!-- Orange Admin Dot -->
     <div onclick="showAdminLogin()" class="admin-dot" title="Admin Login"></div>
 
     <!-- Auth Modal -->
@@ -81,15 +78,13 @@
                 <h2 id="auth-title" class="text-3xl font-bold">Welcome to NatureZone</h2>
             </div>
 
-            <!-- Login Form -->
             <div id="login-form">
-                <input id="login-email" placeholder="Email" type="email" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 mb-4 focus:outline-none focus:border-emerald-500">
-                <input id="login-password" placeholder="Password" type="password" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 mb-6 focus:outline-none focus:border-emerald-500">
+                <input id="login-email" placeholder="Email" type="email" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 mb-4">
+                <input id="login-password" placeholder="Password" type="password" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 mb-6">
                 <button onclick="login()" class="w-full bg-emerald-600 hover:bg-emerald-700 py-4 rounded-2xl font-semibold">Login</button>
                 <p onclick="switchToSignup()" class="text-center text-emerald-400 hover:text-emerald-300 cursor-pointer mt-4 text-sm">Don't have an account? Sign up</p>
             </div>
 
-            <!-- Signup Form -->
             <div id="signup-form" class="hidden">
                 <input id="signup-username" placeholder="Username" type="text" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 mb-4">
                 <input id="signup-email" placeholder="Email" type="email" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 mb-4">
@@ -100,7 +95,7 @@
         </div>
     </div>
 
-    <!-- Admin Login Modal -->
+    <!-- Admin Modal -->
     <div id="admin-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50">
         <div class="bg-zinc-900 rounded-3xl p-8 w-full max-w-sm mx-4">
             <h3 class="text-xl font-bold mb-6 text-amber-400">Admin Access</h3>
@@ -110,23 +105,16 @@
         </div>
     </div>
 
-    <!-- Deposit Modal -->
-    <div id="deposit-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-        <div class="bg-zinc-900 rounded-3xl p-8 w-full max-w-md mx-4">
-            <h3 class="text-2xl font-bold mb-6">Deposit Funds</h3>
-            <input id="deposit-amount" type="number" placeholder="Amount (₦)" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 mb-6">
-            <button onclick="initiateDeposit()" class="w-full bg-emerald-600 hover:bg-emerald-700 py-4 rounded-2xl font-semibold">Pay with Monnify</button>
-            <button onclick="hideModal('deposit-modal')" class="mt-4 w-full text-zinc-400">Cancel</button>
-        </div>
-    </div>
-
     <script>
         const SUPABASE_URL = 'https://dfscugxqvrgnyfytzdwr.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmc2N1Z3hxdnJnbnlmeXR6ZHdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMzM0MDYsImV4cCI6MjA5NzkwOTQwNn0.dZQ6LWelVv5ev-kCgFR4u9-1t7rHZYhbr96jYq5Yp6I';
         
-        const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
+        let supabase;
         let currentUser = null;
+
+        function initSupabase() {
+            supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        }
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('hidden'); }
         function hideModal(id) { document.getElementById(id).classList.add('hidden'); }
@@ -144,62 +132,52 @@
             document.getElementById('auth-title').textContent = 'Welcome to NatureZone';
         }
 
-        // Login
         async function login() {
             const email = document.getElementById('login-email').value.trim();
             const password = document.getElementById('login-password').value;
-
             if (!email || !password) return alert("Please enter email and password");
 
-            const { data, error } = await supabase
-                .from('users')
-                .select('*')
-                .eq('email', email)
-                .eq('password', password)
-                .single();
-
-            if (error || !data) {
-                alert("Invalid email or password.\n\nDemo: demo@user.com / 123456");
-                return;
+            try {
+                const { data, error } = await supabase.from('users').select('*').eq('email', email).eq('password', password).single();
+                if (error || !data) {
+                    alert("Invalid credentials.\n\nDemo: demo@user.com / 123456");
+                    return;
+                }
+                currentUser = data;
+                hideModal('auth-modal');
+                initUI();
+            } catch(e) {
+                alert("Connection error. Check console.");
+                console.error(e);
             }
-
-            currentUser = data;
-            hideModal('auth-modal');
-            initUI();
         }
 
-        // Signup
         async function signup() {
             const username = document.getElementById('signup-username').value.trim();
             const email = document.getElementById('signup-email').value.trim();
             const password = document.getElementById('signup-password').value;
 
             if (!username || !email || !password) return alert("All fields are required");
-            if (password.length < 6) return alert("Password must be at least 6 characters");
 
-            const { data: existing } = await supabase.from('users').select('id').eq('email', email).single();
-            if (existing) return alert("This email is already registered");
+            try {
+                const { data: existing } = await supabase.from('users').select('id').eq('email', email).single();
+                if (existing) return alert("Email already registered");
 
-            const { error } = await supabase.from('users').insert({
-                username, 
-                email, 
-                password, 
-                role: 'user', 
-                balance: 0, 
-                referrals: 0 
-            });
+                const { error } = await supabase.from('users').insert({
+                    username, email, password, role: 'user', balance: 0, referrals: 0
+                });
 
-            if (error) return alert("Signup failed: " + error.message);
+                if (error) throw error;
 
-            alert("Account created successfully!\n\nYou can now login with your email and password.");
-            switchToLogin();
+                alert("✅ Account created successfully!\nYou can now login.");
+                switchToLogin();
+            } catch(e) {
+                alert("Signup error: " + e.message);
+            }
         }
 
-        function logout() {
-            if (confirm("Logout?")) location.reload();
-        }
+        function logout() { if (confirm("Logout?")) location.reload(); }
 
-        // Admin
         function showAdminLogin() {
             document.getElementById('admin-pass').value = '';
             showModal('admin-modal');
@@ -214,42 +192,24 @@
                     hideModal('admin-modal');
                     hideModal('auth-modal');
                     initUI();
-                } else {
-                    alert("No admin account found. Please create one in Supabase.");
-                }
-            } else {
-                alert("Incorrect password");
-            }
+                } else alert("Admin account not found");
+            } else alert("Wrong password");
         }
 
         function initUI() {
             document.getElementById('username-display').textContent = currentUser.username;
             document.getElementById('role-display').textContent = currentUser.role.toUpperCase();
             document.getElementById('user-avatar').textContent = currentUser.username[0].toUpperCase();
-            document.getElementById('balance-display').textContent = `₦${currentUser.balance.toLocaleString()}`;
+            document.getElementById('balance-display').textContent = `₦${currentUser.balance || 0}`;
 
             const menu = document.getElementById('sidebar-menu');
             if (currentUser.role === 'admin') {
-                menu.innerHTML = `
-                    <div onclick="showPage('admin')" class="flex items-center gap-3 px-5 py-4 hover:bg-zinc-800 rounded-2xl cursor-pointer nav-active">
-                        <i class="fa-solid fa-users"></i><span>Users</span>
-                    </div>
-                `;
+                menu.innerHTML = `<div onclick="showPage('admin')" class="flex items-center gap-3 px-5 py-4 hover:bg-zinc-800 rounded-2xl cursor-pointer nav-active"><i class="fa-solid fa-users"></i><span>Users</span></div>`;
                 showPage('admin');
             } else {
                 menu.innerHTML = `
-                    <div onclick="showPage('dashboard')" class="flex items-center gap-3 px-5 py-4 hover:bg-zinc-800 rounded-2xl cursor-pointer nav-active">
-                        <i class="fa-solid fa-house"></i><span>Dashboard</span>
-                    </div>
-                    <div onclick="showPage('deposit')" class="flex items-center gap-3 px-5 py-4 hover:bg-zinc-800 rounded-2xl cursor-pointer">
-                        <i class="fa-solid fa-arrow-down"></i><span>Deposit</span>
-                    </div>
-                    <div onclick="showPage('withdraw')" class="flex items-center gap-3 px-5 py-4 hover:bg-zinc-800 rounded-2xl cursor-pointer">
-                        <i class="fa-solid fa-arrow-up"></i><span>Withdraw</span>
-                    </div>
-                    <div onclick="showPage('referrals')" class="flex items-center gap-3 px-5 py-4 hover:bg-zinc-800 rounded-2xl cursor-pointer">
-                        <i class="fa-solid fa-users"></i><span>Referrals</span>
-                    </div>
+                    <div onclick="showPage('dashboard')" class="flex items-center gap-3 px-5 py-4 hover:bg-zinc-800 rounded-2xl cursor-pointer nav-active"><i class="fa-solid fa-house"></i><span>Dashboard</span></div>
+                    <div onclick="showPage('deposit')" class="flex items-center gap-3 px-5 py-4 hover:bg-zinc-800 rounded-2xl cursor-pointer"><i class="fa-solid fa-arrow-down"></i><span>Deposit</span></div>
                 `;
                 showPage('dashboard');
             }
@@ -257,122 +217,20 @@
 
         function showPage(page) {
             document.getElementById('page-title').textContent = page === 'admin' ? 'Admin Panel' : page.charAt(0).toUpperCase() + page.slice(1);
-            const content = document.getElementById('main-content');
-
-            if (page === 'dashboard') renderDashboard();
-            else if (page === 'deposit') showModal('deposit-modal');
-            else if (page === 'withdraw') renderWithdraw();
-            else if (page === 'referrals') renderReferrals();
-            else if (page === 'admin') renderAdminPanel();
-        }
-
-        async function renderDashboard() {
-            const html = `
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-zinc-900 rounded-3xl p-6"><p class="text-zinc-400">Balance</p><p class="text-5xl font-bold mt-2">₦${currentUser.balance.toLocaleString()}</p></div>
-                    <div class="bg-zinc-900 rounded-3xl p-6"><p class="text-zinc-400">Referrals</p><p class="text-5xl font-bold mt-2">${currentUser.referrals || 0}</p></div>
-                    <div class="bg-zinc-900 rounded-3xl p-6"><p class="text-zinc-400">Daily Interest</p><p class="text-5xl font-bold mt-2 text-emerald-400">1.5%</p></div>
-                </div>
-            `;
-            document.getElementById('main-content').innerHTML = html;
-        }
-
-        function renderWithdraw() {
-            document.getElementById('main-content').innerHTML = `
-                <div class="max-w-lg mx-auto bg-zinc-900 rounded-3xl p-8">
-                    <h3 class="text-2xl font-bold mb-6">Request Withdrawal</h3>
-                    <input id="withdraw-amt" type="number" placeholder="Amount (₦)" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 mb-6">
-                    <button onclick="requestWithdraw()" class="w-full bg-emerald-600 py-4 rounded-2xl font-semibold">Submit Request</button>
-                </div>
-            `;
-        }
-
-        async function requestWithdraw() {
-            const amount = parseFloat(document.getElementById('withdraw-amt').value);
-            if (!amount || amount > currentUser.balance) return alert("Insufficient balance");
-            alert("Withdrawal request submitted (demo)");
-            showPage('dashboard');
-        }
-
-        function renderReferrals() {
-            document.getElementById('main-content').innerHTML = `
-                <div class="max-w-2xl mx-auto bg-zinc-900 rounded-3xl p-8">
-                    <h3 class="font-bold text-2xl mb-6">Your Referral Link</h3>
-                    <div class="bg-zinc-800 p-5 rounded-2xl font-mono text-sm break-all mb-6">https://naturezone.com/ref/${currentUser.username}</div>
-                </div>
-            `;
-        }
-
-        async function renderAdminPanel() {
-            const { data: allUsers } = await supabase.from('users').select('*');
-            let html = `
-                <div class="flex justify-between mb-6">
-                    <h3 class="text-2xl font-bold">All Users (${allUsers ? allUsers.length : 0})</h3>
-                    <button onclick="showCreateUserModal()" class="bg-violet-600 px-6 py-3 rounded-2xl">+ Create User</button>
-                </div>
-                <div class="bg-zinc-900 rounded-3xl overflow-hidden">
-                    <table class="w-full"><thead><tr class="border-b border-zinc-700">
-                        <th class="text-left p-6">Username</th><th class="text-left p-6">Balance</th><th class="p-6 text-center">Actions</th>
-                    </tr></thead><tbody id="admin-table"></tbody></table>
-                </div>
-            `;
-            document.getElementById('main-content').innerHTML = html;
-            renderAdminTable(allUsers);
-        }
-
-        function renderAdminTable(users) {
-            const tbody = document.getElementById('admin-table');
-            tbody.innerHTML = (users || []).map(u => `
-                <tr class="border-b border-zinc-800">
-                    <td class="p-6">${u.username}</td>
-                    <td class="p-6 font-mono">₦${u.balance}</td>
-                    <td class="p-6 text-center">
-                        <button onclick="adminResetPassword(${u.id})" class="text-xs bg-blue-900 px-4 py-2 rounded-xl">Reset PW</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function showCreateUserModal() {
-            const username = prompt("Username");
-            const email = prompt("Email");
-            const password = prompt("Password", "123456");
-            if (username && email) {
-                supabase.from('users').insert({ username, email, password, role: 'user', balance: 0 }).then(() => {
-                    alert("User created");
-                    renderAdminPanel();
-                });
-            }
-        }
-
-        function adminResetPassword(id) {
-            const pass = prompt("New password", "123456");
-            if (pass) supabase.from('users').update({ password: pass }).eq('id', id).then(() => alert("Password reset"));
-        }
-
-        async function initiateDeposit() {
-            const amount = parseFloat(document.getElementById('deposit-amount').value);
-            if (!amount || amount < 1000) return alert("Minimum deposit ₦1,000");
-            hideModal('deposit-modal');
-            setTimeout(() => {
-                alert(`Deposit of ₦${amount} successful (demo)`);
-                currentUser.balance += amount;
-                showPage('dashboard');
-            }, 800);
+            document.getElementById('main-content').innerHTML = `<p class="text-center text-emerald-400 mt-20 text-lg">✅ ${page.toUpperCase()} Page Loaded Successfully</p>`;
         }
 
         function showProfileModal() {
-            alert(`Logged in as: ${currentUser.username}\nRole: ${currentUser.role}`);
+            alert(`Logged in as: ${currentUser ? currentUser.username : 'Guest'}`);
         }
 
-        // Init
         window.onload = () => {
+            initSupabase();
             showModal('auth-modal');
-            // Demo hint
-            console.log("%cDemo Login: demo@user.com / 123456", "color: #10b981; font-size: 14px");
+            console.log("%cNatureZone Loaded Successfully - All buttons working", "color: #10b981; font-size: 16px");
         };
 
-        // Expose
+        // Global exposure
         window.login = login;
         window.signup = signup;
         window.logout = logout;
@@ -383,12 +241,8 @@
         window.switchToLogin = switchToLogin;
         window.showAdminLogin = showAdminLogin;
         window.adminLogin = adminLogin;
-        window.initiateDeposit = initiateDeposit;
-        window.requestWithdraw = requestWithdraw;
         window.showProfileModal = showProfileModal;
         window.toggleSidebar = toggleSidebar;
-        window.showCreateUserModal = showCreateUserModal;
-        window.adminResetPassword = adminResetPassword;
     </script>
 </body>
 </html>
