@@ -788,13 +788,13 @@ function updateSyncStatus(status) {
     var el = document.getElementById('syncStatus');
     if (!el) return;
     if (status === 'saved') {
-        el.textContent = '💾 Saved locally';
+        el.textContent = '💾';
         el.className = 'sync-status synced';
     } else if (status === 'syncing') {
         el.textContent = '☁️ Syncing to cloud...';
         el.className = 'sync-status syncing';
     } else if (status === 'synced') {
-        el.textContent = '☁️ Cloud backup OK';
+        el.textContent = '☁️OK';
         el.className = 'sync-status synced';
     } else {
         el.textContent = '⚠️ Cloud sync failed (local OK)';
