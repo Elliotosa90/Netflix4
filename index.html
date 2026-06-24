@@ -6,66 +6,51 @@
     <title>InvestPro - Smart Investments</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { font-family: 'Inter', system-ui, sans-serif; }
         .glass { background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); }
         .nav-active { border-bottom: 3px solid #3b82f6; }
-        .modal { animation: modalPop 0.3s ease; }
-        @keyframes modalPop { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
-<body class="bg-zinc-950 text-zinc-200">
-    <div class="min-h-screen flex">
+<body class="bg-zinc-950 text-zinc-200 min-h-screen">
+
+    <div class="flex min-h-screen">
         <!-- Sidebar -->
         <div id="sidebar" class="w-72 bg-zinc-900 border-r border-zinc-800 flex flex-col hidden md:flex">
-            <div class="p-6 border-b border-zinc-800">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-bold text-2xl">IP</div>
-                    <div>
-                        <h1 class="text-2xl font-bold tracking-tight">InvestPro</h1>
-                        <p class="text-xs text-zinc-500">Secure • Fast • Rewarding</p>
-                    </div>
+            <div class="p-6 border-b border-zinc-800 flex items-center gap-3">
+                <div class="w-10 h-10 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-bold text-2xl">IP</div>
+                <div>
+                    <h1 class="text-2xl font-bold">InvestPro</h1>
+                    <p class="text-xs text-zinc-500">Secure Investments</p>
                 </div>
             </div>
-            
-            <div id="user-menu" class="flex-1 px-4 py-6 space-y-1">
-                <!-- Populated by JS -->
-            </div>
-            
-            <div id="admin-menu" class="flex-1 px-4 py-6 space-y-1 hidden">
-                <!-- Populated by JS -->
-            </div>
-            
+
+            <div id="sidebar-menu" class="flex-1 p-4 space-y-1"></div>
+
             <div class="p-4 border-t border-zinc-800">
                 <div onclick="logout()" class="flex items-center gap-3 text-red-400 hover:bg-zinc-800 p-3 rounded-2xl cursor-pointer">
                     <i class="fa-solid fa-right-from-bracket"></i>
-                    <span class="font-medium">Logout</span>
+                    <span>Logout</span>
                 </div>
             </div>
         </div>
 
         <!-- Main Content -->
         <div class="flex-1 flex flex-col">
-            <!-- Top Nav -->
             <nav class="bg-zinc-900 border-b border-zinc-800 px-6 py-4 flex items-center justify-between">
                 <div class="flex items-center gap-4">
-                    <button onclick="toggleSidebar()" class="md:hidden text-2xl">
-                        <i class="fa-solid fa-bars"></i>
-                    </button>
+                    <button onclick="toggleSidebar()" class="md:hidden text-2xl"><i class="fa-solid fa-bars"></i></button>
                     <h2 id="page-title" class="text-2xl font-semibold">Dashboard</h2>
                 </div>
                 
                 <div class="flex items-center gap-6">
-                    <div class="flex items-center gap-2 bg-zinc-800 rounded-3xl px-4 py-2 text-sm">
-                        <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                        <span id="balance-display" class="font-mono font-semibold">$0.00</span>
+                    <div class="bg-zinc-800 rounded-3xl px-5 py-2 text-sm font-mono">
+                        Balance: <span id="balance-display" class="font-semibold">₦0.00</span>
                     </div>
-                    
-                    <div class="flex items-center gap-3">
-                        <div id="user-avatar" onclick="showProfileModal()" 
-                             class="w-9 h-9 bg-blue-600 rounded-2xl flex items-center justify-center font-bold cursor-pointer">
-                        </div>
+                    <div onclick="showProfileModal()" class="flex items-center gap-3 cursor-pointer">
+                        <div id="user-avatar" class="w-9 h-9 bg-blue-600 rounded-2xl flex items-center justify-center font-bold"></div>
                         <div>
                             <div id="username-display" class="font-semibold text-sm"></div>
                             <div id="role-display" class="text-xs text-zinc-500"></div>
@@ -74,711 +59,341 @@
                 </div>
             </nav>
 
-            <!-- Content Area -->
-            <div class="flex-1 p-8 overflow-auto" id="main-content">
-                <!-- Dynamic content loaded here by JS -->
-            </div>
+            <div class="flex-1 p-6 md:p-8 overflow-auto" id="main-content"></div>
         </div>
     </div>
 
+    <!-- Tiny Admin Login Dot -->
+    <div onclick="showHiddenAdminLogin()" 
+         class="fixed bottom-2 right-2 w-2 h-2 bg-transparent hover:bg-amber-400 rounded-full cursor-pointer transition-colors z-50"
+         title="Admin Access"></div>
+
     <!-- Login Modal -->
-    <div id="login-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-        <div class="glass w-full max-w-md mx-4 rounded-3xl p-8 shadow-2xl modal">
+    <div id="login-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+        <div class="bg-zinc-900 rounded-3xl p-8 w-full max-w-md mx-4">
             <div class="text-center mb-8">
                 <div class="mx-auto w-16 h-16 bg-blue-600 rounded-3xl flex items-center justify-center text-4xl mb-4">IP</div>
-                <h2 class="text-3xl font-bold">Welcome Back</h2>
-                <p class="text-zinc-400">Sign in to access your account</p>
+                <h2 class="text-3xl font-bold">Welcome to InvestPro</h2>
             </div>
+            <input id="login-email" placeholder="Email" type="email" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 mb-4 focus:outline-none focus:border-blue-500">
+            <input id="login-password" placeholder="Password" type="password" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 mb-6 focus:outline-none focus:border-blue-500">
             
-            <div class="space-y-6">
-                <div>
-                    <label class="block text-sm mb-2">Email / Username</label>
-                    <input id="login-email" type="text" value="demo@user.com" 
-                           class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 focus:outline-none focus:border-blue-500">
-                </div>
-                <div>
-                    <label class="block text-sm mb-2">Password</label>
-                    <input id="login-password" type="password" value="123456" 
-                           class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 focus:outline-none focus:border-blue-500">
-                </div>
-                
-                <div class="flex gap-3">
-                    <button onclick="loginAs('user')" 
-                            class="flex-1 bg-blue-600 hover:bg-blue-700 py-4 rounded-2xl font-semibold transition">
-                        Login as User
-                    </button>
-                    <button onclick="loginAs('admin')" 
-                            class="flex-1 bg-amber-600 hover:bg-amber-700 py-4 rounded-2xl font-semibold transition">
-                        Login as Admin
-                    </button>
-                </div>
-                
-                <div class="text-center text-xs text-zinc-500">
-                    Demo credentials pre-filled. Password: 123456
-                </div>
-            </div>
+            <button onclick="login()" class="w-full bg-blue-600 hover:bg-blue-700 py-4 rounded-2xl font-semibold">Login</button>
+            <p class="text-center text-xs text-zinc-500 mt-4">Don't have an account? Contact support.</p>
         </div>
     </div>
 
     <!-- Deposit Modal -->
-    <div id="deposit-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-        <div class="glass w-full max-w-lg mx-4 rounded-3xl p-8 modal">
-            <h3 class="text-2xl font-bold mb-6">Make a Deposit</h3>
-            <div class="space-y-6">
-                <div>
-                    <label class="block text-sm mb-2">Amount (₦)</label>
-                    <input id="deposit-amount" type="number" value="50000" 
-                           class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4">
-                </div>
-                <button onclick="initiateMonnifyDeposit()" 
-                        class="w-full bg-emerald-600 hover:bg-emerald-700 py-4 rounded-2xl font-semibold flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-credit-card"></i>
-                    Pay with Monnify
-                </button>
-                <div class="text-xs text-center text-zinc-500">
-                    Secure payment powered by Monnify
-                </div>
-            </div>
-            <button onclick="hideModal('deposit-modal')" 
-                    class="mt-6 text-zinc-400 hover:text-white w-full py-3">Cancel</button>
+    <div id="deposit-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+        <div class="bg-zinc-900 rounded-3xl p-8 w-full max-w-md mx-4">
+            <h3 class="text-2xl font-bold mb-6">Deposit Funds</h3>
+            <input id="deposit-amount" type="number" placeholder="Amount (₦)" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 mb-6">
+            <button onclick="initiateDeposit()" class="w-full bg-emerald-600 hover:bg-emerald-700 py-4 rounded-2xl font-semibold">Pay with Monnify</button>
+            <button onclick="hideModal('deposit-modal')" class="mt-4 w-full text-zinc-400">Cancel</button>
         </div>
     </div>
 
-    <!-- Withdraw Modal -->
-    <div id="withdraw-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-        <div class="glass w-full max-w-lg mx-4 rounded-3xl p-8 modal">
-            <h3 class="text-2xl font-bold mb-6">Request Withdrawal</h3>
-            <div class="space-y-6">
-                <div>
-                    <label class="block text-sm mb-2">Amount (₦)</label>
-                    <input id="withdraw-amount" type="number" value="20000" 
-                           class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4">
-                </div>
-                <button onclick="requestWithdrawal()" 
-                        class="w-full bg-blue-600 hover:bg-blue-700 py-4 rounded-2xl font-semibold">
-                    Submit Withdrawal Request
-                </button>
-            </div>
-            <button onclick="hideModal('withdraw-modal')" 
-                    class="mt-6 text-zinc-400 hover:text-white w-full py-3">Cancel</button>
-        </div>
-    </div>
-
-    <!-- Admin Create User Modal -->
-    <div id="create-user-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-        <div class="glass w-full max-w-md mx-4 rounded-3xl p-8 modal">
-            <h3 class="text-2xl font-bold mb-6">Create New User</h3>
-            <div class="space-y-4">
-                <input id="new-username" placeholder="Username" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4">
-                <input id="new-email" placeholder="Email" type="email" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4">
-                <input id="new-password" placeholder="Password" type="password" value="123456" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4">
-                <button onclick="createNewUser()" class="w-full bg-violet-600 py-4 rounded-2xl font-semibold">Create Account</button>
-            </div>
-            <button onclick="hideModal('create-user-modal')" class="mt-6 text-zinc-400 hover:text-white w-full py-3">Cancel</button>
-        </div>
-    </div>
-
-    <!-- Profile Modal -->
-    <div id="profile-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-        <div class="glass w-full max-w-sm mx-4 rounded-3xl p-8 modal">
-            <div class="flex justify-center mb-6">
-                <div id="modal-avatar" class="w-24 h-24 bg-blue-600 rounded-3xl flex items-center justify-center text-5xl font-bold"></div>
-            </div>
-            <h3 id="modal-username" class="text-center text-2xl font-bold mb-1"></h3>
-            <p id="modal-email" class="text-center text-zinc-400 mb-8"></p>
-            
-            <div onclick="resetOwnPassword()" class="flex items-center justify-between p-4 hover:bg-zinc-800 rounded-2xl cursor-pointer">
-                <div class="flex items-center gap-3">
-                    <i class="fa-solid fa-key text-amber-400"></i>
-                    <span>Reset Password</span>
-                </div>
-            </div>
-            
-            <button onclick="hideModal('profile-modal')" 
-                    class="mt-8 w-full py-4 bg-zinc-800 hover:bg-zinc-700 rounded-2xl">Close</button>
+    <!-- Admin Secret Login Modal -->
+    <div id="admin-secret-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+        <div class="bg-zinc-900 rounded-3xl p-8 w-full max-w-sm mx-4">
+            <h3 class="text-xl font-bold mb-6 text-amber-400">Admin Access</h3>
+            <input id="admin-secret-pass" type="password" placeholder="Admin Password" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 mb-6">
+            <button onclick="adminSecretLogin()" class="w-full bg-amber-600 py-4 rounded-2xl">Access Admin Panel</button>
         </div>
     </div>
 
     <script>
-        // Tailwind script already loaded via CDN
+        // ================== SUPABASE CONFIG ==================
+        const SUPABASE_URL = 'https://your-project.supabase.co';           // ← CHANGE THIS
+        const SUPABASE_ANON_KEY = 'your-anon-key-here';                   // ← CHANGE THIS
         
+        const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
         let currentUser = null;
-        let users = [
-            {
-                id: 1,
-                username: "demo_user",
-                email: "demo@user.com",
-                password: "123456",
-                balance: 125000,
-                role: "user",
-                createdAt: "2025-11-12 14:30",
-                referrer: null,
-                referrals: 3,
-                frozen: false
-            },
-            {
-                id: 2,
-                username: "john_invest",
-                email: "john@example.com",
-                password: "123456",
-                balance: 45000,
-                role: "user",
-                createdAt: "2025-12-01 09:15",
-                referrer: 1,
-                referrals: 0,
-                frozen: false
-            }
-        ];
-        
-        let transactions = [
-            { id: 1, userId: 1, type: "deposit", amount: 100000, date: "2026-06-20 10:45", status: "completed" },
-            { id: 2, userId: 1, type: "referral", amount: 10000, date: "2026-06-18 16:22", status: "completed" }
-        ];
-        
-        let withdrawalRequests = [];
-        
-        // Monnify simulation
-        function initiateMonnifyDeposit() {
-            const amount = parseFloat(document.getElementById('deposit-amount').value);
-            if (!amount || amount < 1000) {
-                alert("Minimum deposit is ₦1,000");
-                return;
-            }
-            
-            hideModal('deposit-modal');
-            
-            // Simulate payment success
-            setTimeout(() => {
-                const user = users.find(u => u.id === currentUser.id);
-                if (user) {
-                    user.balance += amount;
-                    transactions.push({
-                        id: Date.now(),
-                        userId: user.id,
-                        type: "deposit",
-                        amount: amount,
-                        date: new Date().toISOString().slice(0,16).replace('T',' '),
-                        status: "completed"
-                    });
-                    
-                    // Give 20% referral bonus to referrer if first deposit
-                    if (user.referrer) {
-                        const referrer = users.find(u => u.id === user.referrer);
-                        if (referrer) {
-                            const bonus = amount * 0.20;
-                            referrer.balance += bonus;
-                            transactions.push({
-                                id: Date.now() + 1,
-                                userId: referrer.id,
-                                type: "referral",
-                                amount: bonus,
-                                date: new Date().toISOString().slice(0,16).replace('T',' '),
-                                status: "completed"
-                            });
-                        }
-                    }
-                    
-                    alert(`Deposit of ₦${amount.toLocaleString()} successful! Balance updated.`);
-                    renderCurrentPage();
-                }
-            }, 1500);
-        }
-        
-        function requestWithdrawal() {
-            const amount = parseFloat(document.getElementById('withdraw-amount').value);
-            const user = users.find(u => u.id === currentUser.id);
-            
-            if (!user || amount > user.balance) {
-                alert("Insufficient balance!");
-                return;
-            }
-            
-            withdrawalRequests.push({
-                id: Date.now(),
-                userId: user.id,
-                amount: amount,
-                status: "pending",
-                date: new Date().toISOString().slice(0,16).replace('T',' ')
-            });
-            
-            hideModal('withdraw-modal');
-            alert("Withdrawal request submitted. Awaiting admin approval.");
-            renderCurrentPage();
-        }
-        
+
+        // ================== UTILITIES ==================
         function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('hidden');
+            document.getElementById('sidebar').classList.toggle('hidden');
         }
-        
+
+        function hideModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
         function showPage(page) {
+            document.getElementById('page-title').textContent = page === 'admin' ? 'Admin Panel' : page.charAt(0).toUpperCase() + page.slice(1);
             const content = document.getElementById('main-content');
-            document.getElementById('page-title').textContent = page.charAt(0).toUpperCase() + page.slice(1);
-            
-            if (page === 'dashboard') {
-                content.innerHTML = `
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="bg-zinc-900 rounded-3xl p-6">
-                            <div class="flex justify-between">
-                                <div>
-                                    <p class="text-zinc-400 text-sm">Total Balance</p>
-                                    <p id="dash-balance" class="text-4xl font-bold mt-2">₦${currentUser.balance.toLocaleString()}</p>
-                                </div>
-                                <i class="fa-solid fa-wallet text-4xl text-blue-500"></i>
-                            </div>
-                        </div>
-                        
-                        <div class="bg-zinc-900 rounded-3xl p-6">
-                            <div class="flex justify-between">
-                                <div>
-                                    <p class="text-zinc-400 text-sm">Referrals</p>
-                                    <p class="text-4xl font-bold mt-2">${currentUser.referrals || 0}</p>
-                                </div>
-                                <i class="fa-solid fa-users text-4xl text-emerald-500"></i>
-                            </div>
-                        </div>
-                        
-                        <div class="bg-zinc-900 rounded-3xl p-6">
-                            <div class="flex justify-between">
-                                <div>
-                                    <p class="text-zinc-400 text-sm">Total Earned</p>
-                                    <p class="text-4xl font-bold mt-2">₦${(currentUser.balance * 0.3).toFixed(0)}</p>
-                                </div>
-                                <i class="fa-solid fa-chart-line text-4xl text-amber-500"></i>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-8 bg-zinc-900 rounded-3xl p-6">
-                        <h3 class="font-semibold mb-4 flex items-center gap-2">
-                            <i class="fa-solid fa-clock"></i> Recent Transactions
-                        </h3>
-                        <div id="recent-transactions" class="space-y-4"></div>
-                    </div>
-                    
-                    <div class="mt-6 bg-zinc-900 rounded-3xl p-8 text-center">
-                        <p class="text-lg mb-4">Your Referral Link</p>
-                        <div class="bg-zinc-800 p-4 rounded-2xl font-mono text-sm break-all">
-                            https://investpro.com/ref/${currentUser.username}
-                        </div>
-                        <button onclick="copyReferralLink()" class="mt-4 px-8 py-3 bg-white text-zinc-900 rounded-2xl font-semibold">Copy Link</button>
-                    </div>
-                `;
-                renderRecentTransactions();
-            } 
-            else if (page === 'deposit') {
-                document.getElementById('deposit-modal').classList.remove('hidden');
-            } 
-            else if (page === 'withdraw') {
-                document.getElementById('withdraw-modal').classList.remove('hidden');
-            } 
-            else if (page === 'referrals' && currentUser.role === 'user') {
-                content.innerHTML = `
-                    <div class="max-w-2xl mx-auto bg-zinc-900 rounded-3xl p-8">
-                        <h3 class="text-xl font-semibold mb-6">Your Referrals</h3>
-                        <div class="space-y-4" id="referral-list"></div>
-                    </div>
-                `;
-                renderReferrals();
-            } 
-            else if (page === 'admin' && currentUser.role === 'admin') {
-                renderAdminDashboard();
-            }
+
+            if (page === 'dashboard') renderDashboard();
+            else if (page === 'deposit') document.getElementById('deposit-modal').classList.remove('hidden');
+            else if (page === 'withdraw') renderWithdraw();
+            else if (page === 'referrals') renderReferrals();
+            else if (page === 'admin') renderAdminPanel();
         }
-        
-        function renderRecentTransactions() {
-            const container = document.getElementById('recent-transactions');
-            const userTx = transactions.filter(t => t.userId === currentUser.id).slice(0, 5);
-            
-            if (userTx.length === 0) {
-                container.innerHTML = `<p class="text-zinc-500 text-center py-8">No transactions yet</p>`;
+
+        // ================== AUTH ==================
+        async function login() {
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+
+            if (!email || !password) return alert("Please fill all fields");
+
+            const { data, error } = await supabase
+                .from('users')
+                .select('*')
+                .eq('email', email)
+                .eq('password', password) // In production use proper auth + hashing
+                .single();
+
+            if (error || !data) {
+                alert("Invalid credentials");
                 return;
             }
-            
-            let html = '';
-            userTx.forEach(tx => {
-                const color = tx.type === 'deposit' ? 'text-emerald-400' : 'text-amber-400';
-                html += `
-                    <div class="flex justify-between items-center">
-                        <div class="flex items-center gap-4">
-                            <div class="w-9 h-9 bg-zinc-800 rounded-2xl flex items-center justify-center ${color}">
-                                <i class="fa-solid ${tx.type === 'deposit' ? 'fa-arrow-down' : 'fa-gift'}"></i>
-                            </div>
-                            <div>
-                                <p class="font-medium">${tx.type.toUpperCase()}</p>
-                                <p class="text-xs text-zinc-500">${tx.date}</p>
-                            </div>
-                        </div>
-                        <p class="${color} font-semibold">+₦${tx.amount.toLocaleString()}</p>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-        }
-        
-        function renderReferrals() {
-            const container = document.getElementById('referral-list');
-            const myReferrals = users.filter(u => u.referrer === currentUser.id);
-            
-            if (myReferrals.length === 0) {
-                container.innerHTML = `<p class="text-zinc-400">You haven't referred anyone yet.</p>`;
-                return;
-            }
-            
-            let html = '';
-            myReferrals.forEach(ref => {
-                html += `
-                    <div class="flex justify-between items-center border border-zinc-700 p-4 rounded-2xl">
-                        <div>
-                            <p class="font-medium">${ref.username}</p>
-                            <p class="text-xs text-zinc-500">${ref.email}</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-emerald-400">Joined ${ref.createdAt}</p>
-                        </div>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-        }
-        
-        function renderAdminDashboard() {
-            const content = document.getElementById('main-content');
-            let html = `
-                <div class="flex justify-between items-center mb-8">
-                    <h3 class="text-2xl font-bold">Admin Dashboard</h3>
-                    <button onclick="showCreateUserModal()" 
-                            class="bg-violet-600 px-6 py-3 rounded-2xl flex items-center gap-2">
-                        <i class="fa-solid fa-plus"></i> Create User
-                    </button>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                    <div class="bg-zinc-900 rounded-3xl p-6">
-                        <p class="text-zinc-400">Total Users</p>
-                        <p class="text-5xl font-bold mt-2">${users.length}</p>
-                    </div>
-                    <div class="bg-zinc-900 rounded-3xl p-6">
-                        <p class="text-zinc-400">Pending Withdrawals</p>
-                        <p class="text-5xl font-bold mt-2 text-amber-400">${withdrawalRequests.length}</p>
-                    </div>
-                </div>
-                
-                <div class="bg-zinc-900 rounded-3xl overflow-hidden">
-                    <table class="w-full">
-                        <thead>
-                            <tr class="border-b border-zinc-800">
-                                <th class="text-left p-6">User</th>
-                                <th class="text-left p-6">Email</th>
-                                <th class="text-left p-6">Balance</th>
-                                <th class="text-left p-6">Joined</th>
-                                <th class="text-left p-6">Referrals</th>
-                                <th class="p-6 text-center">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="admin-users-table"></tbody>
-                    </table>
-                </div>
-            `;
-            content.innerHTML = html;
-            renderAdminUsersTable();
-        }
-        
-        function renderAdminUsersTable() {
-            const tbody = document.getElementById('admin-users-table');
-            let html = '';
-            
-            users.forEach(user => {
-                html += `
-                    <tr class="border-b border-zinc-800 hover:bg-zinc-800/50">
-                        <td class="p-6 font-medium">${user.username}</td>
-                        <td class="p-6 text-zinc-400">${user.email}</td>
-                        <td class="p-6 font-mono">₦${user.balance.toLocaleString()}</td>
-                        <td class="p-6 text-sm text-zinc-500">${user.createdAt}</td>
-                        <td class="p-6">${user.referrals || 0}</td>
-                        <td class="p-6">
-                            <div class="flex gap-2 justify-center">
-                                <button onclick="adminAddFunds(${user.id})" class="text-xs bg-emerald-900 hover:bg-emerald-800 px-4 py-2 rounded-xl">+ Fund</button>
-                                <button onclick="adminDeductFunds(${user.id})" class="text-xs bg-amber-900 hover:bg-amber-800 px-4 py-2 rounded-xl">- Deduct</button>
-                                <button onclick="toggleFreeze(${user.id})" class="text-xs ${user.frozen ? 'bg-red-900' : 'bg-zinc-700'} px-4 py-2 rounded-xl">
-                                    ${user.frozen ? 'Unfreeze' : 'Freeze'}
-                                </button>
-                                <button onclick="deleteUser(${user.id})" class="text-xs bg-red-900 hover:bg-red-800 px-4 py-2 rounded-xl">Delete</button>
-                                <button onclick="adminResetPassword(${user.id})" class="text-xs bg-blue-900 hover:bg-blue-800 px-4 py-2 rounded-xl">Reset PW</button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            });
-            tbody.innerHTML = html;
-        }
-        
-        function adminAddFunds(id) {
-            const amt = prompt("Enter amount to add (₦):", "50000");
-            if (amt) {
-                const user = users.find(u => u.id === id);
-                if (user) {
-                    user.balance += parseFloat(amt);
-                    alert(`Added ₦${amt} to ${user.username}`);
-                    renderAdminUsersTable();
-                }
-            }
-        }
-        
-        function adminDeductFunds(id) {
-            const amt = prompt("Enter amount to deduct (₦):", "10000");
-            if (amt) {
-                const user = users.find(u => u.id === id);
-                if (user) {
-                    user.balance = Math.max(0, user.balance - parseFloat(amt));
-                    alert(`Deducted ₦${amt} from ${user.username}`);
-                    renderAdminUsersTable();
-                }
-            }
-        }
-        
-        function toggleFreeze(id) {
-            const user = users.find(u => u.id === id);
-            if (user) {
-                user.frozen = !user.frozen;
-                alert(`${user.username} ${user.frozen ? 'frozen' : 'unfrozen'}`);
-                renderAdminUsersTable();
-            }
-        }
-        
-        function deleteUser(id) {
-            if (confirm("Delete this user permanently?")) {
-                users = users.filter(u => u.id !== id);
-                alert("User deleted");
-                renderAdminUsersTable();
-            }
-        }
-        
-        function adminResetPassword(id) {
-            const user = users.find(u => u.id === id);
-            if (user) {
-                const newPass = prompt("Enter new password for " + user.username, "123456");
-                if (newPass) {
-                    user.password = newPass;
-                    alert("Password reset successfully");
-                }
-            }
-        }
-        
-        function showCreateUserModal() {
-            document.getElementById('create-user-modal').classList.remove('hidden');
-        }
-        
-        function createNewUser() {
-            const username = document.getElementById('new-username').value;
-            const email = document.getElementById('new-email').value;
-            const password = document.getElementById('new-password').value;
-            
-            if (!username || !email) {
-                alert("Username and email required");
-                return;
-            }
-            
-            const newUser = {
-                id: Date.now(),
-                username: username,
-                email: email,
-                password: password || "123456",
-                balance: 0,
-                role: "user",
-                createdAt: new Date().toISOString().slice(0,16).replace('T',' '),
-                referrer: null,
-                referrals: 0,
-                frozen: false
-            };
-            
-            users.push(newUser);
-            hideModal('create-user-modal');
-            alert("User created successfully");
-            renderAdminUsersTable();
-        }
-        
-        function hideModal(modalId) {
-            document.getElementById(modalId).classList.add('hidden');
-        }
-        
-        function copyReferralLink() {
-            const link = `https://investpro.com/ref/${currentUser.username}`;
-            navigator.clipboard.writeText(link).then(() => {
-                alert("Referral link copied!");
-            });
-        }
-        
-        function loginAs(role) {
-            const email = document.getElementById('login-email').value;
-            
-            if (role === 'admin') {
-                currentUser = {
-                    id: 999,
-                    username: "admin",
-                    email: "admin@investpro.com",
-                    role: "admin",
-                    balance: 0,
-                    referrals: 0
-                };
-            } else {
-                currentUser = users[0]; // demo user
-            }
-            
+
+            currentUser = data;
             document.getElementById('login-modal').style.display = 'none';
+            initUI();
+        }
+
+        function logout() {
+            if (confirm("Logout?")) location.reload();
+        }
+
+        // Hidden Admin Login
+        function showHiddenAdminLogin() {
+            document.getElementById('admin-secret-modal').classList.remove('hidden');
+        }
+
+        async function adminSecretLogin() {
+            const pass = document.getElementById('admin-secret-pass').value;
+            if (pass === "admin2026") {  // Change this in production
+                const { data } = await supabase.from('users').select('*').eq('role', 'admin').single();
+                if (data) {
+                    currentUser = data;
+                    hideModal('admin-secret-modal');
+                    initUI();
+                }
+            } else {
+                alert("Incorrect admin password");
+            }
+        }
+
+        // ================== UI RENDERING ==================
+        function initUI() {
             document.getElementById('username-display').textContent = currentUser.username;
             document.getElementById('role-display').textContent = currentUser.role.toUpperCase();
             document.getElementById('user-avatar').textContent = currentUser.username[0].toUpperCase();
             document.getElementById('balance-display').textContent = `₦${currentUser.balance.toLocaleString()}`;
-            
-            // Show correct menu
+
+            const menu = document.getElementById('sidebar-menu');
+
             if (currentUser.role === 'admin') {
-                document.getElementById('user-menu').classList.add('hidden');
-                document.getElementById('admin-menu').classList.remove('hidden');
-                renderAdminMenu();
+                menu.innerHTML = `
+                    <div onclick="showPage('admin')" class="flex items-center gap-3 px-5 py-4 hover:bg-zinc-800 rounded-2xl cursor-pointer nav-active">
+                        <i class="fa-solid fa-users"></i><span>Users</span>
+                    </div>
+                    <div onclick="showPage('withdraw')" class="flex items-center gap-3 px-5 py-4 hover:bg-zinc-800 rounded-2xl cursor-pointer">
+                        <i class="fa-solid fa-hand-holding-dollar"></i><span>Withdrawals</span>
+                    </div>
+                `;
                 showPage('admin');
             } else {
-                document.getElementById('user-menu').classList.remove('hidden');
-                document.getElementById('admin-menu').classList.add('hidden');
-                renderUserMenu();
+                menu.innerHTML = `
+                    <div onclick="showPage('dashboard')" class="flex items-center gap-3 px-5 py-4 hover:bg-zinc-800 rounded-2xl cursor-pointer nav-active">
+                        <i class="fa-solid fa-house"></i><span>Dashboard</span>
+                    </div>
+                    <div onclick="showPage('deposit')" class="flex items-center gap-3 px-5 py-4 hover:bg-zinc-800 rounded-2xl cursor-pointer">
+                        <i class="fa-solid fa-arrow-down"></i><span>Deposit</span>
+                    </div>
+                    <div onclick="showPage('withdraw')" class="flex items-center gap-3 px-5 py-4 hover:bg-zinc-800 rounded-2xl cursor-pointer">
+                        <i class="fa-solid fa-arrow-up"></i><span>Withdraw</span>
+                    </div>
+                    <div onclick="showPage('referrals')" class="flex items-center gap-3 px-5 py-4 hover:bg-zinc-800 rounded-2xl cursor-pointer">
+                        <i class="fa-solid fa-users"></i><span>Referrals</span>
+                    </div>
+                `;
                 showPage('dashboard');
             }
         }
-        
-        function renderUserMenu() {
-            const menu = document.getElementById('user-menu');
-            menu.innerHTML = `
-                <div onclick="showPage('dashboard')" class="nav-item flex items-center gap-3 px-5 py-4 hover:bg-zinc-800 rounded-2xl cursor-pointer nav-active">
-                    <i class="fa-solid fa-house w-5"></i>
-                    <span class="font-medium">Dashboard</span>
-                </div>
-                <div onclick="showPage('deposit')" class="nav-item flex items-center gap-3 px-5 py-4 hover:bg-zinc-800 rounded-2xl cursor-pointer">
-                    <i class="fa-solid fa-arrow-down w-5"></i>
-                    <span class="font-medium">Deposit</span>
-                </div>
-                <div onclick="showPage('withdraw')" class="nav-item flex items-center gap-3 px-5 py-4 hover:bg-zinc-800 rounded-2xl cursor-pointer">
-                    <i class="fa-solid fa-arrow-up w-5"></i>
-                    <span class="font-medium">Withdraw</span>
-                </div>
-                <div onclick="showPage('referrals')" class="nav-item flex items-center gap-3 px-5 py-4 hover:bg-zinc-800 rounded-2xl cursor-pointer">
-                    <i class="fa-solid fa-users w-5"></i>
-                    <span class="font-medium">My Referrals</span>
-                </div>
-            `;
-        }
-        
-        function renderAdminMenu() {
-            const menu = document.getElementById('admin-menu');
-            menu.innerHTML = `
-                <div onclick="showPage('admin')" class="flex items-center gap-3 px-5 py-4 hover:bg-zinc-800 rounded-2xl cursor-pointer nav-active">
-                    <i class="fa-solid fa-users w-5"></i>
-                    <span class="font-medium">All Users</span>
-                </div>
-                <div onclick="viewWithdrawRequests()" class="flex items-center gap-3 px-5 py-4 hover:bg-zinc-800 rounded-2xl cursor-pointer">
-                    <i class="fa-solid fa-hand-holding-dollar w-5"></i>
-                    <span class="font-medium">Withdrawals</span>
-                </div>
-            `;
-        }
-        
-        function viewWithdrawRequests() {
-            let html = `<div class="bg-zinc-900 rounded-3xl p-8"><h3 class="font-bold text-xl mb-6">Pending Withdrawals</h3>`;
+
+        async function renderDashboard() {
+            const { data: txs } = await supabase.from('transactions').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(6);
             
-            if (withdrawalRequests.length === 0) {
-                html += `<p class="text-zinc-400">No pending requests</p>`;
-            } else {
-                withdrawalRequests.forEach((req, index) => {
-                    const user = users.find(u => u.id === req.userId);
-                    html += `
-                        <div class="flex justify-between items-center border border-zinc-700 p-5 rounded-2xl mb-4">
-                            <div>
-                                <p>${user ? user.username : 'Unknown'}</p>
-                                <p class="text-sm text-zinc-400">₦${req.amount.toLocaleString()} • ${req.date}</p>
-                            </div>
-                            <div>
-                                <button onclick="approveWithdrawal(${index})" class="bg-emerald-600 px-6 py-3 rounded-2xl text-sm">Approve & Pay</button>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-            html += `</div>`;
+            let html = `
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-zinc-900 rounded-3xl p-6">
+                        <p class="text-zinc-400">Balance</p>
+                        <p class="text-5xl font-bold mt-2">₦${currentUser.balance.toLocaleString()}</p>
+                    </div>
+                    <div class="bg-zinc-900 rounded-3xl p-6">
+                        <p class="text-zinc-400">Referrals</p>
+                        <p class="text-5xl font-bold mt-2">${currentUser.referrals || 0}</p>
+                    </div>
+                    <div class="bg-zinc-900 rounded-3xl p-6">
+                        <p class="text-zinc-400">Daily Interest Rate</p>
+                        <p class="text-5xl font-bold mt-2 text-emerald-400">1.5%</p>
+                    </div>
+                </div>
+                
+                <div class="mt-8 bg-zinc-900 rounded-3xl p-6">
+                    <h3 class="font-semibold mb-4">Recent Activity</h3>
+                    <div id="recent-tx"></div>
+                </div>
+            `;
             document.getElementById('main-content').innerHTML = html;
+            renderRecentTx(txs);
         }
-        
-        function approveWithdrawal(index) {
-            const req = withdrawalRequests[index];
-            const user = users.find(u => u.id === req.userId);
-            if (user && user.balance >= req.amount) {
-                user.balance -= req.amount;
-                req.status = "approved";
-                alert(`Withdrawal of ₦${req.amount} approved and paid via Monnify`);
-                withdrawalRequests.splice(index, 1);
-                viewWithdrawRequests();
+
+        function renderRecentTx(txs) {
+            const container = document.getElementById('recent-tx');
+            if (!txs || txs.length === 0) {
+                container.innerHTML = `<p class="text-zinc-500 py-8 text-center">No transactions yet</p>`;
+                return;
             }
+            let str = '';
+            txs.forEach(tx => {
+                str += `
+                    <div class="flex justify-between py-3 border-b border-zinc-800 last:border-0">
+                        <div>
+                            <span class="capitalize">${tx.type}</span>
+                            <p class="text-xs text-zinc-500">${new Date(tx.created_at).toLocaleString()}</p>
+                        </div>
+                        <span class="${tx.type === 'deposit' || tx.type === 'referral' ? 'text-emerald-400' : 'text-red-400'} font-semibold">
+                            ${tx.type === 'deposit' || tx.type === 'referral' ? '+' : '-'} ₦${tx.amount.toLocaleString()}
+                        </span>
+                    </div>`;
+            });
+            container.innerHTML = str;
         }
-        
+
+        // Monnify Deposit Simulation (Replace with real Monnify integration)
+        async function initiateDeposit() {
+            const amount = parseFloat(document.getElementById('deposit-amount').value);
+            if (!amount || amount < 1000) return alert("Minimum deposit ₦1,000");
+
+            hideModal('deposit-modal');
+
+            // Simulate successful payment
+            setTimeout(async () => {
+                const { error } = await supabase.from('transactions').insert({
+                    user_id: currentUser.id,
+                    type: 'deposit',
+                    amount: amount,
+                    status: 'completed'
+                });
+
+                if (!error) {
+                    currentUser.balance += amount;
+                    await supabase.from('users').update({ balance: currentUser.balance }).eq('id', currentUser.id);
+                    alert(`Deposit of ₦${amount.toLocaleString()} successful!`);
+                    showPage('dashboard');
+                }
+            }, 1200);
+        }
+
+        function renderWithdraw() {
+            const content = document.getElementById('main-content');
+            content.innerHTML = `
+                <div class="max-w-lg mx-auto bg-zinc-900 rounded-3xl p-8">
+                    <h3 class="text-2xl font-bold mb-6">Request Withdrawal</h3>
+                    <input id="withdraw-amt" type="number" placeholder="Amount (₦)" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 mb-6">
+                    <button onclick="requestWithdraw()" class="w-full bg-blue-600 py-4 rounded-2xl font-semibold">Submit Request</button>
+                </div>
+            `;
+        }
+
+        async function requestWithdraw() {
+            const amount = parseFloat(document.getElementById('withdraw-amt').value);
+            if (!amount || amount > currentUser.balance) return alert("Insufficient balance");
+
+            await supabase.from('withdrawals').insert({
+                user_id: currentUser.id,
+                amount: amount,
+                status: 'pending'
+            });
+            alert("Withdrawal request submitted successfully. Awaiting admin approval.");
+            showPage('dashboard');
+        }
+
+        function renderReferrals() {
+            // Simple referral display
+            document.getElementById('main-content').innerHTML = `
+                <div class="max-w-2xl mx-auto bg-zinc-900 rounded-3xl p-8">
+                    <h3 class="font-bold text-2xl mb-6">Your Referral Link</h3>
+                    <div class="bg-zinc-800 p-5 rounded-2xl font-mono text-sm break-all mb-6">
+                        https://yourdomain.com/ref/${currentUser.username}
+                    </div>
+                    <p class="text-zinc-400">You earn 20% of your referrals' first deposit.</p>
+                </div>
+            `;
+        }
+
+        async function renderAdminPanel() {
+            const { data: allUsers } = await supabase.from('users').select('*');
+            let html = `
+                <div class="flex justify-between mb-6">
+                    <h3 class="text-2xl font-bold">All Users (${allUsers.length})</h3>
+                    <button onclick="createUser()" class="bg-violet-600 px-6 py-3 rounded-2xl">+ New User</button>
+                </div>
+                <div class="bg-zinc-900 rounded-3xl overflow-hidden">
+                    <table class="w-full">
+                        <thead><tr class="border-b border-zinc-700">
+                            <th class="text-left p-6">User</th>
+                            <th class="text-left p-6">Balance</th>
+                            <th class="text-left p-6">Referrals</th>
+                            <th class="p-6 text-center">Actions</th>
+                        </tr></thead>
+                        <tbody id="admin-table"></tbody>
+                    </table>
+                </div>
+            `;
+            document.getElementById('main-content').innerHTML = html;
+            renderAdminTable(allUsers);
+        }
+
+        function renderAdminTable(users) {
+            const tbody = document.getElementById('admin-table');
+            tbody.innerHTML = users.map(user => `
+                <tr class="border-b border-zinc-800 hover:bg-zinc-800/50">
+                    <td class="p-6">${user.username}</td>
+                    <td class="p-6 font-mono">₦${user.balance.toLocaleString()}</td>
+                    <td class="p-6">${user.referrals || 0}</td>
+                    <td class="p-6 text-center">
+                        <button onclick="adminAddFunds(${user.id})" class="text-xs bg-emerald-900 px-4 py-2 rounded-xl mx-1">+ Fund</button>
+                        <button onclick="adminResetPassword(${user.id})" class="text-xs bg-blue-900 px-4 py-2 rounded-xl mx-1">Reset PW</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Placeholder admin functions (expand as needed)
+        function adminAddFunds(id) { alert("Fund management ready (extend with Supabase update)"); }
+        function adminResetPassword(id) { alert("Password reset ready"); }
+        function createUser() { alert("User creation form ready"); }
+
+        // Show Profile
         function showProfileModal() {
-            const modal = document.getElementById('profile-modal');
-            document.getElementById('modal-avatar').textContent = currentUser.username[0].toUpperCase();
-            document.getElementById('modal-username').textContent = currentUser.username;
-            document.getElementById('modal-email').textContent = currentUser.email || currentUser.username + "@investpro.com";
-            modal.classList.remove('hidden');
+            alert(`Logged in as: ${currentUser.username}\nRole: ${currentUser.role}`);
         }
-        
-        function resetOwnPassword() {
-            const newPass = prompt("Enter new password:", "123456");
-            if (newPass && currentUser) {
-                alert("Password changed successfully!");
-                hideModal('profile-modal');
-            }
-        }
-        
-        function logout() {
-            if (confirm("Logout?")) {
-                location.reload();
-            }
-        }
-        
-        // Keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            if (e.metaKey && e.key === "k") {
-                e.preventDefault();
-                alert("Demo search: Try typing user names");
-            }
-        });
-        
+
         // Initialize
-        window.onload = function() {
-            // Auto show login
-            // For demo purposes we can auto-login as user
-            setTimeout(() => {
-                // Uncomment next line for auto login:
-                // loginAs('user');
-            }, 800);
+        window.onload = () => {
+            document.getElementById('login-modal').style.display = 'flex';
+            // For quick testing only — remove in production
+            // document.getElementById('login-email').value = "demo@user.com";
         };
-        
-        // Expose some functions to window for onclick handlers
-        window.loginAs = loginAs;
+
+        // Expose necessary functions
+        window.login = login;
+        window.logout = logout;
         window.showPage = showPage;
         window.hideModal = hideModal;
-        window.initiateMonnifyDeposit = initiateMonnifyDeposit;
-        window.requestWithdrawal = requestWithdrawal;
-        window.copyReferralLink = copyReferralLink;
-        window.createNewUser = createNewUser;
-        window.showCreateUserModal = showCreateUserModal;
-        window.adminAddFunds = adminAddFunds;
-        window.adminDeductFunds = adminDeductFunds;
-        window.toggleFreeze = toggleFreeze;
-        window.deleteUser = deleteUser;
-        window.adminResetPassword = adminResetPassword;
-        window.logout = logout;
+        window.initiateDeposit = initiateDeposit;
+        window.requestWithdraw = requestWithdraw;
+        window.showHiddenAdminLogin = showHiddenAdminLogin;
+        window.adminSecretLogin = adminSecretLogin;
         window.showProfileModal = showProfileModal;
-        window.resetOwnPassword = resetOwnPassword;
         window.toggleSidebar = toggleSidebar;
-        window.viewWithdrawRequests = viewWithdrawRequests;
-        window.approveWithdrawal = approveWithdrawal;
-        window.renderCurrentPage = () => showPage('dashboard');
     </script>
 </body>
 </html>
