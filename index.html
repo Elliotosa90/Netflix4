@@ -3,246 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NatureZone - Grow Naturally</title>
+    <title>NatureZone</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        body { font-family: 'Inter', system-ui, sans-serif; }
+        body { font-family: system-ui, sans-serif; }
         .admin-dot {
             position: fixed;
-            bottom: 25px;
-            right: 25px;
-            width: 18px;
-            height: 18px;
+            bottom: 30px;
+            right: 30px;
+            width: 22px;
+            height: 22px;
             background: #f59e0b;
             border: 3px solid white;
             border-radius: 50%;
             cursor: pointer;
-            z-index: 9999;
-            box-shadow: 0 0 12px rgba(245, 158, 11, 0.8);
+            z-index: 10000;
+            box-shadow: 0 0 15px #f59e0b;
         }
     </style>
 </head>
-<body class="bg-zinc-950 text-zinc-200 min-h-screen">
+<body class="bg-zinc-950 text-white min-h-screen">
 
     <div class="flex min-h-screen">
-        <div id="sidebar" class="w-72 bg-zinc-900 border-r border-zinc-800 flex flex-col hidden md:flex">
-            <div class="p-6 border-b border-zinc-800 flex items-center gap-3">
-                <div class="w-10 h-10 bg-emerald-600 rounded-2xl flex items-center justify-center text-white font-bold text-2xl">NZ</div>
-                <div>
-                    <h1 class="text-2xl font-bold">NatureZone</h1>
-                    <p class="text-xs text-zinc-500">Grow • Invest • Thrive</p>
-                </div>
+        <div id="sidebar" class="w-72 bg-zinc-900 hidden md:flex flex-col">
+            <div class="p-6 border-b border-zinc-800">
+                <h1 class="text-2xl font-bold">NatureZone</h1>
             </div>
-            <div id="sidebar-menu" class="flex-1 p-4 space-y-1"></div>
-            <div class="p-4 border-t border-zinc-800">
-                <div onclick="logout()" class="flex items-center gap-3 text-red-400 hover:bg-zinc-800 p-3 rounded-2xl cursor-pointer">
-                    <i class="fa-solid fa-right-from-bracket"></i><span>Logout</span>
-                </div>
-            </div>
+            <div id="sidebar-menu" class="flex-1 p-4"></div>
         </div>
 
-        <div class="flex-1 flex flex-col">
-            <nav class="bg-zinc-900 border-b border-zinc-800 px-6 py-4 flex items-center justify-between">
-                <div class="flex items-center gap-4">
-                    <button onclick="toggleSidebar()" class="md:hidden text-2xl"><i class="fa-solid fa-bars"></i></button>
-                    <h2 id="page-title" class="text-2xl font-semibold">Dashboard</h2>
-                </div>
-                <div class="flex items-center gap-6">
-                    <div class="bg-zinc-800 rounded-3xl px-5 py-2 text-sm font-mono">
-                        Balance: <span id="balance-display" class="font-semibold">₦0</span>
-                    </div>
-                    <div onclick="showProfileModal()" class="flex items-center gap-3 cursor-pointer">
-                        <div id="user-avatar" class="w-9 h-9 bg-emerald-600 rounded-2xl flex items-center justify-center font-bold"></div>
-                        <div>
-                            <div id="username-display" class="font-semibold text-sm"></div>
-                            <div id="role-display" class="text-xs text-zinc-500"></div>
-                        </div>
-                    </div>
+        <div class="flex-1">
+            <nav class="bg-zinc-900 p-6 flex justify-between">
+                <h2 id="page-title" class="text-2xl font-bold">Dashboard</h2>
+                <div onclick="showProfileModal()" class="cursor-pointer">
+                    <div id="user-avatar" class="w-10 h-10 bg-emerald-600 rounded-full flex items-center justify-center font-bold"></div>
                 </div>
             </nav>
-            <div class="flex-1 p-8 overflow-auto" id="main-content"></div>
+            <div id="main-content" class="p-8"></div>
         </div>
     </div>
 
     <!-- Orange Admin Dot -->
-    <div onclick="showAdminLogin()" class="admin-dot" title="Admin Login"></div>
+    <div onclick="showAdminLogin()" class="admin-dot"></div>
 
-    <!-- Auth Modal -->
-    <div id="auth-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-        <div class="bg-zinc-900 rounded-3xl p-8 w-full max-w-md mx-4">
+    <!-- Login / Signup Modal -->
+    <div id="auth-modal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50">
+        <div class="bg-zinc-900 rounded-3xl p-8 w-full max-w-md">
             <div class="text-center mb-8">
-                <div class="mx-auto w-16 h-16 bg-emerald-600 rounded-3xl flex items-center justify-center text-4xl mb-4">NZ</div>
                 <h2 id="auth-title" class="text-3xl font-bold">Welcome to NatureZone</h2>
             </div>
 
+            <!-- Login -->
             <div id="login-form">
-                <input id="login-email" placeholder="Email" type="email" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 mb-4">
-                <input id="login-password" placeholder="Password" type="password" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 mb-6">
-                <button onclick="login()" class="w-full bg-emerald-600 hover:bg-emerald-700 py-4 rounded-2xl font-semibold">Login</button>
-                <p onclick="switchToSignup()" class="text-center text-emerald-400 hover:text-emerald-300 cursor-pointer mt-4 text-sm">Don't have an account? Sign up</p>
+                <input id="login-email" placeholder="Email" type="email" class="w-full bg-zinc-800 p-4 rounded-2xl mb-4">
+                <input id="login-password" placeholder="Password" type="password" class="w-full bg-zinc-800 p-4 rounded-2xl mb-6">
+                <button onclick="login()" class="w-full bg-emerald-600 py-4 rounded-2xl font-bold">LOGIN</button>
+                <p onclick="switchToSignup()" class="text-center text-emerald-400 mt-4 cursor-pointer">No account? Sign up</p>
             </div>
 
+            <!-- Signup -->
             <div id="signup-form" class="hidden">
-                <input id="signup-username" placeholder="Username" type="text" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 mb-4">
-                <input id="signup-email" placeholder="Email" type="email" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 mb-4">
-                <input id="signup-password" placeholder="Password (min 6 chars)" type="password" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 mb-6">
-                <button onclick="signup()" class="w-full bg-emerald-600 hover:bg-emerald-700 py-4 rounded-2xl font-semibold">Create Account</button>
-                <p onclick="switchToLogin()" class="text-center text-emerald-400 hover:text-emerald-300 cursor-pointer mt-4 text-sm">Already have an account? Login</p>
+                <input id="signup-username" placeholder="Username" type="text" class="w-full bg-zinc-800 p-4 rounded-2xl mb-4">
+                <input id="signup-email" placeholder="Email" type="email" class="w-full bg-zinc-800 p-4 rounded-2xl mb-4">
+                <input id="signup-password" placeholder="Password" type="password" class="w-full bg-zinc-800 p-4 rounded-2xl mb-6">
+                <button onclick="signup()" class="w-full bg-emerald-600 py-4 rounded-2xl font-bold">CREATE ACCOUNT</button>
+                <p onclick="switchToLogin()" class="text-center text-emerald-400 mt-4 cursor-pointer">Back to Login</p>
             </div>
         </div>
     </div>
 
     <!-- Admin Modal -->
-    <div id="admin-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-        <div class="bg-zinc-900 rounded-3xl p-8 w-full max-w-sm mx-4">
-            <h3 class="text-xl font-bold mb-6 text-amber-400">Admin Access</h3>
-            <input id="admin-pass" type="password" placeholder="Admin Password" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 mb-6">
-            <button onclick="adminLogin()" class="w-full bg-amber-600 py-4 rounded-2xl font-semibold">Access Admin Panel</button>
-            <button onclick="hideModal('admin-modal')" class="mt-4 w-full text-zinc-400">Cancel</button>
+    <div id="admin-modal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-50">
+        <div class="bg-zinc-900 rounded-3xl p-8 w-full max-w-sm">
+            <h3 class="text-xl font-bold mb-6">Admin Login</h3>
+            <input id="admin-pass" type="password" placeholder="Admin Password" class="w-full bg-zinc-800 p-4 rounded-2xl mb-6">
+            <button onclick="adminLogin()" class="w-full bg-amber-600 py-4 rounded-2xl font-bold">ENTER ADMIN PANEL</button>
         </div>
     </div>
 
     <script>
-        const SUPABASE_URL = 'https://dfscugxqvrgnyfytzdwr.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmc2N1Z3hxdnJnbnlmeXR6ZHdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMzM0MDYsImV4cCI6MjA5NzkwOTQwNn0.dZQ6LWelVv5ev-kCgFR4u9-1t7rHZYhbr96jYq5Yp6I';
-        
-        let supabase;
         let currentUser = null;
 
-        function initSupabase() {
-            supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        }
-
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('hidden'); }
-        function hideModal(id) { document.getElementById(id).classList.add('hidden'); }
         function showModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function hideModal(id) { document.getElementById(id).classList.add('hidden'); }
 
         function switchToSignup() {
             document.getElementById('login-form').classList.add('hidden');
             document.getElementById('signup-form').classList.remove('hidden');
-            document.getElementById('auth-title').textContent = 'Join NatureZone';
         }
 
         function switchToLogin() {
             document.getElementById('signup-form').classList.add('hidden');
             document.getElementById('login-form').classList.remove('hidden');
-            document.getElementById('auth-title').textContent = 'Welcome to NatureZone';
         }
 
-        async function login() {
+        function login() {
             const email = document.getElementById('login-email').value.trim();
             const password = document.getElementById('login-password').value;
-            if (!email || !password) return alert("Please enter email and password");
 
-            try {
-                const { data, error } = await supabase.from('users').select('*').eq('email', email).eq('password', password).single();
-                if (error || !data) {
-                    alert("Invalid credentials.\n\nDemo: demo@user.com / 123456");
-                    return;
-                }
-                currentUser = data;
+            if (email && password) {
+                currentUser = { username: "Demo User", role: "user", balance: 125000 };
                 hideModal('auth-modal');
                 initUI();
-            } catch(e) {
-                alert("Connection error. Check console.");
-                console.error(e);
+            } else {
+                alert("Please fill email and password");
             }
         }
 
-        async function signup() {
+        function signup() {
             const username = document.getElementById('signup-username').value.trim();
             const email = document.getElementById('signup-email').value.trim();
             const password = document.getElementById('signup-password').value;
 
-            if (!username || !email || !password) return alert("All fields are required");
-
-            try {
-                const { data: existing } = await supabase.from('users').select('id').eq('email', email).single();
-                if (existing) return alert("Email already registered");
-
-                const { error } = await supabase.from('users').insert({
-                    username, email, password, role: 'user', balance: 0, referrals: 0
-                });
-
-                if (error) throw error;
-
-                alert("✅ Account created successfully!\nYou can now login.");
+            if (username && email && password) {
+                alert("Account created! You can now login.");
                 switchToLogin();
-            } catch(e) {
-                alert("Signup error: " + e.message);
+            } else {
+                alert("Please fill all fields");
             }
         }
-
-        function logout() { if (confirm("Logout?")) location.reload(); }
 
         function showAdminLogin() {
             document.getElementById('admin-pass').value = '';
             showModal('admin-modal');
         }
 
-        async function adminLogin() {
-            const pass = document.getElementById('admin-pass').value;
-            if (pass === "admin2026") {
-                const { data } = await supabase.from('users').select('*').eq('role', 'admin').single();
-                if (data) {
-                    currentUser = data;
-                    hideModal('admin-modal');
-                    hideModal('auth-modal');
-                    initUI();
-                } else alert("Admin account not found");
-            } else alert("Wrong password");
+        function adminLogin() {
+            if (document.getElementById('admin-pass').value === "admin2026") {
+                currentUser = { username: "Admin", role: "admin", balance: 0 };
+                hideModal('admin-modal');
+                hideModal('auth-modal');
+                initUI();
+            } else {
+                alert("Wrong password");
+            }
         }
 
         function initUI() {
             document.getElementById('username-display').textContent = currentUser.username;
-            document.getElementById('role-display').textContent = currentUser.role.toUpperCase();
-            document.getElementById('user-avatar').textContent = currentUser.username[0].toUpperCase();
-            document.getElementById('balance-display').textContent = `₦${currentUser.balance || 0}`;
-
-            const menu = document.getElementById('sidebar-menu');
-            if (currentUser.role === 'admin') {
-                menu.innerHTML = `<div onclick="showPage('admin')" class="flex items-center gap-3 px-5 py-4 hover:bg-zinc-800 rounded-2xl cursor-pointer nav-active"><i class="fa-solid fa-users"></i><span>Users</span></div>`;
-                showPage('admin');
-            } else {
-                menu.innerHTML = `
-                    <div onclick="showPage('dashboard')" class="flex items-center gap-3 px-5 py-4 hover:bg-zinc-800 rounded-2xl cursor-pointer nav-active"><i class="fa-solid fa-house"></i><span>Dashboard</span></div>
-                    <div onclick="showPage('deposit')" class="flex items-center gap-3 px-5 py-4 hover:bg-zinc-800 rounded-2xl cursor-pointer"><i class="fa-solid fa-arrow-down"></i><span>Deposit</span></div>
-                `;
-                showPage('dashboard');
-            }
+            document.getElementById('user-avatar').textContent = currentUser.username[0];
+            showPage(currentUser.role === 'admin' ? 'admin' : 'dashboard');
         }
 
         function showPage(page) {
-            document.getElementById('page-title').textContent = page === 'admin' ? 'Admin Panel' : page.charAt(0).toUpperCase() + page.slice(1);
-            document.getElementById('main-content').innerHTML = `<p class="text-center text-emerald-400 mt-20 text-lg">✅ ${page.toUpperCase()} Page Loaded Successfully</p>`;
+            document.getElementById('page-title').textContent = page === 'admin' ? 'Admin Panel' : 'Dashboard';
+            document.getElementById('main-content').innerHTML = `<h1 class="text-4xl text-emerald-400 text-center mt-32">Welcome to ${page}</h1>`;
         }
 
         function showProfileModal() {
-            alert(`Logged in as: ${currentUser ? currentUser.username : 'Guest'}`);
+            alert(currentUser ? `Logged in as ${currentUser.username}` : "Not logged in");
         }
 
         window.onload = () => {
-            initSupabase();
             showModal('auth-modal');
-            console.log("%cNatureZone Loaded Successfully - All buttons working", "color: #10b981; font-size: 16px");
         };
 
-        // Global exposure
+        // Make buttons work
         window.login = login;
         window.signup = signup;
-        window.logout = logout;
-        window.showPage = showPage;
-        window.hideModal = hideModal;
-        window.showModal = showModal;
         window.switchToSignup = switchToSignup;
         window.switchToLogin = switchToLogin;
         window.showAdminLogin = showAdminLogin;
         window.adminLogin = adminLogin;
         window.showProfileModal = showProfileModal;
-        window.toggleSidebar = toggleSidebar;
     </script>
 </body>
 </html>
